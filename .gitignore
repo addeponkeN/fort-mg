@@ -1,0 +1,10 @@
+obj/
+bin/
+.vs/
+DesignTimeBuild/
+FileContentIndex/
+v17/
+ProjectValuation/
+
+
+*.csproj.user

@@ -7,19 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FontStashSharp.MonoGame" Version="1.3.10" />
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.2.1105" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Utils\Extensions\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Fort.Utility\Fort.Utility.csproj" />
-    <ProjectReference Include="..\Fort.MG.Core\Fort.MG.Core.csproj" />
-    <ProjectReference Include="..\Fort.MG.Extensions\Fort.MG.Extensions.csproj" />
-    <ProjectReference Include="..\Fort.MG.Gui\Fort.MG.Gui.csproj" />
   </ItemGroup>
 
 </Project>

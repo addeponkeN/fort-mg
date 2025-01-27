@@ -1,6 +1,6 @@
 ﻿using Fort.MG.EntitySystem;
 using Fort.MG.Systems;
-using OboEngine.ParticleEngine;
+using Fort.MG.Utils;
 
 namespace Fort.MG.ParticleEngine;
 
@@ -33,7 +33,7 @@ public class ParticleEngine : EngineSystem, IRenderable
         emitters.Clear();
     }
 
-    public override void Update(IOboTime t)
+    public override void Update(IGameTime t)
     {
         base.Update(t);
 

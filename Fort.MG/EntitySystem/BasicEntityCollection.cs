@@ -32,7 +32,7 @@ public class BasicEntityCollection : EntityCollection
 
 	public override void Add(Entity ent)
 	{
-		// ent.Init();
+		// ent.Start();
 		Entities.Add(ent);
 		if (ent is IRenderable entRenderable)
 			_renderables.Add(entRenderable);

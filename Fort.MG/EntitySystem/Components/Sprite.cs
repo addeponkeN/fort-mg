@@ -1,4 +1,5 @@
 ﻿using Fort.MG.Assets;
+using Fort.MG.Core;
 using Fort.MG.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

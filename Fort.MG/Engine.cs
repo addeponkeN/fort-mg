@@ -5,7 +5,6 @@ using Fort.MG.Scenes;
 using Fort.MG.Systems;
 using Fort.MG.Utils;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Camera = Fort.MG.EntitySystem.Components.Camera;
 
 namespace Fort.MG;
@@ -15,7 +14,6 @@ public static class Engine
     public static FortGame Game;
     public static GameTime gt;
     public static SceneManager SceneManager;
-    public static GraphicsDeviceManager GraphicsDeviceManager;
 
     /// <summary>
     /// get current scene
@@ -31,31 +29,30 @@ public static class Engine
 
     public static Content Content;
 
-    static bool _startedExiting;
+    private static bool _startedExiting;
 
-    public static void Init(FortGame game)
+    public static void Start(FortGame game)
     {
-        Init(game, new DefaultGameTime());
+	    Game = game;
+    }
+
+	public static void Load()
+    {
+        Load(new DefaultGameTime());
     }
     
-    public static void Init(FortGame game, IGameTime oboTime)
+    public static void Load(IGameTime? gameTime = null)
     {
-        SceneManager = game.SceneManager;
-        Game = game;
-        Time.Init(oboTime);
+		SceneManager = Game.SceneManager;
+
+        gameTime ??= new DefaultGameTime();
+
+        Time.Init(gameTime);
         SystemManager = new EngineSystemManager();
         SystemManager.Add(Entity.Create<TimerSystem>());
         SystemManager.Add(Entity.Create<DebugPrinter>());
         Content = new Content();
-        Content.Init(game);
-        
-        Input.Init(game);
-    }
-
-    public static void InitGraphics(SpriteBatch spriteBatch, GraphicsDeviceManager graphics)
-    {        
-        GraphicsDeviceManager = graphics;
-        Graphics.Init(Game._spriteBatch);
+        Content.Init();
     }
 
     public static void RegisterSystem<T>() where T : EngineSystem, new()

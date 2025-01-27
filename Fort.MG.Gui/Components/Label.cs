@@ -1,5 +1,4 @@
 ﻿using FontStashSharp;
-using Fort.MG.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -53,7 +52,7 @@ public class Label : Component
 
 public class TextRenderer
 {
-	public DynamicSpriteFont Font = Content.GetDefaultFont();
+	public DynamicSpriteFont Font = GuiContent.GetDefaultFont();
 	public Vector2 Position;
 	public Color Color = Color.White;
 	public string Text = "";

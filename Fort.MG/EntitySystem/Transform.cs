@@ -1,6 +1,5 @@
 ﻿using Fort.MG.Utils;
 using Microsoft.Xna.Framework;
-using OboEngine.EntitySystem;
 
 namespace Fort.MG.EntitySystem;
 

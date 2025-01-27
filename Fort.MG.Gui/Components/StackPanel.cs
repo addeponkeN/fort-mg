@@ -11,8 +11,8 @@ public class ComponentTexture
 
 public class Style
 {
-	public Color Background { get; set; }
-	public Color Foreground { get; set; }
+	public Color Background { get; set; } = new Color(200, 200, 200, 255);
+	public Color Foreground { get; set; } = Color.White;
 	public int BorderThickness { get; set; } = 1;
 }
 

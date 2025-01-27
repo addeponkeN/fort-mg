@@ -1,4 +1,6 @@
-﻿namespace Fort.MG.Utils;
+﻿using Fort.MG.Extensions;
+
+namespace Fort.MG.Utils;
 
 /// <summary>
 /// if possible - use IOboTime in Update(IOboTime t) methods instead

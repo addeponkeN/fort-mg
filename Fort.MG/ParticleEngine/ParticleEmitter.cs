@@ -1,16 +1,20 @@
 ﻿using Fort.MG.Assets;
+using Fort.MG.Core;
 using Fort.MG.EntitySystem;
+using Fort.MG.Extensions;
 using Fort.MG.ParticleEngine.EmitterStates;
 using Fort.MG.Utils;
+using Fort.Utility;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OboEngine.ParticleEngine;
 
 namespace Fort.MG.ParticleEngine;
 
 public class ParticleEmitter : Entity
 {
-    public int Type;
+	static Color shadowColor = new Color(1, 1, 1, 50);
+
+	public int Type;
 
     List<Particle> particles;
     AtlasRegion _atlasRegion;
@@ -49,12 +53,12 @@ public class ParticleEmitter : Entity
     void SpawnParticle()
     {
         var p = PoolManager<Particle>.Spawn();
-        p.position = GRng.PositionInRadius(e.size, Transform.LocalPosition);
+        p.position = RngMG.PositionInRadius(e.size, Transform.LocalPosition);
         p.Init(d);
         particles.Add(p);
     }
 
-    public override void Update(IOboTime t)
+    public override void Update(IGameTime t)
     {
         base.Update(t);
         var dt = t.Delta;
@@ -79,7 +83,6 @@ public class ParticleEmitter : Entity
         }
     }
 
-    static Color shadowColor = new Color(1, 1, 1, 50);
 
     public override void Draw()
     {

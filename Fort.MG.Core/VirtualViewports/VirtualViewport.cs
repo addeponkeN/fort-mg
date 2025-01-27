@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace Fort.MG.VirtualViewports;
+namespace Fort.MG.Core.VirtualViewports;
 
 public class VirtualViewport
 {

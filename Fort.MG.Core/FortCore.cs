@@ -1,18 +1,23 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Fort.MG.Core;
 
 public static class FortCore
 {
-	public static GraphicsDevice GraphicsDevice;
-	public static Game Game;
+	public static Game Game { get; private set; }
 
-	public static void Init(Game game)
+	public static event EventHandler<EventArgs>? WindowSizeChanged;
+
+	public static void Start(Game game)
 	{
 		Game = game;
-		GraphicsDevice = game.GraphicsDevice;
-		Input.Init(Game);
+		Graphics.Start(game);
+	}
+
+	public static void Init()
+	{
+		Game.Window.ClientSizeChanged += WindowOnClientSizeChanged;
+		Graphics.Init();
 	}
 
 	public static void Update(GameTime gt)
@@ -23,5 +28,10 @@ public static class FortCore
 	public static void PostUpdate(GameTime gt)
 	{
 		Input.PostUpdate();
+	}
+
+	private static void WindowOnClientSizeChanged(object? sender, EventArgs e)
+	{
+		WindowSizeChanged?.Invoke(sender, e);
 	}
 }

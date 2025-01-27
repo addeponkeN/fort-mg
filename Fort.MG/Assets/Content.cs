@@ -1,4 +1,5 @@
 ﻿using FontStashSharp;
+using Fort.MG.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -10,7 +11,7 @@ public class Content
 
 	public AtlasRegion Pixel;
 
-	// public SpriteFont DefaultFont;
+	// public SpriteFont DefaultFontSystem;
 	public DynamicSpriteFont DefaultFont;
 	public FontSystem FontSystem;
 
@@ -26,8 +27,9 @@ public class Content
 	public static string FontPath = @"fonts/";
 	public static string ShaderPath = @"shaders/";
 
-	public void Init(FortGame game, ContentConfig? config = null)
+	public void Init(ContentConfig? config = null)
 	{
+		var game = FortCore.Game;
 		Manager = game.Content;
 		_gd = game.GraphicsDevice;
 

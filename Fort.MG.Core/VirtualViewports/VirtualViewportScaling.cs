@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace Fort.MG.VirtualViewports;
+namespace Fort.MG.Core.VirtualViewports;
 
 public class VirtualViewportScaling : VirtualViewport
 {
@@ -12,8 +12,8 @@ public class VirtualViewportScaling : VirtualViewport
     {
         get
         {
-            var scaleX = (float)Utils.Screen.Width / Width;
-            var scaleY = (float)Utils.Screen.Height / Height;
+            var scaleX = (float)Screen.Width / Width;
+            var scaleY = (float)Screen.Height / Height;
             return Matrix.CreateScale(scaleX, scaleY, 1.0f);
         }
     }

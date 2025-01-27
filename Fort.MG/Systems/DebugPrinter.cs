@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using FontStashSharp;
 using Fort.MG.Core;
 using Fort.MG.EntitySystem;
 using Fort.MG.Utils;
@@ -48,7 +49,7 @@ public class DebugPrinter : EngineSystem, IRenderable, IDrawableControl
         // Draw($"chunkbounds: x{rec.X}, y{rec.Y}, r{rec.Right}, b{rec.Bottom}");
     }
 
-    void Draw(string text)
+    private void Draw(string text)
     {
         Graphics.SpriteBatch.DrawString(Engine.Content.DefaultFont, text,
             new Vector2(Position.X + 1, Position.Y + i * spacing + 1),

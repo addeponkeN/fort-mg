@@ -1,5 +1,5 @@
-﻿using Fort.MG.Utils;
-using Fort.MG.VirtualViewports;
+﻿using Fort.MG.Core.VirtualViewports;
+using Fort.MG.Utils;
 using Microsoft.Xna.Framework;
 
 namespace Fort.MG.EntitySystem.Components;

@@ -5,7 +5,7 @@ namespace Fort.MG.Core;
 
 public static class Input
 {
-	private static Game _game;
+	private static Game _game => FortCore.Game;
 
 	public static KeyboardState KeyState;
 	public static MouseState MouseState;
@@ -19,11 +19,6 @@ public static class Input
 
 	public static Vector2 MouseTransformedPos(Matrix matrix) => Vector2.Transform(MousePos, Matrix.Invert(matrix));
 	public static Vector2 OldMouseTransformedPos(Matrix matrix) => Vector2.Transform(OldMousePos, Matrix.Invert(matrix));
-
-	public static void Init(Game game)
-	{
-		_game = game;
-	}
 
 	public static void Update()
 	{

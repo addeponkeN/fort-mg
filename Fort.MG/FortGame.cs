@@ -1,55 +1,24 @@
-﻿using Fort.MG.Scenes;
+﻿using Fort.MG.Core;
+using Fort.MG.Scenes;
 using Fort.MG.Utils;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Fort.MG;
 
-public class FortGame : Game
+public class FortGame : FortCoreGame
 {
-    public event EventHandler<EventArgs> WindowSizeChanged;
-
-    protected GraphicsDeviceManager graphicsManager;
-    internal SpriteBatch _spriteBatch;
-
-    private bool isFirstFrame;
-
     public SceneManager SceneManager;
 
     public FortGame()
     {
-        graphicsManager = new GraphicsDeviceManager(this);
-
-        Content.RootDirectory = "content";
-
-        Window.AllowAltF4 = true;
-        IsMouseVisible = true;
-        IsFixedTimeStep = false;
-
-        LimitFPS(200);
-
-        Screen.Init(graphicsManager);
         SceneManager = new SceneManager();
-    }
-
-    public void LimitFPS(int limit)
-    {
-        TargetElapsedTime = TimeSpan.FromMilliseconds(1000.0f / limit);
+        Engine.Start(this);
     }
 
     protected override void Initialize()
     {
         base.Initialize();
-        _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-        Screen.Width = 1920;
-        Screen.Height = 1080;
-        Screen.MSAA = true;
-        Screen.VSync = true;
-        Screen.Apply();
-
-        Engine.Init(this);
-        Engine.InitGraphics(_spriteBatch, graphicsManager);
+        Engine.Load();
     }
 
     protected override void LoadContent()
@@ -57,18 +26,21 @@ public class FortGame : Game
         base.LoadContent();
     }
 
-    private void OnFirstFrame(GameTime gt)
+    protected override void OnFirstFrame(GameTime gt)
     {
-        isFirstFrame = true;
+	    base.OnFirstFrame(gt);
         Engine.FirstFrameInit(gt);
     }
 
-    protected override void Update(GameTime gameTime)
+    protected override void Update(GameTime gt)
     {
-        base.Update(gameTime);
-        Engine.gt = gameTime;
-        if(!isFirstFrame)
-            OnFirstFrame(gameTime);
+        base.Update(gt);
+        Engine.gt = gt;
+    }
+
+    protected override void UpdateGame(GameTime gt)
+    {
+	    base.UpdateGame(gt);
 
         Engine.Update();
 
@@ -77,11 +49,16 @@ public class FortGame : Game
         Engine.PostUpdate();
     }
 
-    protected override void Draw(GameTime gameTime)
+    protected override void Render(GameTime gt)
     {
-        base.Draw(gameTime);
-        Engine.DrawBegin();
+	    base.Render(gt);
         SceneManager.Render();
+    }
+
+    protected override void Draw(GameTime gt)
+    {
+        base.Draw(gt);
+        Engine.DrawBegin();
         SceneManager.Draw();
         Engine.Draw();
         Engine.DrawEnd();

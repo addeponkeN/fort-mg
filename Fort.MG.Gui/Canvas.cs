@@ -1,4 +1,6 @@
-﻿using Fort.MG.Gui.Components;
+﻿using Fort.MG.Core;
+using Fort.MG.Core.VirtualViewports;
+using Fort.MG.Gui.Components;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -9,28 +11,33 @@ public class Canvas : Container
 	private RenderTarget2D _target;
 
 	internal SpriteBatch Sb;
-	public ContentManager Content;
-	public Matrix Matrix;
+
+	public VirtualViewport VirtualViewport { get; set; }
+	public Matrix TransformMatrix => VirtualViewport.Matrix;
 
 	public int Width, Height;
 
-	public Canvas(SpriteBatch sb, ContentManager content)
+	public Canvas()
 	{
-		Sb = sb;
-		Content = content;
+		Sb = Graphics.SpriteBatch;
+
+		UpdateDimensions();
+		VirtualViewport = new VirtualViewportScaling(854, 480);
+		SetCanvasSize(VirtualViewport.Width, VirtualViewport.Height);
+
+		FortCore.WindowSizeChanged += (sender, args) => UpdateDimensions();
 	}
 
-	public void SetCanvasSize(int w, int h)
+	private void UpdateDimensions()
+	{
+		Width = Screen.Width;
+		Height = Screen.Height;
+	}
+
+	private void SetCanvasSize(int w, int h)
 	{
 		_target?.Dispose();
-
 		Size = new Vector2(w, h);
-
-		Width = w;
-		Height = h;
-
-		Matrix = Matrix.CreateScale(Width);
-
 		_target = new(Sb.GraphicsDevice, w, h);
 	}
 
@@ -52,13 +59,13 @@ public class Canvas : Container
 		Items.Remove(item);
 	}
 
-	private void Render()
+	public void Render()
 	{
 		var gd = Sb.GraphicsDevice;
 		gd.SetRenderTarget(_target);
 		gd.Clear(Color.Transparent);
 
-		Sb.Begin(SpriteSortMode.BackToFront, transformMatrix: Matrix);
+		Sb.Begin(SpriteSortMode.BackToFront, transformMatrix: TransformMatrix);
 		base.Draw();
 		Sb.End();
 	}
@@ -66,8 +73,8 @@ public class Canvas : Container
 	public override void Draw()
 	{
 		Sb.Begin();
-		var scale = Vector2.One;
-		Sb.Draw(_target, Position, _target.Bounds, Style.Foreground, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+		var rec = new Rectangle(0, 0, Width, Height);
+		Sb.Draw(_target, Position, rec, Style.Foreground, 0f, Vector2.Zero, Vector2.One, SpriteEffects.None, 0f);
 		Sb.End();
 	}
 }

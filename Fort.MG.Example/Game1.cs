@@ -1,28 +1,14 @@
-﻿using Fort.MG.Gui;
+﻿using Fort.MG.Core;
+using Fort.MG.Gui;
 using Fort.MG.Gui.Components;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace Fort.MG.Example;
 
-public class Game1 : Game
+public class Game1 : FortCoreGame
 {
-	private GraphicsDeviceManager _graphics;
-	private SpriteBatch _spriteBatch;
-
-	private FortCore _fort;
 	private Canvas _canvas;
-
-	public Game1()
-	{
-		_graphics = new GraphicsDeviceManager(this);
-		Content.RootDirectory = "Content";
-		IsMouseVisible = true;
-
-		_graphics.PreferredBackBufferWidth = 1920;
-		_graphics.PreferredBackBufferHeight = 1080;
-	}
 
 	protected override void Initialize()
 	{
@@ -31,39 +17,50 @@ public class Game1 : Game
 
 	protected override void LoadContent()
 	{
-		_fort = new(this);
+		GuiContent.Load();
 
-		_spriteBatch = new SpriteBatch(GraphicsDevice);
-		_canvas = new Canvas(_spriteBatch);
+		_canvas = new Canvas();
 
 		var panel = new StackPanel
 		{
 			Position = new Vector2(100),
 		};
 
-		panel.Add(new Label { Text = "hej hej hehe" });
+		panel.Add(new Label
+		{
+			Text = "long cooooooool text ababab aabba a\nNJEW LIONOE !",
+			Foreground = Color.White,
+		});
 
 		_canvas.Add(panel);
 	}
 
 	protected override void Update(GameTime gt)
 	{
+		base.Update(gt);
 		if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
 			Exit();
-
-		_fort.Update(gt);
-
-		_canvas.Update(gt);
-
-		base.Update(gt);
 	}
 
-	protected override void Draw(GameTime gameTime)
+	protected override void UpdateGame(GameTime gt)
 	{
+		base.UpdateGame(gt);
+		_canvas.Update(gt);
+	}
+
+	protected override void Render(GameTime gt)
+	{
+		base.Render(gt);
+		_canvas.Render();
+	}
+
+	protected override void Draw(GameTime gt)
+	{
+		base.Draw(gt);
+
+		GraphicsDevice.SetRenderTarget(null);
 		GraphicsDevice.Clear(Color.CornflowerBlue);
 
 		_canvas.Draw();
-
-		base.Draw(gameTime);
 	}
 }

@@ -1,9 +1,9 @@
 ﻿using Fort.MG.Core;
+using Fort.MG.Core.VirtualViewports;
 using Fort.MG.EntitySystem;
 using Fort.MG.Gui;
 using Fort.MG.Systems;
 using Fort.MG.Utils;
-using Fort.MG.VirtualViewports;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Camera = Fort.MG.EntitySystem.Components.Camera;
@@ -172,7 +172,7 @@ public class Scene
 		Graphics.GraphicsDevice.Clear(new Color(25, 25, 25));
 
 		Graphics.SpriteBatch.Begin();
-		Graphics.SpriteBatch.Draw(_target, Utils.Screen.Bounds, Color.White);
+		Graphics.SpriteBatch.Draw(_target, Screen.Bounds, Color.White);
 		Graphics.SpriteBatch.End();
 	}
 

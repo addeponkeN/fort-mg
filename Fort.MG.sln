@@ -3,17 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fort.MG", "Fort.MG\Fort.MG.csproj", "{0C89B0FE-9D51-4DA4-B33C-01C62C00B10D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fort.MG", "Fort.MG\Fort.MG.csproj", "{0C89B0FE-9D51-4DA4-B33C-01C62C00B10D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fort.MG.Example", "Fort.MG.Example\Fort.MG.Example.csproj", "{F9A047E5-6077-4A1A-A58D-74EB5D651265}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fort.MG.Gui", "Fort.MG.Gui\Fort.MG.Gui.csproj", "{A213322F-54CE-432F-A077-A6F5921D57FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fort.MG.Gui", "Fort.MG.Gui\Fort.MG.Gui.csproj", "{A213322F-54CE-432F-A077-A6F5921D57FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fort.MG.Core", "Fort.MG.Core\Fort.MG.Core.csproj", "{3F3F1EC0-CC36-4D44-831D-2EE5606D43A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fort.MG.Core", "Fort.MG.Core\Fort.MG.Core.csproj", "{3F3F1EC0-CC36-4D44-831D-2EE5606D43A4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Fort", "Fort", "{7BB5C73D-CAA5-42AD-A3E3-C29E85B7F85A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fort.Utility", "..\Fort.Utility\Fort.Utility.csproj", "{E0A339EE-E991-414D-8225-4DCA4DA6C621}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fort.MG.Extensions", "Fort.MG.Extensions\Fort.MG.Extensions.csproj", "{F485DE6F-425E-4917-9838-1A91583FE1F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{E0A339EE-E991-414D-8225-4DCA4DA6C621}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0A339EE-E991-414D-8225-4DCA4DA6C621}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0A339EE-E991-414D-8225-4DCA4DA6C621}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F485DE6F-425E-4917-9838-1A91583FE1F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F485DE6F-425E-4917-9838-1A91583FE1F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F485DE6F-425E-4917-9838-1A91583FE1F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F485DE6F-425E-4917-9838-1A91583FE1F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

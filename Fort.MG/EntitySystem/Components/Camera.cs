@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 
 namespace Fort.MG.EntitySystem.Components;
 
-public class Camera : Entity
+public class Camera : Component
 {
     public VirtualViewport Viewport;
 

@@ -46,6 +46,6 @@ public class Sprite : Component
     {
         base.Draw();
         var drawScale = new Vector2(Transform.Size.X / Frame.Width, Transform.Size.Y / Frame.Height);
-        Graphics.SpriteBatch.Draw(Texture, Transform.PositionZ, Frame, Color, Rotation, Origin, drawScale, SpriteEffect, DrawLayer);
+        Graphics.SpriteBatch.Draw(Texture, Transform.Position, Frame, Color, Rotation, Origin, drawScale, SpriteEffect, DrawLayer);
     }
 }

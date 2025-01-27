@@ -72,9 +72,10 @@ public class Scene
 		EntityManager = new EntityManager(new BasicEntityCollection());
 		SystemManager.Add(EntityManager);
 
-		Cam = Entity.Create<Camera>();
+		Cam = Entity.Create<Entity>()
+			.AddComponent<Camera>();
+
 		Cam.SetViewport(new VirtualViewportScaling(virtualWidth, virtualHeight));
-		EntityManager.Add(Cam);
 
 		_target = new RenderTarget2D(Graphics.GraphicsDevice, Cam.Viewport.Width, Cam.Viewport.Height,
 			false, SurfaceFormat.Color, DepthFormat.Depth24);

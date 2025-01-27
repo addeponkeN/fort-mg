@@ -7,7 +7,7 @@ namespace Fort.MG.EntitySystem.Components;
 
 public class CameraControls : Component
 {
-    Camera cam;
+    private Camera cam;
 
     public float StepSize;
 
@@ -23,7 +23,7 @@ public class CameraControls : Component
     public override void OnAdded()
     {
         base.OnAdded();
-        cam = Parent as Camera;
+        cam = Entity.Get<Camera>();
     }
 
     public override void Update(IGameTime t)

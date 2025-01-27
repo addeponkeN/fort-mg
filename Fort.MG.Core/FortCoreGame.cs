@@ -71,7 +71,6 @@ public class FortCoreGame : Game
 
 	protected virtual void Render(GameTime gt)
 	{
-
 	}
 
 	protected override void Draw(GameTime gt)

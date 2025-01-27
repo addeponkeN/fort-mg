@@ -5,25 +5,89 @@ namespace Fort.MG.EntitySystem;
 
 public class Transform : Component
 {
-    public Vector2 PositionZ => new Vector2(Position.X, Position.Y - Z);
-    public Vector2 LocalPositionZ => new Vector2(LocalPosition.X, LocalPosition.Y - LocalZ);
+	private Vector3 _localPosition;
+	private Vector3 _position;
+	private bool _dirty = true;
 
-    public Vector2 Size;
-    public Vector2 Position;
-    public float Z;
-    public Vector2 LocalPosition;
-    public float LocalZ;
+	public Vector2 Position
+	{
+		get => new Vector2(_position.X, _position.Y);
+		set
+		{
+			_position = new Vector3(value, _position.Z);
+			_dirty = true;
+		}
+	}
 
-    public override void Update(IGameTime t)
-    {
-        // base.Update();
+	public Vector3 Position3
+	{
+		get => CalculateWorldPosition();
+		set
+		{
+			if (Entity.Parent != null)
+			{
+				var parentTransform = Entity.Parent.Transform;
+				if (parentTransform != null)
+				{
+					_localPosition = value - parentTransform.Position3;
+				}
+				else
+				{
+					_localPosition = value;
+				}
+			}
+			else
+			{
+				_localPosition = value;
+			}
+			_dirty = true;
+		}
+	}
 
-        if(Parent.Parent != null)
-        {
-            Position.X = LocalPosition.X + Parent.Parent.Transform.Position.X;
-            Position.Y = LocalPosition.Y + Parent.Parent.Transform.Position.Y;
-            Z = LocalZ + Parent.Parent.Transform.Z;
-        }
-    }
+	public Vector2 LocalPosition
+	{
+		get => new Vector2(_localPosition.X, _localPosition.Y);
+		set
+		{
+			_localPosition = new Vector3(value, _localPosition.Z);
+			_dirty = true;
+		}
+	}
+
+	public Vector3 LocalPosition3
+	{
+		get => _localPosition;
+		set
+		{
+			_localPosition = value;
+			_dirty = true;
+		}
+	}
+
+	public Vector2 Size { get; set; }
+
+	internal Vector3 CalculateWorldPosition()
+	{
+		if (!_dirty)
+			return _position;
+
+		if (Entity?.Parent != null)
+		{
+			var parentTransform = Entity.Parent.Transform;
+			if (parentTransform != null)
+			{
+				_position = parentTransform.Position3 + _localPosition;
+			}
+			else
+			{
+				_position = _localPosition;
+			}
+		}
+		else
+		{
+			_position = _localPosition;
+		}
+		_dirty = false;
+		return _position;
+	}
 }
-

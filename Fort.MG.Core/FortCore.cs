@@ -10,12 +10,15 @@ public static class FortCore
 
 	public static void Start(Game game)
 	{
-		Game = game;
+		Game = game ?? throw new ArgumentNullException(nameof(game));
 		Graphics.Start(game);
 	}
 
 	public static void Init()
 	{
+		if (Game == null)
+			throw new InvalidOperationException("Game instance is not set. Call Start() first.");
+
 		Game.Window.ClientSizeChanged += WindowOnClientSizeChanged;
 		Graphics.Init();
 	}
@@ -33,5 +36,14 @@ public static class FortCore
 	private static void WindowOnClientSizeChanged(object? sender, EventArgs e)
 	{
 		WindowSizeChanged?.Invoke(sender, e);
+	}
+
+	public static void Dispose()
+	{
+		if (Game != null)
+		{
+			Game.Window.ClientSizeChanged -= WindowOnClientSizeChanged;
+		}
+		Graphics.Dispose();
 	}
 }

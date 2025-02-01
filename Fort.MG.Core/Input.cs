@@ -5,7 +5,7 @@ namespace Fort.MG.Core;
 
 public static class Input
 {
-	private static Game _game => FortCore.Game;
+	private static Game Game => FortCore.Game;
 
 	public static KeyboardState KeyState;
 	public static MouseState MouseState;
@@ -22,7 +22,7 @@ public static class Input
 
 	public static void Update()
 	{
-		if (!_game.IsActive)
+		if (!Game.IsActive)
 			return;
 
 		KeyStateOld = KeyState;

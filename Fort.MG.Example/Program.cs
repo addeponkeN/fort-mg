@@ -1,2 +1,2 @@
-﻿using var game = new Fort.MG.Example.Game1();
+﻿using var game = new Fort.MG.Example.ExampleGame();
 game.Run();

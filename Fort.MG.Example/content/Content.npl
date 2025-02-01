@@ -1,0 +1,19 @@
+{
+	"root": "",
+	"references": [
+		"Fort.MG.PipelineExtension.dll"
+	],
+	"content":
+	{
+		"spriteatlas": {
+			"path": "textures/*.atlas",
+			"recursive": "false",
+			"action": "build",
+			"importer": "SpriteAtlasImporter",
+			"processor": "SpriteAtlasProcessor",
+			"processorParam": {
+				"Padding": "4"
+			}
+		}
+	}
+}

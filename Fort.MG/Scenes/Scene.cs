@@ -24,8 +24,6 @@ public class Scene
 	private FortTimer _enterTime;
 	private FortTimer _exitTime;
 
-
-
 	internal SceneStates State;
 
 	public EngineSystemManager SystemManager;
@@ -164,8 +162,8 @@ public class Scene
 		if (State != SceneStates.Active)
 		{
 			Graphics.SpriteBatch.Begin();
-			Graphics.SpriteBatch.Draw(Engine.Content.Pixel, new Rectangle(0, 0, Cam.Viewport.Width, Cam.Viewport.Height),
-				Engine.Content.Pixel, Color.Black * lerp);
+			Graphics.SpriteBatch.Draw(Engine.AssetManager.Pixel, new Rectangle(0, 0, Cam.Viewport.Width, Cam.Viewport.Height),
+				Engine.AssetManager.Pixel, Color.Black * lerp);
 			Graphics.SpriteBatch.End();
 		}
 

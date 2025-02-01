@@ -18,13 +18,13 @@ public class FortGame : FortCoreGame
     protected override void Initialize()
     {
         base.Initialize();
-        Engine.Load();
     }
 
     protected override void LoadContent()
     {
         base.LoadContent();
-    }
+        Engine.Load();
+	}
 
     protected override void OnFirstFrame(GameTime gt)
     {

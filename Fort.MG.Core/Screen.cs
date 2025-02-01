@@ -4,40 +4,40 @@ namespace Fort.MG.Core;
 
 public static class Screen
 {
-	private static GraphicsDeviceManager gd => Graphics.GDM;
+	private static GraphicsDeviceManager Gd => Graphics.GDM;
 
 	public static Rectangle Bounds => new Rectangle(0, 0, Width, Height);
 
 	public static int Width
 	{
-		get => gd.PreferredBackBufferWidth;
-		set => gd.PreferredBackBufferWidth = value;
+		get => Gd.PreferredBackBufferWidth;
+		set => Gd.PreferredBackBufferWidth = value;
 	}
 
 	public static int Height
 	{
-		get => gd.PreferredBackBufferHeight;
-		set => gd.PreferredBackBufferHeight = value;
+		get => Gd.PreferredBackBufferHeight;
+		set => Gd.PreferredBackBufferHeight = value;
 	}
 
 	public static bool IsFullscreen
 	{
-		get => gd.IsFullScreen;
-		set => gd.IsFullScreen = value;
+		get => Gd.IsFullScreen;
+		set => Gd.IsFullScreen = value;
 	}
 
 	public static bool VSync
 	{
-		get => gd.SynchronizeWithVerticalRetrace;
-		set => gd.SynchronizeWithVerticalRetrace = value;
+		get => Gd.SynchronizeWithVerticalRetrace;
+		set => Gd.SynchronizeWithVerticalRetrace = value;
 	}
 
 	public static bool MSAA
 	{
-		get => gd.PreferMultiSampling;
-		set => gd.PreferMultiSampling = value;
+		get => Gd.PreferMultiSampling;
+		set => Gd.PreferMultiSampling = value;
 	}
 
-	public static void Apply() => gd.ApplyChanges();
+	public static void Apply() => Gd.ApplyChanges();
 
 }

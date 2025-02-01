@@ -1,4 +1,4 @@
-﻿using Fort.MG.Assets;
+﻿using Fort.MG.Assets.Data;
 using Fort.MG.Core;
 using Fort.MG.Utils;
 using Microsoft.Xna.Framework;
@@ -19,13 +19,13 @@ public class Sprite : Component
     public override void Init()
     {
         base.Init();
-        Texture = Engine.Content.Pixel;
-        Frame = Engine.Content.Pixel;
+        Texture = Engine.AssetManager.Pixel;
+        Frame = Engine.AssetManager.Pixel;
         Color = Color.White;
         Transform.Size = Vector2.One;
     }
 
-    public void SetSprite(AtlasRegion region)
+    public void SetSprite(SpriteRegion region)
     {
         Texture = region;
         Frame = region;
@@ -34,7 +34,7 @@ public class Sprite : Component
     
     public void SetSprite(string spriteName)
     {
-        SetSprite(Content.Get.GetRegion(spriteName));
+        //SetSprite(AssetManager.Get.GetRegion(spriteName));
     }
 
     public override void Update(IGameTime t)

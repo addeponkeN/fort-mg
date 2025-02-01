@@ -51,10 +51,10 @@ public class DebugPrinter : EngineSystem, IRenderable, IDrawableControl
 
     private void Draw(string text)
     {
-        Graphics.SpriteBatch.DrawString(Engine.Content.DefaultFont, text,
+        Graphics.SpriteBatch.DrawString(Engine.AssetManager.DefaultFont, text,
             new Vector2(Position.X + 1, Position.Y + i * spacing + 1),
             Color.Black);
-        Graphics.SpriteBatch.DrawString(Engine.Content.DefaultFont, text, new Vector2(Position.X, Position.Y + i++ * spacing),
+        Graphics.SpriteBatch.DrawString(Engine.AssetManager.DefaultFont, text, new Vector2(Position.X, Position.Y + i++ * spacing),
             Color.White);
     }
 

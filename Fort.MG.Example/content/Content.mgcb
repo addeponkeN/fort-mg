@@ -10,6 +10,12 @@
 
 #-------------------------------- References --------------------------------#
 
+/reference:Fort.MG.PipelineExtension.dll
 
 #---------------------------------- Content ---------------------------------#
 
+#begin textures/world.atlas
+/importer:SpriteAtlasImporter
+/processor:SpriteAtlasProcessor
+/processorParam:Padding=4
+/build:textures/world.atlas

@@ -11,7 +11,7 @@ public static class FortCore
 	public static void Start(Game game)
 	{
 		Game = game ?? throw new ArgumentNullException(nameof(game));
-		Graphics.Start(game);
+		Graphics.Start();
 	}
 
 	public static void Init()

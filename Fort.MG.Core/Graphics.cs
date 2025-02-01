@@ -5,24 +5,23 @@ namespace Fort.MG.Core;
 
 public static class Graphics
 {
-	private static Game _game;
+	private static Game Game => FortCore.Game;
 
 	public static SpriteBatch SpriteBatch { get; private set; }
 	public static GraphicsDevice GraphicsDevice { get; private set; }
 	public static GraphicsDeviceManager GDM { get; private set; }
 
-	internal static void Start(Game game)
+	internal static void Start()
 	{
-		_game = game ?? throw new ArgumentNullException(nameof(game));
-		GDM = new GraphicsDeviceManager(_game);
+		GDM = new GraphicsDeviceManager(Game);
 	}
 
 	internal static void Init()
 	{
-		if (_game == null)
+		if (Game == null)
 			throw new InvalidOperationException("Game instance is not set. Call Start() first.");
 
-		GraphicsDevice = _game.GraphicsDevice;
+		GraphicsDevice = Game.GraphicsDevice;
 		SpriteBatch = new SpriteBatch(GraphicsDevice);
 	}
 

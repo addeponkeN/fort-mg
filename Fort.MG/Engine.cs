@@ -27,7 +27,7 @@ public static class Engine
 
     internal static EngineSystemManager SystemManager;
 
-    public static Content Content;
+    public static AssetManager AssetManager;
 
     private static bool _startedExiting;
 
@@ -51,8 +51,7 @@ public static class Engine
         SystemManager = new EngineSystemManager();
         SystemManager.Add(Entity.Create<TimerSystem>());
         SystemManager.Add(Entity.Create<DebugPrinter>());
-        Content = new Content();
-        Content.Init();
+        AssetManager = new AssetManager();
     }
 
     public static void RegisterSystem<T>() where T : EngineSystem, new()

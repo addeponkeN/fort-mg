@@ -7,79 +7,75 @@ namespace Fort.MG.Scenes;
 //  aka scene aka world
 public class SceneManager : EngineSystem, IRenderable
 {
-    Type _defaultSceneType;
+	private Type? _defaultSceneType;
 
-    Scene DefaultScene
-    {
-        //  todo - very slow
-        get => Activator.CreateInstance(_defaultSceneType) as Scene;
-    }
+	private Scene CreateDefaultScene => _defaultSceneType == null ? new Scene(1280, 720) : Activator.CreateInstance(_defaultSceneType) as Scene;
 
-    Queue<Scene> queuedScenes;
-    List<Scene> popupScenes;
+	private Queue<Scene> _queuedScenes;
+	private List<Scene> _popupScenes;
 
-    public Scene Scene;
+	public Scene Scene { get; private set; }
 
-    public SceneManager()
-    {
-        queuedScenes = new Queue<Scene>();
-        popupScenes = new List<Scene>();
-    }
+	public SceneManager()
+	{
+		_queuedScenes = new Queue<Scene>();
+		_popupScenes = new List<Scene>();
+	}
 
-    public void SetScene(Scene scene)
-    {
-        //  automatically set default scene to first set scene
-        _defaultSceneType ??= scene.GetType();
+	public void SetScene(Scene scene)
+	{
+		//  automatically set default scene to first set scene
+		_defaultSceneType ??= scene.GetType();
 
-        if(Scene == null)
-        {
-            SetActiveScene(scene);
-        }
-        else
-        {
-            Scene.Exit();
-            queuedScenes.Enqueue(scene);
-        }
-    }
+		if (Scene == null)
+		{
+			SetActiveScene(scene);
+		}
+		else
+		{
+			Scene.Exit();
+			_queuedScenes.Enqueue(scene);
+		}
+	}
 
-    void SetActiveScene(Scene scene)
-    {
-        Scene = scene;
-        Scene.State = SceneStates.Entering;
-        Scene.Init();
-        Scene.LoadContent();
-        Engine.SystemManager.OnSceneChanged(scene);
-    }
+	private void SetActiveScene(Scene scene)
+	{
+		Scene = scene;
+		Scene.State = SceneStates.Entering;
+		Scene.Init();
+		Scene.LoadContent();
+		Engine.SystemManager.OnSceneChanged(scene);
+	}
 
-    public override void Update(IGameTime t)
-    {
-        if(Scene != null)
-        {
-            Scene.Update(t);
-            if(Scene.State == SceneStates.Exited)
-            {
-                SetActiveScene(queuedScenes.Count > 0 ? queuedScenes.Dequeue() : DefaultScene);
-            }
-        }
-        else
-        {
-            SetActiveScene(queuedScenes.Count > 0 ? queuedScenes.Dequeue() : DefaultScene);
-        }
+	public override void Update(IGameTime t)
+	{
+		if (Scene != null)
+		{
+			Scene.Update(t);
+			if (Scene.State == SceneStates.Exited)
+			{
+				SetActiveScene(_queuedScenes.Count > 0 ? _queuedScenes.Dequeue() : CreateDefaultScene);
+			}
+		}
+		else
+		{
+			SetActiveScene(_queuedScenes.Count > 0 ? _queuedScenes.Dequeue() : CreateDefaultScene);
+		}
 
-        base.Update(t);
-    }
+		base.Update(t);
+	}
 
-    public override void Render()
-    {
-        base.Render();
-        if(Scene != null)
-            Scene.Render();
-    }
+	public override void Render()
+	{
+		base.Render();
+		if (Scene != null)
+			Scene.Render();
+	}
 
-    public override void Draw()
-    {
-        base.Draw();
-        if(Scene != null)
-            Scene.Draw();
-    }
+	public override void Draw()
+	{
+		base.Draw();
+		if (Scene != null)
+			Scene.Draw();
+	}
 }

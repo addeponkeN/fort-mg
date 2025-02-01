@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="MonoGame.Framework.Content.Pipeline" Version="3.8.2.1105">
+			<PrivateAssets>All</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.2.1105">
+			<PrivateAssets>All</PrivateAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="RectpackSharp" Version="1.2.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Fort.MG.Assets.Data\Fort.MG.Assets.Data.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Remove="\**\*\CppNet.dll" />
+		<Content Remove="\**\*\libmojoshader_64.dll" />
+		<Content Remove="\**\*\mgfxc*" />
+		<Content Remove="\**\*\SharpDX.*" />
+	</ItemGroup>
+
+</Project>

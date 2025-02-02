@@ -1,6 +1,6 @@
 ﻿using Fort.MG.Assets;
 using Fort.MG.Core;
-using Fort.MG.EntitySystem;
+using Fort.MG.Gui;
 using Fort.MG.Scenes;
 using Fort.MG.Systems;
 using Fort.MG.Utils;
@@ -46,17 +46,18 @@ public static class Engine
 		SceneManager = Game.SceneManager;
 
         gameTime ??= new DefaultGameTime();
-
+        GuiContent.Load();
         Time.Init(gameTime);
         SystemManager = new EngineSystemManager();
-        SystemManager.Add(Entity.Create<TimerSystem>());
-        SystemManager.Add(Entity.Create<DebugPrinter>());
+        
+        SystemManager.Register<TimerSystem>();
+        SystemManager.Register<DebugPrinter>();
         AssetManager = new AssetManager();
     }
 
     public static void RegisterSystem<T>() where T : EngineSystem, new()
     {
-        SystemManager.Add(Entity.Create<T>());
+        SystemManager.Register<T>();
     }
 
     public static T GetSystem<T>() where T : EngineSystem => SystemManager.Get<T>();
@@ -79,14 +80,12 @@ public static class Engine
             Game.Exit();
             return;
         }
-        Input.Update();
         SystemManager.Update(Time.GetTimeManager());
     }
 
     internal static void PostUpdate()
     {
         SystemManager.PostUpdate(Time.GetTimeManager());
-        Input.PostUpdate();
     }
 
     internal static void DrawBegin()

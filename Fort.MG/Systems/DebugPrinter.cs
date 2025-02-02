@@ -14,31 +14,31 @@ public interface IDebugDrawable
 
 public class DebugPrinter : EngineSystem, IRenderable, IDrawableControl
 {
-    static Vector2 Position = new Vector2(4, 80);
-    static int spacing = 14;
-    int i;
+	private static Vector2 _position = new Vector2(4, 10);
+	private static int _spacing = 14;
+	private int _i;
 
-    int fps;
-    float ms;
+	private int _fps;
+	private float _ms;
 
-    Stopwatch sw;
+	private Stopwatch _sw;
 
     public DebugPrinter()
     {
-        sw = new Stopwatch();
+        _sw = new Stopwatch();
     }
 
     public override void Update(IGameTime t)
     {
         base.Update(t);
-        fps += (int)((1f / Engine.gt.ElapsedGameTime.TotalSeconds - fps) * 0.1);
+        _fps += (int)((1f / Engine.gt.ElapsedGameTime.TotalSeconds - _fps) * 0.1);
     }
 
     public override void Draw()
     {
-        i = 0;
-        Draw($"fps: {fps:N0}");
-        Draw($"ms: {ms:N5}");
+        _i = 0;
+        Draw($"fps: {_fps:N0}");
+        Draw($"ms: {_ms:N5}");
         Draw($"swaps: {Graphics.GraphicsDevice.Metrics.TextureCount}");
         var cam = Engine.Cam;
         Draw($"");
@@ -52,20 +52,20 @@ public class DebugPrinter : EngineSystem, IRenderable, IDrawableControl
     private void Draw(string text)
     {
         Graphics.SpriteBatch.DrawString(Engine.AssetManager.DefaultFont, text,
-            new Vector2(Position.X + 1, Position.Y + i * spacing + 1),
+            new Vector2(_position.X + 1, _position.Y + _i * _spacing + 1),
             Color.Black);
-        Graphics.SpriteBatch.DrawString(Engine.AssetManager.DefaultFont, text, new Vector2(Position.X, Position.Y + i++ * spacing),
+        Graphics.SpriteBatch.DrawString(Engine.AssetManager.DefaultFont, text, new Vector2(_position.X, _position.Y + _i++ * _spacing),
             Color.White);
     }
 
     public void OnDrawBegin()
     {
-        sw.Restart();
+        _sw.Restart();
     }
 
     public void OnDrawEnd()
     {
-        sw.Stop();
-        ms = (float)sw.Elapsed.TotalMilliseconds;
+        _sw.Stop();
+        _ms = (float)_sw.Elapsed.TotalMilliseconds;
     }
 }

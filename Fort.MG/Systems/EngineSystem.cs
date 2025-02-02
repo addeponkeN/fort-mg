@@ -4,7 +4,7 @@ using Fort.MG.Utils;
 
 namespace Fort.MG.Systems;
 
-public abstract class EngineSystem : Entity
+public abstract class EngineSystem : BaseEntity
 {
     public EngineSystemManager SystemManager;
 

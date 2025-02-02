@@ -5,37 +5,36 @@ namespace Fort.MG.EntitySystem.Components;
 
 public class CameraFollower : Component
 {
-    public Transform Target;
-    public float Speed;
+	private Camera _cam;
 
-    Camera cam;
+	public Transform? Target;
+	public float Speed = 10f;
+	public float MinDistance = 1f;
 
-    public CameraFollower(Transform target)
-    {
-        this.Target = target;
-        Speed = 10f;
-    }
-    
-    public CameraFollower(Entity target) : this(target.Transform)
-    {
-    }
+	public override void OnAdded()
+	{
+		base.OnAdded();
+		_cam = GetComponent<Camera>();
+	}
 
-    public override void Init()
-    {
-        base.Init();
-        cam = Engine.Cam;
-        cam.Transform.Position = Target.LocalPosition;
-    }
+	public void SetTarget(Transform target)
+	{
+		Target = target;
+		_cam.Transform.Position = Target.LocalPosition;
+	}
 
-    public override void Update(IGameTime t)
-    {
-        base.Update(t);
-        var center = new Vector2(Target.Position.X + Target.Size.X * .5f, Target.Position.Y + Target.Size.Y * .5f);
-        var distance = Vector2.Distance(cam.Transform.Position, center);
-        if(distance > 1)
-        {
-            var dir = Vector2.Normalize(center - cam.Transform.Position);
-            cam.Transform.Position += dir * Speed * distance * t.Delta;
-        }
-    }
+	public override void Update(IGameTime t)
+	{
+		base.Update(t);
+
+		if (Target == null) return;
+
+		var center = new Vector2(Target.Position.X + Target.Size.X * .5f, Target.Position.Y + Target.Size.Y * .5f);
+		var distance = Vector2.Distance(_cam.Transform.Position, center);
+		if (distance > MinDistance)
+		{
+			var dir = Vector2.Normalize(center - _cam.Transform.Position);
+			_cam.Transform.Position += dir * Speed * distance * t.Delta;
+		}
+	}
 }

@@ -9,7 +9,7 @@ public class SceneManager : EngineSystem, IRenderable
 {
 	private Type? _defaultSceneType;
 
-	private Scene CreateDefaultScene => _defaultSceneType == null ? new Scene(1280, 720) : Activator.CreateInstance(_defaultSceneType) as Scene;
+	private Scene CreateDefaultScene => _defaultSceneType == null ? new Scene() : Activator.CreateInstance(_defaultSceneType) as Scene;
 
 	private Queue<Scene> _queuedScenes;
 	private List<Scene> _popupScenes;

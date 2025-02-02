@@ -15,23 +15,20 @@ public class Canvas : Container
 	public VirtualViewport VirtualViewport { get; set; }
 	public Matrix TransformMatrix => VirtualViewport.Matrix;
 
-	public int Width, Height;
-
 	public Canvas()
 	{
 		Sb = Graphics.SpriteBatch;
 
-		UpdateDimensions();
+		UpdateCanvasSize();
 		VirtualViewport = new VirtualViewportScaling(854, 480);
 		SetCanvasSize(VirtualViewport.Width, VirtualViewport.Height);
 
-		FortCore.WindowSizeChanged += (sender, args) => UpdateDimensions();
+		FortCore.WindowSizeChanged += (sender, args) => UpdateCanvasSize();
 	}
 
-	private void UpdateDimensions()
+	private void UpdateCanvasSize()
 	{
-		Width = Screen.Width;
-		Height = Screen.Height;
+		Size = new Vector2(Screen.Width, Screen.Height);
 	}
 
 	private void SetCanvasSize(int w, int h)
@@ -46,16 +43,16 @@ public class Canvas : Container
 		base.Update(gt);
 	}
 
-	public override void Add(Component item)
+	public override void Add(GuiComponent item)
 	{
-		item.Canvas = this;
+		item._canvas = this;
 		item.Parent = this;
 		Items.Add(item);
 	}
 
-	public override void Remove(Component item)
+	public override void Remove(GuiComponent item)
 	{
-		item.Canvas = null;
+		item._canvas = null;
 		Items.Remove(item);
 	}
 
@@ -73,7 +70,8 @@ public class Canvas : Container
 	public override void Draw()
 	{
 		Sb.Begin();
-		var rec = new Rectangle(0, 0, Width, Height);
+		var size = Size;
+		var rec = new Rectangle(0, 0, (int)size.X, (int)size.Y);
 		Sb.Draw(_target, Position, rec, Style.Foreground, 0f, Vector2.Zero, Vector2.One, SpriteEffects.None, 0f);
 		Sb.End();
 	}

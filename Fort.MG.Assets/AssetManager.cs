@@ -47,7 +47,7 @@ public class AssetManager
 		RegisterStorage(new TextureStorage());
 		RegisterStorage(new SoundStorage());
 		RegisterStorage(new FontStorage());
-		RegisterStorage(new SpriteAtlasStorage(GetStorage<TextureStorage>()));
+		RegisterStorage(new SpriteAtlasStorage());
 	}
 
 	public void RegisterStorage<T>(BaseStorage<T> storage)
@@ -93,54 +93,4 @@ public class AssetManager
 
 		DefaultFont = DefaultFontSystem.GetFont(18f);
 	}
-
-	//	public SpriteAtlas LoadSpriteAtlas(SpriteAtlasData data)
-	//	{
-	//		string texturePath = Path.Combine(TexturePath, data.name.Replace('-', '_'));
-	//		string atlasName = data.name.Split('\\').Last().Split('.').First();
-
-	//		//  get tx
-	//		if (!_textures.TryGetValue(atlasName, out var tx))
-	//			tx = ContentManager.Load<Texture2D>(texturePath);
-
-	//		//  add tx to texture set
-	//		_textures.Add(atlasName, tx);
-
-	//		var regions = data.sprites.Select(x => new SpriteRegion(x.name, tx, x.frame.X, x.frame.Y, x.frame.Width, x.frame.Height))
-	//			.ToList();
-
-	//		//  create & add atlas
-	//		var atlas = new SpriteAtlas(atlasName, tx, regions);
-	//		_atlases.Add(atlasName, atlas);
-
-	//		//  add all regions of atlas
-	//		foreach (var spr in data.sprites)
-	//		{
-	//			var sprName = spr.name.Replace('-', '_');
-	//			_regions.Add(sprName,
-	//				new SpriteRegion(sprName, tx, spr.frame.X, spr.frame.Y, spr.frame.Width, spr.frame.Height));
-	//		}
-
-	//		//  yes
-	//		return atlas;
-	//	}
-
-	//	public Texture2D LoadTexture(string path, string name)
-	//	{
-	//		var tx = ContentManager.Load<Texture2D>(path);
-	//		_textures.Add(name, tx);
-	//		return tx;
-	//	}
-
-	//	public Texture2D GetTexture(string name)
-	//	{
-	//		return _textures[name];
-	//	}
-
-	//	public SpriteRegion GetRegion(string name)
-	//	{
-	//		return _regions[name];
-	//	}
-
-
 }

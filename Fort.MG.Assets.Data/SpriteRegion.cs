@@ -18,4 +18,9 @@ public class SpriteRegion
 
 	public static implicit operator Texture2D(SpriteRegion tf) => tf.Texture;
 	public static implicit operator Rectangle(SpriteRegion tf) => tf.Frame;
+
+	public override string ToString()
+	{
+		return $"{Name}: {Frame}";
+	}
 }

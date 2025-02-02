@@ -1,10 +1,11 @@
 ﻿using FontStashSharp;
+using Fort.MG.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Fort.MG.Gui.Components;
 
-public class Label : Component
+public class Label : GuiComponent
 {
 	private readonly TextRenderer _renderer = new();
 
@@ -45,7 +46,7 @@ public class Label : Component
 	public override void Draw()
 	{
 		base.Draw();
-		_renderer.Draw(Canvas.Sb);
+		_renderer.Draw(_canvas.Sb);
 	}
 
 }
@@ -56,6 +57,8 @@ public class TextRenderer
 	public Vector2 Position;
 	public Color Color = Color.White;
 	public string Text = "";
+
+	public void Draw() => Draw(Graphics.SpriteBatch);
 
 	public void Draw(SpriteBatch sb)
 	{

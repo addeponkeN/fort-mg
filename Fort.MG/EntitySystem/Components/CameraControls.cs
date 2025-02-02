@@ -23,7 +23,7 @@ public class CameraControls : Component
     public override void OnAdded()
     {
         base.OnAdded();
-        cam = Entity.Get<Camera>();
+        cam = Entity.GetComponent<Camera>();
     }
 
     public override void Update(IGameTime t)

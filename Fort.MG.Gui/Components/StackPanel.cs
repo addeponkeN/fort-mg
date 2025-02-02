@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Fort.MG.Gui.Components;
 
-public class ComponentTexture
+public class Skin
 {
 	public Texture2D Tex { get; set; }
 	public Rectangle Source { get; set; }
@@ -16,24 +16,28 @@ public class Style
 	public int BorderThickness { get; set; } = 1;
 }
 
-public class Component
+public class GuiComponent
 {
-	internal virtual Canvas Canvas { get; set; }
-
-	public Component Parent { get; set; }
-
-	public ComponentTexture Texture { get; set; }
-
-	public Style Style { get; set; } = new();
-
+	private Color _foreground;
 	private Vector2 _totalPosition;
 	private Vector2 _localPosition;
 	private Vector2 _position;
 	private Vector2 _size;
+	private bool _started;
+
+	internal Canvas _canvas;
+
+	public virtual Canvas Canvas
+	{
+		get => _canvas;
+		internal set => _canvas = value;
+	}
+
+	public GuiComponent Parent { get; set; }
+	public Skin Skin { get; set; }
+	public Style Style { get; set; } = new();
 
 	public Rectangle Bounds { get; private set; }
-	private Color _foreground;
-
 	public int Id { get; set; }
 	public string Name { get; set; }
 
@@ -80,12 +84,22 @@ public class Component
 		Bounds = new Rectangle((int)pos.X, (int)pos.Y, (int)Size.X, (int)Size.Y);
 	}
 
+	public virtual void Start()
+	{
+		_started = true;
+	}
+
 	public virtual void UpdateInput()
 	{
 	}
 
 	public virtual void Update(GameTime gt)
 	{
+		if (!_started)
+		{
+			Start();
+			_started = true;
+		}
 	}
 
 	public virtual void Draw()
@@ -93,19 +107,18 @@ public class Component
 	}
 }
 
-public class Container : Component
+public class Container : GuiComponent
 {
-	private Canvas _canvas;
-	public List<Component> Items { get; set; } = new();
+	public List<GuiComponent> Items { get; set; } = new();
 
-	internal override Canvas Canvas
+	public override Canvas Canvas
 	{
 		get => _canvas;
-		set
+		internal set
 		{
 			_canvas = value;
 			foreach (var item in Items)
-				item.Canvas = _canvas;
+				item._canvas = _canvas;
 		}
 	}
 
@@ -133,7 +146,7 @@ public class Container : Component
 		return totalItemHeight + spacing;
 	}
 
-	protected virtual Vector2 GetItemTransform(Component item, int i)
+	protected virtual Vector2 GetItemTransform(GuiComponent item, int i)
 	{
 		return new Vector2(Position.X, Position.Y);
 	}
@@ -149,16 +162,16 @@ public class Container : Component
 		}
 	}
 
-	public virtual void Add(Component item)
+	public virtual void Add(GuiComponent item)
 	{
-		item.Canvas = Canvas;
+		item._canvas = Canvas;
 		item.Parent = this;
 		Items.Add(item);
 		UpdateItemTransforms();
 		UpdateSize();
 	}
 
-	public virtual void Remove(Component item)
+	public virtual void Remove(GuiComponent item)
 	{
 		Items.Remove(item);
 		item.Parent = null;

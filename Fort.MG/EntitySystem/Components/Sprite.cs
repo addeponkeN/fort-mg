@@ -1,6 +1,5 @@
 ﻿using Fort.MG.Assets.Data;
 using Fort.MG.Core;
-using Fort.MG.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -8,7 +7,7 @@ namespace Fort.MG.EntitySystem.Components;
 
 public class Sprite : Component
 {
-    public Texture2D Texture;
+	public Texture2D Texture;
     public Rectangle Frame;
     public Color Color;
     public float Rotation;
@@ -22,7 +21,6 @@ public class Sprite : Component
         Texture = Engine.AssetManager.Pixel;
         Frame = Engine.AssetManager.Pixel;
         Color = Color.White;
-        Transform.Size = Vector2.One;
     }
 
     public void SetSprite(SpriteRegion region)
@@ -32,16 +30,6 @@ public class Sprite : Component
         Transform.Size = Frame.Size.ToVector2();
     }
     
-    public void SetSprite(string spriteName)
-    {
-        //SetSprite(AssetManager.Get.GetRegion(spriteName));
-    }
-
-    public override void Update(IGameTime t)
-    {
-        base.Update(t);
-    }
-
     public override void Draw()
     {
         base.Draw();

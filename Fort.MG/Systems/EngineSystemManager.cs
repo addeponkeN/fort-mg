@@ -24,9 +24,11 @@ public sealed class EngineSystemManager
         Systems.Clear();
     }
 
-    public void Register<T>() where T : EngineSystem, new()
+    public T Register<T>() where T : EngineSystem, new()
     {
-        Add(Entity.Create<T>());
+        var system = new T();
+		Add(system);
+		return system;
     }
 
     public void Add(EngineSystem system)

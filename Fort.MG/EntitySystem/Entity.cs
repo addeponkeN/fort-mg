@@ -12,14 +12,26 @@ public class BaseEntity
 	public bool Enabled = true;
 	public bool IsDestroyed;
 
+	/// <summary>
+	/// One time init - called when the entity object is created - once ever.
+	/// </summary>
 	public virtual void Init() { _inited = true; }
+
+	public virtual void Start()
+	{
+		_initedFirstFrame = true;
+	}
 
 	public virtual void Kill()
 	{
 		_killed = true;
 	}
 
-	public virtual void Update(IGameTime t) { }
+	public virtual void Update(IGameTime t)
+	{
+		if(!_initedFirstFrame)
+			Start();
+	}
 
 	public virtual void Render()
 	{
@@ -33,6 +45,8 @@ public class BaseEntity
 
 public class Entity : BaseEntity
 {
+	public int Id { get; set; }
+
 	public Entity Parent;
 	public List<Component> Components;
 	public Transform Transform;
@@ -42,15 +56,15 @@ public class Entity : BaseEntity
 		Components = new List<Component>();
 	}
 
-	public virtual T Get<T>() where T : Component
+	public virtual T GetComponent<T>() where T : Component
 	{
 		for (int i = 0; i < Components.Count; i++)
 		{
 			var comp = Components[i];
-			if (comp is T) return comp as T;
+			if (comp is T retComp) return retComp;
 		}
 
-		return null;
+		return null!;
 	}
 
 	public virtual T AddComponent<T>() where T : Component, new()
@@ -107,9 +121,9 @@ public class Entity : BaseEntity
 	/// <summary>
 	/// on first frame
 	/// </summary>
-	public virtual void Start()
+	public override void Start()
 	{
-		_initedFirstFrame = true;
+		base.Start();
 	}
 
 	/// <summary>
@@ -193,36 +207,53 @@ public class Entity : BaseEntity
 	}
 
 	/// <summary>
-	/// creates and returns a new entity 
+	/// Create an Entity with a component attached
 	/// </summary>
-	public static T Create<T>() where T : Entity, new()
+	public static T Create<T>() where T : Component, new()
 	{
-		var t = new T(); // PoolManager<T>.Spawn();
+		var ent = Create();
+		return ent.AddComponent<T>();
+	}
+
+	/// <summary>
+	/// Instantiate an entity with a component attached
+	/// </summary>
+	public static T Instantiate<T>() where T : Component, new()
+	{
+		var ent = Instantiate();
+		return ent.AddComponent<T>();
+	}
+
+	/// <summary>
+	/// Create an entity
+	/// </summary>
+	public static Entity Create()
+	{
+		var t = new Entity(); // PoolManager<T>.Spawn();
 		t.Spawn();
 		t.Init();
 		return t;
 	}
 
 	/// <summary>
-	/// creates a new entity and adds it 
+	/// Create and instantiate an entity
 	/// </summary>
-	public static T Instantiate<T>() where T : Entity, new()
+	public static Entity Instantiate()
 	{
-		var ent = Create<T>();
-		Engine.SceneManager.Scene.EntityManager.Add(ent);
-		return ent;
+		var ent = Create();
+		return Instantiate(ent);
 	}
 
 	/// <summary>
-	/// adds an entity
+	/// Instantiate an existing entity
 	/// </summary>
-	public static T Instantiate<T>(T existingEnt) where T : Entity, new()
+	public static Entity Instantiate(Entity existingEnt)
 	{
 		Engine.SceneManager.Scene.EntityManager.Add(existingEnt);
 		return existingEnt;
 	}
 
-	public virtual void Spawn()
+	internal virtual void Spawn()
 	{
 		Parent = null;
 		_killed = false;

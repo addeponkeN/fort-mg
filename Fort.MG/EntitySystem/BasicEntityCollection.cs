@@ -21,14 +21,8 @@ public interface IDrawableControl
 
 public class BasicEntityCollection : EntityCollection
 {
-	public List<Entity> Entities;
-	List<IRenderable> _renderables;
-
-	public BasicEntityCollection()
-	{
-		Entities = new List<Entity>();
-		_renderables = new List<IRenderable>();
-	}
+	private readonly List<IRenderable> _renderables = new();
+	public List<Entity> Entities = new();
 
 	public override void Add(Entity ent)
 	{

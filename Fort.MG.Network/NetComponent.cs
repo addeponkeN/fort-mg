@@ -2,12 +2,7 @@
 
 namespace Fort.MG.Network;
 
-public class NetComponent : Component
+public class NetPosition : Component
 {
-	public int Id { get; set; }
-}
 
-
-public class NetPosition : NetComponent
-{
 }

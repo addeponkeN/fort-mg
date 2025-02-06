@@ -1,20 +1,25 @@
 ﻿using FontStashSharp;
-using Fort.MG.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Fort.MG.Gui;
 
-public static class GuiContent
+internal static class GuiContent
 {
+	internal static bool IsLoaded { get; private set; }
+
 	private static string _contentRoot;
 	private static Dictionary<string, FontSystem> _fonts = new();
 
 	internal static FontSystem DefaultFontSystem { get; private set; }
 	internal static Texture2D Pixel { get; private set; }
 
-	public static void Load()
+	internal static void Load()
 	{
+		if (IsLoaded)
+			return;
+		IsLoaded = true;
+
 		_contentRoot = Path.Combine(Directory.GetCurrentDirectory(), FortCore.Game.Content.RootDirectory, "fonts");
 		Pixel = new Texture2D(Graphics.GraphicsDevice, 1, 1);
 		Pixel.SetData([Color.White]);
@@ -25,7 +30,7 @@ public static class GuiContent
 		GC.Collect();
 	}
 
-	public static void Dispose()
+	internal static void Dispose()
 	{
 		Pixel.Dispose();
 		foreach (var fontSystem in _fonts)

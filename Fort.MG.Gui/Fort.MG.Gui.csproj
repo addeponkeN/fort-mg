@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Fort.MG.Core\Fort.MG.Core.csproj" />
+    <ProjectReference Include="..\Fort.MG\Fort.MG.csproj" />
   </ItemGroup>
 
 </Project>

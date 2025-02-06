@@ -1,6 +1,5 @@
-﻿using Fort.MG.Core;
-using Fort.MG.Core.VirtualViewports;
-using Fort.MG.Gui.Components;
+﻿using Fort.MG.Gui.Components;
+using Fort.MG.VirtualViewports;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -17,6 +16,7 @@ public class Canvas : Container
 
 	public Canvas()
 	{
+		GuiContent.Load();
 		Sb = Graphics.SpriteBatch;
 
 		UpdateCanvasSize();
@@ -48,6 +48,14 @@ public class Canvas : Container
 		item._canvas = this;
 		item.Parent = this;
 		Items.Add(item);
+
+		if (item is Container c)
+		{
+			foreach (var containerItem in c.Items)
+			{
+				containerItem._canvas = this;
+			}
+		}
 	}
 
 	public override void Remove(GuiComponent item)

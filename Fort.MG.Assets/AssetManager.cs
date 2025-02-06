@@ -5,7 +5,6 @@ using System.Linq;
 using FontStashSharp;
 using Fort.MG.Assets.Data;
 using Fort.MG.Assets.Storage;
-using Fort.MG.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 

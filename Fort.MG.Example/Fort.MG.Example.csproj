@@ -34,7 +34,8 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\Fort\Fort.TexturePacker\Fort.TexturePacker.csproj" />
-		<ProjectReference Include="..\Fort.MG\Fort.MG.csproj" />
+		<ProjectReference Include="..\Fort.MG.Engine\Fort.MG.Engine.csproj" />
+		<ProjectReference Include="..\Fort.MG.Gui\Fort.MG.Gui.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

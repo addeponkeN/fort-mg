@@ -18,7 +18,6 @@ public class Style
 
 public class GuiComponent
 {
-	private Color _foreground;
 	private Vector2 _totalPosition;
 	private Vector2 _localPosition;
 	private Vector2 _position;

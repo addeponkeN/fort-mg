@@ -1,5 +1,4 @@
-﻿using Fort.MG.Core;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 
 namespace Fort.MG.Assets.Storage;
 

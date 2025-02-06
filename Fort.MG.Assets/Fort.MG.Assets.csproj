@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
@@ -9,7 +9,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Fort.MG.Core\Fort.MG.Core.csproj" />
     <ProjectReference Include="..\Fort.MG.PipelineExtensionReaders\Fort.MG.PipelineExtensionReaders.csproj" />
+    <ProjectReference Include="..\Fort.MG\Fort.MG.csproj" />
   </ItemGroup>
 </Project>

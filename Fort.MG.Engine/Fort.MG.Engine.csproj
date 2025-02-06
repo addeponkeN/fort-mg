@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Fort.MG</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="content\" />
+    <Folder Include="Utils\Extensions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.2.1105" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Fort.MG.Assets\Fort.MG.Assets.csproj" />
+    <ProjectReference Include="..\Fort.MG.Extensions\Fort.MG.Extensions.csproj" />
+    <ProjectReference Include="..\Fort.MG.Gui\Fort.MG.Gui.csproj" />
+    <ProjectReference Include="..\Fort.MG\Fort.MG.csproj" />
+  </ItemGroup>
+
+</Project>

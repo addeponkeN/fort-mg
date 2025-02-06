@@ -1,5 +1,4 @@
 ﻿using Fort.MG.Assets.Data;
-using Fort.MG.Core;
 using Fort.MG.Gui;
 using Fort.MG.Gui.Components;
 using Microsoft.Xna.Framework;
@@ -11,10 +10,7 @@ namespace Fort.MG.Example;
 public class ExampleGame : FortGame
 {
 	private Canvas _canvas;
-
-	//private GuyDataTypeReader reader;
-
-	SpriteAtlas atlas;
+	private SpriteAtlas _atlas;
 
 	protected override void Initialize()
 	{
@@ -24,8 +20,6 @@ public class ExampleGame : FortGame
 	protected override void LoadContent()
 	{
 		base.LoadContent();
-
-		GuiContent.Load();
 
 		_canvas = new Canvas();
 
@@ -43,10 +37,9 @@ public class ExampleGame : FortGame
 		_canvas.Add(panel);
 
 		//reader = new GuyDataTypeReader();
-
 		//var guyData = Content.Load<GuyData>("data/guydata");
 
-		atlas = Content.Load<SpriteAtlas>("textures/world");
+		_atlas = Content.Load<SpriteAtlas>("textures/world");
 	}
 
 	protected override void Update(GameTime gt)
@@ -78,12 +71,11 @@ public class ExampleGame : FortGame
 		var sb = Graphics.SpriteBatch;
 
 		sb.Begin();
-		sb.Draw(Engine.AssetManager.Pixel, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, new Vector2(atlas.Texture.Width, atlas.Texture.Height), SpriteEffects.None, 0f);
-		sb.Draw(atlas.Texture, Vector2.Zero, Color.White);
+		sb.Draw(FortEngine.AssetManager.Pixel, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, new Vector2(_atlas.Texture.Width, _atlas.Texture.Height), SpriteEffects.None, 0f);
+		sb.Draw(_atlas.Texture, Vector2.Zero, Color.White);
 
-		var rocksRegion = atlas["tree1"];
+		var rocksRegion = _atlas["tree1"];
 		sb.Draw(rocksRegion, new Vector2(0, 300), rocksRegion, Color.White);
-
 
 		sb.End();
 

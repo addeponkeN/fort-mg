@@ -11,17 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Assets\" />
-    <Folder Include="content\" />
-    <Folder Include="Utils\Extensions\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Fort\Fort.Utility\Fort.Utility.csproj" />
-    <ProjectReference Include="..\Fort.MG.Assets\Fort.MG.Assets.csproj" />
-    <ProjectReference Include="..\Fort.MG.Core\Fort.MG.Core.csproj" />
-    <ProjectReference Include="..\Fort.MG.Extensions\Fort.MG.Extensions.csproj" />
-    <ProjectReference Include="..\Fort.MG.Gui\Fort.MG.Gui.csproj" />
   </ItemGroup>
 
 </Project>

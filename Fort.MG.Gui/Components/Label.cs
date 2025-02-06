@@ -1,5 +1,4 @@
 ﻿using FontStashSharp;
-using Fort.MG.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 

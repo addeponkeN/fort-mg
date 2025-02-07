@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Fort.MG.Extensions;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Fort.MG.Gui.Components;
@@ -40,6 +41,8 @@ public class GuiComponent
 	public int Id { get; set; }
 	public string Name { get; set; }
 
+	internal bool IsPositionDirty;
+
 	public virtual Color Foreground
 	{
 		get => Style.Foreground;
@@ -63,6 +66,7 @@ public class GuiComponent
 		{
 			_position = value;
 			UpdateTransforms();
+			IsPositionDirty = true;
 		}
 	}
 
@@ -81,6 +85,7 @@ public class GuiComponent
 		_totalPosition = _position + _localPosition;
 		var pos = Position + LocalPosition;
 		Bounds = new Rectangle((int)pos.X, (int)pos.Y, (int)Size.X, (int)Size.Y);
+		IsPositionDirty = true;
 	}
 
 	public virtual void Start()
@@ -103,6 +108,7 @@ public class GuiComponent
 
 	public virtual void Draw()
 	{
+		Bounds.DrawLined(Color.MonoGameOrange);
 	}
 }
 
@@ -124,6 +130,18 @@ public class Container : GuiComponent
 	public float Spacing { get; set; }
 	public Vector2 Padding { get; set; }
 	public bool AutoSize { get; set; } = true;
+
+	public override Vector2 Position
+	{
+		get => base.Position;
+		set
+		{
+			if (base.Position == value)
+				return;
+			base.Position = value;
+			UpdateItemTransforms();
+		}
+	}
 
 	public Container()
 	{
@@ -194,6 +212,32 @@ public class Container : GuiComponent
 
 		Size = new Vector2(maxWidth + Padding.X * 2, totalHeight);
 	}
+
+	public override void Update(GameTime gt)
+	{
+		base.Update(gt);
+		for (int i = 0; i < Items.Count; i++)
+		{
+			var item = Items[i];
+			item.Update(gt);
+		}
+	}
+
+	protected void UpdateDirtyItems()
+	{
+		for (int i = 0; i < Items.Count; i++)
+		{
+			var item = Items[i];
+			if (item.IsPositionDirty)
+			{
+				UpdateSize();
+				UpdateItemTransforms();
+				UpdateSize();
+				break;
+			}
+		}
+	}
+
 	public override void Draw()
 	{
 		base.Draw();
@@ -207,6 +251,14 @@ public class Container : GuiComponent
 public class StackPanel : Container
 {
 	public Orientation ItemOrientation { get; set; } = Orientation.Vertical;
+	public Alignment HorizontalAlignment { get; set; } = Alignment.Left;
+	public Alignment VerticalAlignment { get; set; } = Alignment.Center;
+
+	public override void Update(GameTime gt)
+	{
+		base.Update(gt);
+		UpdateDirtyItems();
+	}
 
 	protected override void UpdateItemTransforms()
 	{
@@ -214,24 +266,126 @@ public class StackPanel : Container
 
 		float offset = 0;
 
-		for (int i = 0; i < Items.Count; i++)
+		foreach (var item in Items)
 		{
-			var item = Items[i];
+			Vector2 alignedPosition = GetAlignedItemPosition(item, offset);
 
-			if (ItemOrientation == Orientation.Vertical)
-			{
-				item.Position = new Vector2(Position.X + Padding.X, Position.Y + offset + Padding.Y);
-				offset += item.Size.Y + Spacing;
-			}
-			else // Horizontal orientation
-			{
-				item.Position = new Vector2(Position.X + offset + Padding.X, Position.Y + Padding.Y);
-				offset += item.Size.X + Spacing;
-			}
+			item.Position = alignedPosition;
+
+			offset += ItemOrientation == Orientation.Vertical
+				? item.Size.Y + Spacing
+				: item.Size.X + Spacing;
+
+			item.IsPositionDirty = false;
 		}
 	}
+
+	private Vector2 GetAlignedItemPosition(GuiComponent item, float offset)
+	{
+		float x = Position.X + Padding.X;
+		float y = Position.Y + Padding.Y;
+
+		if (ItemOrientation == Orientation.Vertical)
+		{
+			// Handle horizontal alignment
+			switch (HorizontalAlignment)
+			{
+				case Alignment.Left:
+					x = Position.X + Padding.X;
+					break;
+				case Alignment.Center:
+					x = Position.X + (Size.X - item.Size.X) / 2;
+					break;
+				case Alignment.Right:
+					x = Position.X + Size.X - item.Size.X - Padding.X;
+					break;
+			}
+
+			// Handle vertical alignment for centering items within vertical orientation
+			switch (VerticalAlignment)
+			{
+				case Alignment.Top:
+					y = Position.Y + Padding.Y;
+					break;
+				case Alignment.Center:
+					y = Position.Y + (Size.Y - GetTotalItemsHeight()) / 2;
+					break;
+				case Alignment.Bot:
+					y = Position.Y + Size.Y - GetTotalItemsHeight() - Padding.Y;
+					break;
+			}
+
+			return new Vector2(x, y + offset);
+		}
+		else // Horizontal orientation
+		{
+			// Handle vertical alignment
+			switch (VerticalAlignment)
+			{
+				case Alignment.Top:
+					y = Position.Y + Padding.Y;
+					break;
+				case Alignment.Center:
+					y = Position.Y + (Size.Y - item.Size.Y) / 2;
+					break;
+				case Alignment.Bot:
+					y = Position.Y + Size.Y - item.Size.Y - Padding.Y;
+					break;
+			}
+
+			// Handle horizontal alignment
+			switch (HorizontalAlignment)
+			{
+				case Alignment.Left:
+					x = Position.X + Padding.X;
+					break;
+				case Alignment.Center:
+					x = Position.X + (Size.X - GetTotalItemsWidth()) / 2;
+					break;
+				case Alignment.Right:
+					x = Position.X + Size.X - GetTotalItemsWidth() - Padding.X;
+					break;
+			}
+
+			return new Vector2(x + offset, y);
+		}
+	}
+
+	private float GetTotalItemsHeight()
+	{
+		float totalHeight = Padding.Y * 2 + (Items.Count - 1) * Spacing;
+
+		foreach (var item in Items)
+		{
+			totalHeight += item.Size.Y;
+		}
+
+		return totalHeight;
+	}
+
+	private float GetTotalItemsWidth()
+	{
+		float totalWidth = Padding.X * 2 + (Items.Count - 1) * Spacing;
+
+		foreach (var item in Items)
+		{
+			totalWidth += item.Size.X;
+		}
+
+		return totalWidth;
+	}
+
 }
 
+
+public enum Alignment
+{
+	Center,
+	Left,
+	Right,
+	Top,
+	Bot,
+}
 
 public enum Orientation
 {

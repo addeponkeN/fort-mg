@@ -1,12 +1,13 @@
 ﻿using Fort.MG.EntitySystem;
 using Fort.MG.Systems;
-using Fort.MG.Utils;
 
 namespace Fort.MG.Scenes;
 
 //  aka scene aka world
 public class SceneManager : EngineSystem, IRenderable
 {
+	public static Scene CurrentScene => FortEngine.SceneManager.Scene;
+
 	private Type? _defaultSceneType;
 
 	private Scene CreateDefaultScene => _defaultSceneType == null ? new Scene() : Activator.CreateInstance(_defaultSceneType) as Scene;
@@ -24,6 +25,7 @@ public class SceneManager : EngineSystem, IRenderable
 
 	public void SetScene(Scene scene)
 	{
+		scene.SceneManager = this;
 		//  automatically set default scene to first set scene
 		_defaultSceneType ??= scene.GetType();
 
@@ -42,8 +44,12 @@ public class SceneManager : EngineSystem, IRenderable
 	{
 		Scene = scene;
 		Scene.State = SceneStates.Entering;
-		Scene.Init();
-		Scene.LoadContent();
+		if(!Scene.IsInited)
+			Scene.Init();
+		Scene.IsInited = true;
+		if (!Scene.IsLoaded)
+			Scene.LoadContent();
+		Scene.IsLoaded = true;
 		FortEngine.SystemManager.OnSceneChanged(scene);
 	}
 

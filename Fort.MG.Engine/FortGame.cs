@@ -6,7 +6,7 @@ namespace Fort.MG;
 
 public class FortGame : FortCoreGame
 {
-    public SceneManager SceneManager;
+    public SceneManager SceneManager { get; private set; }
 
     public FortGame()
     {

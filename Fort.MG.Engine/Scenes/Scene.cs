@@ -24,6 +24,7 @@ public partial class Scene
 
 	internal SceneStates State;
 
+	internal SceneManager SceneManager;
 	public EngineSystemManager SystemManager;
 	public EntityManager EntityManagerSystem;
 	internal CanvasSystem CanvasSystem;
@@ -43,6 +44,9 @@ public partial class Scene
 	public Canvas Canvas => CanvasSystem.Canvas;
 
 	protected bool InitedFirstFrame;
+
+	internal bool IsLoaded;
+	internal bool IsInited;
 
 	public FortTimer EnterTime
 	{
@@ -66,6 +70,7 @@ public partial class Scene
 
 	public virtual void Init()
 	{
+		IsInited = true;
 		SystemManager = new EngineSystemManager();
 		SystemManager.Add(EntityManagerSystem = new EntityManager(new BasicEntityCollection()));
 		SystemManager.Add(CanvasSystem = new CanvasSystem());
@@ -84,6 +89,7 @@ public partial class Scene
 
 	public virtual void LoadContent()
 	{
+		IsLoaded = true;
 	}
 
 	/// <summary>
@@ -93,6 +99,8 @@ public partial class Scene
 	{
 		InitedFirstFrame = true;
 	}
+
+	public void SetScene(Scene scene) => SceneManager.SetScene(scene);
 
 	internal void SetState(SceneStates sceneState)
 	{
@@ -146,7 +154,6 @@ public partial class Scene
 		var sb = Graphics.SpriteBatch;
 		gd.SetRenderTarget(_target);
 		gd.Clear(new Color(25, 25, 25));
-
 
 		sb.Begin(SortMode, BlendState, SamplerState, Stencil, Rasterizer, Effect, Cam.DrawMatrix);
 		SystemManager.Draw();

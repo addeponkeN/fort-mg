@@ -6,46 +6,57 @@ namespace Fort.MG.Gui.Components;
 
 public class Label : GuiComponent
 {
-	private readonly TextRenderer _renderer = new();
+	private readonly TextRenderer _textRenderer = new();
 
 	public DynamicSpriteFont Font
 	{
-		get => _renderer.Font;
-		set => _renderer.Font = value;
+		get => _textRenderer.Font;
+		set
+		{
+			_textRenderer.Font = value;
+			IsPositionDirty = true;
+		}
 	}
 
 	public string Text
 	{
-		get => _renderer.Text;
+		get => _textRenderer.Text;
 		set
 		{
-			_renderer.Text = value;
+			if (_textRenderer.Text.Equals(value))
+				return;
+			_textRenderer.Text = value;
 			UpdateSize();
+			IsPositionDirty = true;
 		}
 	}
 
 	public override Vector2 Position
 	{
-		get => _renderer.Position;
-		set => _renderer.Position = value;
+		get => _textRenderer.Position;
+		set
+		{
+			_textRenderer.Position = value;
+			IsPositionDirty = true;
+		}
 	}
 
 	public override Color Foreground
 	{
-		get => _renderer.Color;
-		set => _renderer.Color = value;
+		get => _textRenderer.Color;
+		set => _textRenderer.Color = value;
 	}
 
 	private void UpdateSize()
 	{
-		if (_renderer.Font != null)
-			Size = _renderer.Font.MeasureString(_renderer.Text);
+		if (_textRenderer.Font != null)
+			Size = _textRenderer.Font.MeasureString(_textRenderer.Text);
 	}
 
 	public override void Draw()
 	{
 		base.Draw();
-		_renderer.Draw(_canvas.Sb);
+		_textRenderer.Draw(_canvas.Sb);
 	}
 
 }

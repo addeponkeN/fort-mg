@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Fort.MG.Extensions\Fort.MG.Extensions.csproj" />
     <ProjectReference Include="..\Fort.MG\Fort.MG.csproj" />
   </ItemGroup>
 

@@ -8,7 +8,6 @@ namespace Fort.MG.Gui;
 public class Canvas : Container
 {
 	private RenderTarget2D _target;
-
 	internal SpriteBatch Sb;
 
 	public VirtualViewport VirtualViewport { get; set; }
@@ -19,9 +18,11 @@ public class Canvas : Container
 		GuiContent.Load();
 		Sb = Graphics.SpriteBatch;
 
+		AutoSize = false;
+		VirtualViewport = new();
+
 		UpdateCanvasSize();
-		VirtualViewport = new VirtualViewportScaling(854, 480);
-		SetCanvasSize(VirtualViewport.Width, VirtualViewport.Height);
+		SetVirtualSize(Screen.Width, Screen.Height);
 
 		FortCore.WindowSizeChanged += (sender, args) => UpdateCanvasSize();
 	}
@@ -31,10 +32,11 @@ public class Canvas : Container
 		Size = new Vector2(Screen.Width, Screen.Height);
 	}
 
-	private void SetCanvasSize(int w, int h)
+	private void SetVirtualSize(int w, int h)
 	{
+		VirtualViewport.Width = w;
+		VirtualViewport.Height = h;
 		_target?.Dispose();
-		Size = new Vector2(w, h);
 		_target = new(Sb.GraphicsDevice, w, h);
 	}
 
@@ -70,7 +72,7 @@ public class Canvas : Container
 		gd.SetRenderTarget(_target);
 		gd.Clear(Color.Transparent);
 
-		Sb.Begin(SpriteSortMode.BackToFront, transformMatrix: TransformMatrix);
+		Sb.Begin(SpriteSortMode.BackToFront);
 		base.Draw();
 		Sb.End();
 	}
@@ -78,9 +80,9 @@ public class Canvas : Container
 	public override void Draw()
 	{
 		Sb.Begin();
-		var size = Size;
-		var rec = new Rectangle(0, 0, (int)size.X, (int)size.Y);
-		Sb.Draw(_target, Position, rec, Style.Foreground, 0f, Vector2.Zero, Vector2.One, SpriteEffects.None, 0f);
+		var scale = Size / new Vector2(VirtualViewport.Width, VirtualViewport.Height);
+		var rec = new Rectangle(0, 0, (int)VirtualViewport.Width, (int)VirtualViewport.Height);
+		Sb.Draw(_target, Position, rec, Style.Foreground, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
 		Sb.End();
 	}
 }

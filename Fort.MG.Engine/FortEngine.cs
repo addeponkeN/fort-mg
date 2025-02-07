@@ -1,5 +1,6 @@
 ﻿using Fort.MG.Assets;
 using Fort.MG.EntitySystem.Components;
+using Fort.MG.Extensions;
 using Fort.MG.Scenes;
 using Fort.MG.Systems;
 using Fort.MG.Utils;
@@ -44,6 +45,7 @@ public static class FortEngine
 		SceneManager = Game.SceneManager;
 
         Time.Init(gameTime);
+        DrawHelper.Initialize(Graphics.SpriteBatch);
         SystemManager = new EngineSystemManager();
         
         SystemManager.Register<TimerSystem>();

@@ -3,7 +3,6 @@
 
 /outputDir:bin/$(Platform)
 /intermediateDir:obj/$(Platform)
-/platform:DesktopGL
 /config:
 /profile:Reach
 /compress:False
@@ -19,3 +18,9 @@
 /processor:SpriteAtlasProcessor
 /processorParam:Padding=4
 /build:textures/world.atlas
+
+#begin textures/gui.atlas
+/importer:SpriteAtlasImporter
+/processor:SpriteAtlasProcessor
+/processorParam:Padding=4
+/build:textures/gui.atlas

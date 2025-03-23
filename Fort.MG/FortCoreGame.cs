@@ -12,7 +12,7 @@ public class FortCoreGame : Game
 
 		Window.AllowAltF4 = true;
 		IsMouseVisible = true;
-		IsFixedTimeStep = false;
+		IsFixedTimeStep = true;
 
 		LimitFPS(200);
 

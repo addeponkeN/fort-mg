@@ -18,7 +18,9 @@ public class SpriteAtlasImporter : ContentImporter<Atlas>
 	public override Atlas Import(string filename, ContentImporterContext context)
 	{
 		var json = File.ReadAllText(filename);
+
 		EnsureJson(json);
+
 		var data = JsonSerializer.Deserialize<Atlas>(json);
 		var atlas = data;
 
@@ -38,6 +40,8 @@ public class SpriteAtlasImporter : ContentImporter<Atlas>
 		}
 
 		atlas.textures = textures;
+
+		Console.WriteLine($"Found {textures.Count} images in {atlas.sourceFolder}");
 
 		return data;
 	}

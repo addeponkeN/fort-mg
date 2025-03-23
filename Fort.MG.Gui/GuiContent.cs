@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Fort.MG.Gui;
 
-internal static class GuiContent
+public static class GuiContent
 {
 	internal static bool IsLoaded { get; private set; }
 
@@ -13,6 +13,8 @@ internal static class GuiContent
 
 	internal static FontSystem DefaultFontSystem { get; private set; }
 	internal static Texture2D Pixel { get; private set; }
+
+	internal static Dictionary<Texture2D, Texture2D> _whites = new();
 
 	internal static void Load()
 	{
@@ -39,6 +41,40 @@ internal static class GuiContent
 		DefaultFontSystem = null;
 	}
 	internal static DynamicSpriteFont GetDefaultFont(float size = 16f) => DefaultFontSystem.GetFont(size);
+
+	public static Texture2D GetWhiteTexture(Texture2D tx)
+	{
+		if (tx == null) return null;
+		if (tx == Pixel) return Pixel;
+
+		if (_whites.TryGetValue(tx, out var txWhite))
+			return txWhite;
+
+		txWhite = CreateWhiteTexture(tx);
+
+		return txWhite;
+	}
+
+	private static Texture2D CreateWhiteTexture(Texture2D tx)
+	{
+		var data = new Color[tx.Width * tx.Height];
+		var txData = new Color[data.Length];
+		tx.GetData(txData);
+		for (int i = 0; i < txData.Length; i++)
+		{
+			var c = txData[i];
+			if (c.A == 0) 
+				continue;
+			if (c is { R: < 1, G: < 1, B: < 1 })
+				continue;
+			data[i] = Color.White;
+		}
+		var white = new Texture2D(Graphics.GraphicsDevice, tx.Width, tx.Height);
+		white.SetData(data);
+
+		_whites.Add(tx, white);
+		return white;
+	}
 
 	private static void TryLoadDefaultFont()
 	{

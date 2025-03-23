@@ -1,4 +1,5 @@
 ﻿using FontStashSharp;
+using Fort.MG.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -53,12 +54,14 @@ public class Label : GuiComponent
 			Size = _textRenderer.Font.MeasureString(_textRenderer.Text);
 	}
 
-	public override void Draw()
+	public override void DrawText()
 	{
-		base.Draw();
-		_textRenderer.Draw(_canvas.Sb);
-	}
+		base.DrawText();
+		UpdateTransforms();
+		_textRenderer.DrawText(_canvas.Sb);
 
+		Bounds.DrawLined(Color.MonoGameOrange);
+	}
 }
 
 public class TextRenderer
@@ -68,9 +71,9 @@ public class TextRenderer
 	public Color Color = Color.White;
 	public string Text = "";
 
-	public void Draw() => Draw(Graphics.SpriteBatch);
+	public void DrawText() => DrawText(Graphics.SpriteBatch);
 
-	public void Draw(SpriteBatch sb)
+	public void DrawText(SpriteBatch sb)
 	{
 		Font.DrawText(sb, Text, Position, Color, 0f, Vector2.Zero, Vector2.One, 0f, 0f, 0f, TextStyle.None, FontSystemEffect.None, 0);
 	}

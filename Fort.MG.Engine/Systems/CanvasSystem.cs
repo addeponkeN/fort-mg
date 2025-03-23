@@ -16,7 +16,7 @@ public class CanvasSystem : EngineSystem, IRenderable, IDrawableGui
 	public override void Update(IGameTime t)
 	{
 		base.Update(t);
-		Canvas.UpdateInput();
+		//Canvas.UpdateInput();
 		Canvas.Update(FortEngine.Gt);
 	}
 

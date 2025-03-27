@@ -5,11 +5,6 @@ namespace Fort.MG.Gui.Components;
 
 public class Window : StackPanel
 {
-
-	public Window()
-	{
-	}
-
 	public override void Draw()
 	{
 		var sb = Graphics.SpriteBatch;
@@ -31,10 +26,5 @@ public class Window : StackPanel
 		sb.Begin(samplerState: SamplerState.AnisotropicClamp);
 		base.DrawText();
 		sb.End();
-	}
-
-	public override void DrawText()
-	{
-		base.DrawText();
 	}
 }

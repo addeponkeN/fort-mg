@@ -50,7 +50,7 @@ public class Canvas : Container
 		_target = new(Sb.GraphicsDevice, w, h);
 	}
 
-	public override void Add(GuiComponent item)
+	public override void AddItem(GuiComponent item)
 	{
 		item.Canvas = this;
 		item.Parent = this;
@@ -80,7 +80,7 @@ public class Canvas : Container
 		base.Start();
 	}
 
-	public override void Remove(GuiComponent item)
+	public override void RemoveItem(GuiComponent item)
 	{
 		item._canvas = null;
 		Items.Remove(item);

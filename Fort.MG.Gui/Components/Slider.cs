@@ -5,12 +5,10 @@ namespace Fort.MG.Gui.Components;
 public class Slider : GuiComponent
 {
 	private bool _isDragging = false;
-	private float _prevValue;
 	private Skin _background;
 	private Image _handle;
 	private float _value = 0f;
-	private bool _triggerValueChanged = true;
-
+	private float _prevTriggerValue;
 	public float MinValue { get; set; } = 0f;
 	public float MaxValue { get; set; } = 1f;
 
@@ -19,9 +17,10 @@ public class Slider : GuiComponent
 		get => _value;
 		set
 		{
+			if (_value == value) return;
 			_value = value;
-			if (_triggerValueChanged)
-				OnValueChanged?.Invoke(_value);
+			UpdateHandlePosition();
+			OnValueChanged?.Invoke(Value);
 		}
 	}
 
@@ -81,7 +80,8 @@ public class Slider : GuiComponent
 
 	private void UpdateHandlePosition()
 	{
-		Handle.Position = Background.Position + new Vector2(GetHandleOffset() - HandleOffset, 0);
+		if (Handle != null)
+			Handle.Position = Background.Position + new Vector2(GetHandleOffset() - HandleOffset, 0);
 	}
 
 	private float GetHandleOffset()
@@ -103,6 +103,22 @@ public class Slider : GuiComponent
 			AddSkin(new Skin());
 	}
 
+	public override void OnTrigger()
+	{
+		base.OnTrigger();
+		if (Value > 0f)
+		{
+			_prevTriggerValue = Value;
+			Value = 0f;
+		}
+		else
+		{
+			if (_prevTriggerValue == 0f)
+				_prevTriggerValue = 1f;
+			Value = _prevTriggerValue;
+		}
+	}
+
 	public override void UpdateInput()
 	{
 		base.UpdateInput();
@@ -115,28 +131,12 @@ public class Slider : GuiComponent
 
 		if (_isDragging)
 		{
-			_value = MathHelper.Clamp(
+			Value = MathHelper.Clamp(
 				(mpos.X - Position.X) / Size.X,
 				0f, 1f) * (MaxValue - MinValue) + MinValue;
-			UpdateHandlePosition();
 
-			if (_prevValue != _value)
-			{
-				_triggerValueChanged = false;
-				OnValueChanged?.Invoke(Value);
-				_triggerValueChanged = true;
-			}
-
-			_prevValue = _value;
 			if (Input.LeftRelease)
 				_isDragging = false;
 		}
-	}
-
-	public override void Draw()
-	{
-		base.Draw();
-		//Background.Draw();
-		//Handle.Draw();
 	}
 }

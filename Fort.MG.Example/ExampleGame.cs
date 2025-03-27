@@ -55,22 +55,22 @@ public class ExampleGame : FortGame
 			Position = new Vector2(100, 100),
 		};
 
-		var lbAddWindow = new Label { Name = "AddWindow", Text = "Add window" };
+		var lbAddWindow = new Label { Name = "AddWindow", Text = "AddItem window" };
 		lbAddWindow.OnMouseEvent += (_) => AddWindow();
-		_debugWindow.Add(lbAddWindow);
+		_debugWindow.AddItem(lbAddWindow);
 
-		var lbRemoveWindow = new Label { Text = "Remove window" };
+		var lbRemoveWindow = new Label { Text = "RemoveItem window" };
 		lbRemoveWindow.OnMouseEvent += (_) => RemoveWindow();
-		_debugWindow.Add(lbRemoveWindow);
+		_debugWindow.AddItem(lbRemoveWindow);
 
 		int btCounter = 0;
 		var btCount = new Button { Text = "Button1", Size = new Vector2(200, 48) };
 		btCount.Style.Background = Color.White * 1f;
 		btCount.AddSkin(new ThreeSlice { Texture = _threeSlice, Source = _threeSlice, BorderSize = 32 });
 		btCount.OnTriggerEvent += () => { btCount.Text = $"Button ({++btCounter})"; };
-		_debugWindow.Add(btCount);
+		_debugWindow.AddItem(btCount);
 
-		_canvas.Add(_debugWindow);
+		_canvas.AddItem(_debugWindow);
 
 		var win1 = new Window
 		{
@@ -88,7 +88,7 @@ public class ExampleGame : FortGame
 		win1.AddSkin(win1Skin);
 
 
-		win1.Add(new Label
+		win1.AddItem(new Label
 		{
 			Text = "WINDOW #1",
 			Foreground = Color.White,
@@ -100,7 +100,7 @@ public class ExampleGame : FortGame
 			Size = new Vector2(256, 64),
 		};
 		bt1.AddSkin(new ThreeSlice { Texture = _threeSlice, Source = _threeSlice, BorderSize = 32 });
-		win1.Add(bt1);
+		win1.AddItem(bt1);
 
 		var spSlider = new StackPanel { ItemOrientation = Orientation.Horizontal };
 
@@ -112,27 +112,40 @@ public class ExampleGame : FortGame
 			win1Skin.BorderExtend = v;
 			sliderValue.Text = $"{v:N1}";
 		};
-		spSlider.Add(slider);
-		spSlider.Add(sliderValue);
-		win1.Add(spSlider);
+		spSlider.AddItem(slider);
+		spSlider.AddItem(sliderValue);
+		win1.AddItem(spSlider);
 
 		var checkbox = new Checkbox();
-		win1.Add(checkbox);
+		win1.AddItem(checkbox);
 
 		var edlb = new EditLabel { Text = "Editable text" };
-		win1.Add(edlb);
+		win1.AddItem(edlb);
 
 		var tb = new TextBox();
-		win1.Add(tb);
+		win1.AddItem(tb);
 
-		_canvas.Add(win1);
+		var lb = new ListBox
+		{
+			Spacing = 4,
+			ScrollRate = 25f,
+		};
+		for (int j = 0; j < 6; j++)
+		{
+			lb.AddItem(new Image { Texture = _atlas.Regions[1], Source = _atlas.Regions[1] });
+			lb.AddItem(new Label { Text = $"labbel {j}" });
+			lb.AddItem(new Button { Text = $"butti {j}" });
+		}
+		win1.AddItem(lb);
+
+		_canvas.AddItem(win1);
 	}
 
 	private void RemoveWindow()
 	{
 		var lastItem = _canvas.Items.LastOrDefault();
 		if (lastItem != null)
-			_canvas.Remove(lastItem);
+			_canvas.RemoveItem(lastItem);
 	}
 
 	private void AddWindow()
@@ -142,11 +155,11 @@ public class ExampleGame : FortGame
 			Name = "rnd_win" + _canvas.Items.Count,
 			Position = new Vector2(Rng.Next(_canvas.VirtualViewport.Width), Rng.Next(_canvas.VirtualViewport.Height)),
 		};
-		win.Add(new Label
+		win.AddItem(new Label
 		{
 			Text = $"i am window number #{_canvas.Items.Count} thanks lots poggy",
 		});
-		_canvas.Add(win);
+		_canvas.AddItem(win);
 	}
 
 	protected override void Update(GameTime gt)

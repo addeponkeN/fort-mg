@@ -5,6 +5,12 @@ using Fort.MG.Extensions;
 
 namespace Fort.MG.Gui.Components;
 
+public struct TextChangedArgs
+{
+	public string Text;
+	public string OldText;
+}
+
 public class EditLabel : GuiComponent
 {
 	private readonly char[] _splitters = [' ', '.', ';', ':', '!', '?', '(', ')', '[', ']', '{', '}', '-', '/', '\\', '*', '&', '^', '%', '$', '#', '@', '"', '\''];
@@ -55,7 +61,7 @@ public class EditLabel : GuiComponent
 
 	public Color MarkerColor { get; set; } = new Color(220, 220, 220, 255);
 
-	public event Action<string> OnTextChanged;
+	public event Action<TextChangedArgs> OnTextChanged;
 
 	public EditLabel()
 	{
@@ -82,6 +88,8 @@ public class EditLabel : GuiComponent
 			case Keys.Delete:
 				DeleteCharacter(1);
 				break;
+			case Keys.Tab:
+				break;
 			default:
 				if (!Input.CtrlDown)
 					InsertText(e.Character.ToString());
@@ -93,22 +101,15 @@ public class EditLabel : GuiComponent
 	{
 		base.Update(gt);
 
-		//if (Input.LeftClick)
-		//{
-		//	_isFocused = false;
-		//}
-
 		if (Bounds.Contains(Canvas.MousePosition))
 		{
 			if (Input.LeftClick)
 			{
-				//_isFocused = true;
 				_cursorPosition = GetCursorPositionFromMouse();
 				_selectionStart = _cursorPosition;
 			}
 			else if (Input.LeftHold)
 			{
-				//_isFocused = true;
 				_cursorPosition = GetCursorPositionFromMouse();
 			}
 		}
@@ -210,6 +211,11 @@ public class EditLabel : GuiComponent
 	private void SetCursorPosition(int i)
 	{
 		_cursorPosition = i;
+		ResetBlinker();
+	}
+
+	private void ResetBlinker()
+	{
 		_cursorVisible = true;
 		_lastBlinkTime = 0;
 	}
@@ -249,8 +255,11 @@ public class EditLabel : GuiComponent
 	private void UpdateText(string text)
 	{
 		if (Label == null) return;
+		if (Label.Text == text) return;
+
+		var prev = Label.Text;
 		Label.Text = text;
-		OnTextChanged?.Invoke(_text.ToString());
+		OnTextChanged?.Invoke(new TextChangedArgs { Text = _text.ToString(), OldText = prev });
 	}
 
 	private void DeleteSelection()
@@ -329,12 +338,23 @@ public class EditLabel : GuiComponent
 		return _cursorPositionX;
 	}
 
+	public override void OnFocus(bool isFocus)
+	{
+		base.OnFocus(isFocus);
+		if (isFocus)
+		{
+			ResetBlinker();
+		}
+	}
+
 	public override void Draw()
 	{
 		Label.Foreground = Foreground;
 		Label.Position = Position;
 
-		base.Draw();
+		base.DrawSelf();
+		base.DrawSkins();
+		base.DrawComponents();
 
 		var sb = Graphics.SpriteBatch;
 
@@ -357,7 +377,7 @@ public class EditLabel : GuiComponent
 		if (IsFocused && _cursorVisible)
 		{
 			float cursorX = Position.X + GetCursorXPosition();
-			sb.Draw(GuiContent.Pixel, new Rectangle((int)cursorX, (int)Position.Y, 1, (int)Size.Y), MarkerColor);
+			sb.Draw(GuiContent.Pixel, new Rectangle((int)cursorX, (int)Position.Y + 2, 1, (int)Size.Y - 4), MarkerColor);
 		}
 	}
 

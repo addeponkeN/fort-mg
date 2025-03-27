@@ -156,6 +156,18 @@ public partial class GuiComponent : ComponentBase
 		DrawSkins();
 
 		DrawComponents();
+
+		DrawFocused();
+	}
+
+	internal void DrawFocused()
+	{
+		if (IsFocused)
+		{
+			var b = Bounds;
+			b.Inflate(1, 1);
+			b.DrawLined(Color.White * 0.5f);
+		}
 	}
 
 	internal void DrawSkins()
@@ -209,5 +221,4 @@ public partial class GuiComponent : ComponentBase
 	{
 		OnTriggerEvent?.Invoke();
 	}
-
 }

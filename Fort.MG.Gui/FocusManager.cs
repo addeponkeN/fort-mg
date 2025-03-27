@@ -19,6 +19,8 @@ public class FocusManager
 
 	private IEnumerable<GuiComponent> GetAllComponents(GuiComponent component)
 	{
+		if(!component?.IsEnabled ?? false) yield break;
+
 		yield return component;
 
 		if (component is Container container)
@@ -42,7 +44,7 @@ public class FocusManager
 
 		FocusedComponent?.OnFocus(false);
 
-		if (component != null && IsComponentInTree(component) && component.IsFocusable)
+		if (component != null && component.IsEnabled && IsComponentInTree(component) && component.IsFocusable)
 		{
 			FocusedComponent = component;
 			FocusedComponent.OnFocus(true);
@@ -87,10 +89,11 @@ public class FocusManager
 		SetFocus(focusableComponents[nextIndex]);
 	}
 
+	//hmm
 	public void DrawSelection()
 	{
 		if (FocusedComponent == null) return;
-		FocusedComponent.Bounds.DrawLined(Color.White);
+		//FocusedComponent.Bounds.DrawLined(Color.White);
 	}
 
 	public void UpdateInput()

@@ -5,23 +5,32 @@ namespace Fort.MG.Gui.Components;
 
 public class TextBox : GuiComponent
 {
+	private readonly RasterizerState _rasterizer = new RasterizerState { ScissorTestEnable = true };
+	private float _scrollOffset = 0; 
+	private float _visibleWidth;
+	private float _cursorXPosition;
+	private float _padding = 4; 
+	private EditLabel _editLabel;
+
 	public EditLabel EditLabel
 	{
 		get => _editLabel;
-		set => SetComponent(ref _editLabel, value);
+		set
+		{
+			if (_editLabel != null)
+				_editLabel.OnTextChanged -= EditLabelOnOnTextChanged;
+			SetComponent(ref _editLabel, value);
+			_editLabel.OnTextChanged += EditLabelOnOnTextChanged;
+		}
 	}
-
-	private float _scrollOffset = 0; // How much the text has been scrolled
-	private float _visibleWidth; // Width of the text area
-	private float _cursorXPosition; // Cursor position relative to text
-	private float _padding = 4; // Space between text and box edges
-	private EditLabel _editLabel;
 
 	public override bool IsFocused
 	{
 		get => _editLabel.IsFocused;
 		set => _editLabel.IsFocused = value;
 	}
+
+	public event Action<TextChangedArgs> OnTextChangedEvent;
 
 	public TextBox()
 	{
@@ -39,13 +48,10 @@ public class TextBox : GuiComponent
 			Size = new Vector2(Size.X - 2 * _padding, Size.Y),
 			Foreground = Foreground
 		};
-
-		EditLabel.OnTextChanged += EditLabelOnOnTextChanged;
-
 		_visibleWidth = Size.X - 2 * _padding;
 	}
 
-	private void EditLabelOnOnTextChanged(string text)
+	private void EditLabelOnOnTextChanged(TextChangedArgs obj)
 	{
 		UpdateScroll();
 	}
@@ -69,10 +75,8 @@ public class TextBox : GuiComponent
 			_scrollOffset = _cursorXPosition;
 		}
 
-		EditLabel.Position = Position + new Vector2(_padding - _scrollOffset, 0);
+		EditLabel.Position = Position + new Vector2(_padding - _scrollOffset, 2);
 	}
-
-	private RasterizerState _rasterizer = new RasterizerState { ScissorTestEnable = true };
 
 	public override void DrawContent()
 	{
@@ -89,7 +93,9 @@ public class TextBox : GuiComponent
 
 		sb.Begin(SpriteSortMode.Deferred, Canvas.BlendState, Canvas.SamplerState, null, gd.RasterizerState);
 		sb.Draw(GuiContent.Pixel, Bounds, Style.Background);
-		base.Draw();
+		//base.DrawSelf();
+		base.DrawSkins();
+		base.DrawComponents();
 		sb.End();
 
 		sb.Begin(samplerState: SamplerState.AnisotropicClamp, rasterizerState: gd.RasterizerState);
@@ -102,11 +108,23 @@ public class TextBox : GuiComponent
 
 	public override void Draw()
 	{
-
+		DrawFocused();
+		//	don't draw base
 	}
 
 	public override void DrawText()
 	{
+		//	don't draw base
+	}
 
+	public override void OnFocus(bool isFocus)
+	{
+		base.OnFocus(isFocus);
+		EditLabel.OnFocus(isFocus);
+	}
+
+	protected virtual void OnTextChanged(TextChangedArgs obj)
+	{
+		OnTextChangedEvent?.Invoke(obj);
 	}
 }

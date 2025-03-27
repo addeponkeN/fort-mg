@@ -94,7 +94,7 @@ public class Container : GuiComponent
 		return null;
 	}
 
-	public virtual void Add(GuiComponent item)
+	public virtual void AddItem(GuiComponent item)
 	{
 		item._canvas = Canvas;
 		item.Parent = this;
@@ -103,7 +103,7 @@ public class Container : GuiComponent
 		UpdateSize();
 	}
 
-	public virtual void Remove(GuiComponent item)
+	public virtual void RemoveItem(GuiComponent item)
 	{
 		Items.Remove(item);
 		item.Parent = null;

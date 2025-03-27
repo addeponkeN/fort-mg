@@ -13,6 +13,7 @@ public static class GuiContent
 
 	internal static FontSystem DefaultFontSystem { get; private set; }
 	internal static Texture2D Pixel { get; private set; }
+	internal static Texture2D PixelSource { get; private set; }
 
 	internal static Dictionary<Texture2D, Texture2D> _whites = new();
 

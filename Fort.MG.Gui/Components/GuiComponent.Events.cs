@@ -1,11 +1,33 @@
 ﻿namespace Fort.MG.Gui.Components;
 
+public enum MouseButton
+{
+	None,
+	Left, Right, Middle,
+}
+
+public enum MouseState
+{
+	None,
+	Click,
+	Release,
+	Hold,
+}
+
+public struct MouseClickEvent
+{
+	public MouseButton Button;
+	public MouseState State;
+	public bool IsClick => State == MouseState.Click;
+}
+
 public partial class GuiComponent
 {
-	public event Action OnClick;
-	public event Action OnRelease;
+	public event Action<MouseClickEvent> OnMouseEvent;
 	public event Action OnMouseEnter;
 	public event Action OnMouseLeave;
+
+	public event Action OnTriggerEvent;
 
 	public bool IsHovered;
 	public bool IsPressed;
@@ -25,9 +47,8 @@ public partial class GuiComponent
 			if (Input.LeftClick)
 			{
 				IsPressed = true;
-				OnClick?.Invoke();
+				OnMouse(new MouseClickEvent { Button = MouseButton.Left, State = MouseState.Click });
 			}
-
 		}
 		else
 		{
@@ -45,9 +66,19 @@ public partial class GuiComponent
 				IsPressed = false;
 				if (IsHovered)
 				{
-					OnRelease?.Invoke();
+					OnMouse(new MouseClickEvent { Button = MouseButton.Left, State = MouseState.Release });
 				}
+			}
+			else
+			{
+				OnMouse(new MouseClickEvent { Button = MouseButton.Left, State = MouseState.Hold });
 			}
 		}
 	}
+
+	public virtual void OnMouse(MouseClickEvent arg)
+	{
+		OnMouseEvent?.Invoke(arg);
+	}
+
 }

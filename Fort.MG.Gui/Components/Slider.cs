@@ -63,7 +63,8 @@ public class Slider : GuiComponent
 
 	public Slider()
 	{
-		base.Size = new Vector2(200, 20);  // Default size of the slider
+		IsFocusable = true;
+		base.Size = new Vector2(200, 20);
 		IsPositionDirty = true;
 	}
 

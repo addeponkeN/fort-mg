@@ -166,9 +166,25 @@ public class Container : GuiComponent
 		}
 	}
 
+	public override void DrawContent()
+	{
+		base.DrawContent();
+		for (var i = 0; i < Items.Count; i++)
+		{
+			var item = Items[i];
+			if (!item.IsVisible) continue;
+			item.DrawContent();
+		}
+	}
+
 	public override void Draw()
 	{
 		base.Draw();
+		DrawItems();
+	}
+
+	internal void DrawItems()
+	{
 		for (var i = 0; i < Items.Count; i++)
 		{
 			var item = Items[i];

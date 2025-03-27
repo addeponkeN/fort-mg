@@ -5,6 +5,8 @@ namespace Fort.MG;
 
 public static class Input
 {
+	private static bool _inited;
+
 	private static Game Game => FortCore.Game;
 
 	public static KeyboardState KeyState;
@@ -20,8 +22,27 @@ public static class Input
 	public static Vector2 MouseTransformedPos(Matrix matrix) => Vector2.Transform(MousePos, Matrix.Invert(matrix));
 	public static Vector2 OldMouseTransformedPos(Matrix matrix) => Vector2.Transform(OldMousePos, Matrix.Invert(matrix));
 
+	public static event Action<TextInputEventArgs> OnTextInput;
+
+	private static void Init()
+	{
+		_inited = true;
+		FortCore.Game.Window.TextInput += WindowOnTextInput;
+	}
+
+	private static void WindowOnTextInput(object? sender, TextInputEventArgs e)
+	{
+		OnTextInput?.Invoke(e);
+	}
+
 	public static void Update()
 	{
+		if (!_inited)
+		{
+			Init();
+			_inited = true;
+		}
+
 		if (!Game.IsActive)
 			return;
 
@@ -47,7 +68,13 @@ public static class Input
 	public static bool KeyRelease(params Keys[] keys) => keys.Any(x => KeyState.IsKeyUp(x) && KeyStateOld.IsKeyDown(x));
 
 	public static bool KeyHold(Keys key) => KeyState.IsKeyDown(key);
-	public static bool KeyHold(params Keys[] keys) => keys.Any(x => KeyState.IsKeyDown(x));
+	public static bool KeyHold(params Keys[] keys)
+	{
+		for (int i = 0; i < keys.Length; i++)
+			if (KeyState.IsKeyDown(keys[i]))
+				return true;
+		return false;
+	}
 
 	public static bool LeftClickRec(Rectangle rec) => rec.Contains(MousePos) && LeftClick;
 	public static bool LeftClick => MouseState.LeftButton == ButtonState.Pressed && MouseStateOld.LeftButton == ButtonState.Released;
@@ -71,10 +98,12 @@ public static class Input
 	public static bool Mouse5Release => MouseState.XButton2 == ButtonState.Released && MouseStateOld.XButton2 == ButtonState.Pressed;
 	public static bool Mouse5Hold => MouseState.XButton2 == ButtonState.Pressed;
 
+	public static bool ShiftDown => KeyHold(Keys.LeftShift, Keys.RightShift);
 	public static bool ShiftLeftDown => KeyHold(Keys.LeftShift);
 	public static bool ShiftRightDown => KeyHold(Keys.RightShift);
-	public static bool ControlLeftDown => KeyHold(Keys.LeftControl);
-	public static bool ControlRightDown => KeyHold(Keys.RightControl);
+	public static bool CtrlDown => KeyHold(Keys.LeftControl, Keys.RightControl);
+	public static bool CtrlLeftDown => KeyHold(Keys.LeftControl);
+	public static bool CtrlRightDown => KeyHold(Keys.RightControl);
 
 	/// <summary>
 	/// after use it in IF -- write under the IF: Input.ScrollValueOld = Input.ScrollValue;

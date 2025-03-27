@@ -1,8 +1,8 @@
-﻿using FontStashSharp;
-using Fort.MG.Gui.Components;
+﻿using Fort.MG.Gui.Components;
 using Fort.MG.VirtualViewports;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace Fort.MG.Gui;
 
@@ -10,11 +10,11 @@ public class Canvas : Container
 {
 	private List<Window> _windows = new();
 	private List<GuiComponent> _items = new();
+	private FocusManager _focusManager = new();
 	private RenderTarget2D _target;
 	private TextRenderer _textRen;
 
 	internal SpriteBatch Sb;
-
 
 	public VirtualViewport VirtualViewport { get; set; }
 	public Matrix TransformMatrix => VirtualViewport.Matrix;
@@ -23,6 +23,7 @@ public class Canvas : Container
 	public SamplerState SamplerState { get; set; } = SamplerState.PointClamp;
 
 	public Vector2 MousePosition => Input.MouseTransformedPos(TransformMatrix);
+	public GuiComponent FocusedComponent => _focusManager.FocusedComponent;
 
 	public Canvas()
 	{
@@ -73,6 +74,12 @@ public class Canvas : Container
 		}
 	}
 
+	public override void Start()
+	{
+		_focusManager.Update(this);
+		base.Start();
+	}
+
 	public override void Remove(GuiComponent item)
 	{
 		item._canvas = null;
@@ -93,6 +100,16 @@ public class Canvas : Container
 		base.Update(gt);
 	}
 
+	public override void UpdateInput()
+	{
+		base.UpdateInput();
+		_focusManager.UpdateInput();
+		if (Input.LeftClick)
+		{
+			_focusManager.HandleMouseClick(MousePosition);
+		}
+	}
+
 	public void Render()
 	{
 		var gd = Sb.GraphicsDevice;
@@ -109,6 +126,8 @@ public class Canvas : Container
 		{
 			item.Draw();
 		}
+
+		_focusManager.DrawSelection();
 		Sb.End();
 	}
 

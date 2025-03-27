@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Fort.MG\Fort.MG.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Util\" />
+  </ItemGroup>
+
 </Project>

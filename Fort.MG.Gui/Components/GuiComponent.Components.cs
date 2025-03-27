@@ -29,7 +29,7 @@ public partial class GuiComponent
 	{
 		if (field != null)
 		{
-			RemoveComponent(field); // Remove old component
+			RemoveComponent(field);
 		}
 
 		field = value;
@@ -37,9 +37,9 @@ public partial class GuiComponent
 
 		if (field != null)
 		{
-			AddComponent(field); // Add new component
+			AddComponent(field);
 		}
 
-		UpdateTransforms(); // Ensure proper alignment after component change
+		UpdateTransforms();
 	}
 }

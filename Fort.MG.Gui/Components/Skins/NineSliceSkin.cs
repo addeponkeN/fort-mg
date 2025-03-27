@@ -150,11 +150,10 @@ public class NineSlice : Skin
 			CalculateRegions();
 	}
 
-	private void DrawRegion(int regionInt)
+	private void DrawRegion(Texture2D tx, Color clr, int regionInt)
 	{
 		var sb = Graphics.SpriteBatch;
 		var region = _regions[regionInt];
-		var clr = GuiParent.Foreground;
 		sb.Draw(Texture, region.Destination, region.Source, clr);
 	}
 
@@ -167,21 +166,21 @@ public class NineSlice : Skin
 	internal override void Draw(Texture2D tx, Color clr)
 	{
 		base.Draw(tx, clr);
-		if (Texture == null) return;
+		if (tx == null) return;
 
 		// Top row
-		DrawRegion(0);
-		DrawRegion(1);
-		DrawRegion(2);
+		DrawRegion(tx, clr, 0);
+		DrawRegion(tx, clr, 1);
+		DrawRegion(tx, clr, 2);
 
-		// Middle row
-		DrawRegion(3);
-		DrawRegion(5);
+		//	Middle row
+		DrawRegion(tx, clr, 3);
+		DrawRegion(tx, clr, 5);
 
-		// Bottom row
-		DrawRegion(6);
-		DrawRegion(7);
-		DrawRegion(8);
+		// Bot row
+		DrawRegion(tx, clr, 6);
+		DrawRegion(tx, clr, 7);
+		DrawRegion(tx, clr, 8);
 
 		// Center region
 		if (DrawCenter)
@@ -191,16 +190,16 @@ public class NineSlice : Skin
 			if (StretchCenter)
 			{
 				var sb = Graphics.SpriteBatch;
-				sb.Draw(Texture, centerRegion.Destination, centerRegion.Source, clr);
+				sb.Draw(tx, centerRegion.Destination, centerRegion.Source, clr);
 			}
 			else
 			{
-				TileRegion(centerRegion);
+				TileRegion(tx, clr, centerRegion);
 			}
 		}
 	}
 
-	private void TileRegion(SliceRegion region)
+	private void TileRegion(Texture2D tx, Color clr, SliceRegion region)
 	{
 		var sb = Graphics.SpriteBatch;
 		Rectangle source = region.Source;
@@ -231,7 +230,7 @@ public class NineSlice : Skin
 					dest.Y + y * source.Height,
 					tileWidth, tileHeight);
 
-				sb.Draw(Texture, tileDest, tileSource, Style.Foreground);
+				sb.Draw(tx, tileDest, tileSource, clr);
 			}
 		}
 	}

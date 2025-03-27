@@ -56,22 +56,18 @@ public class ExampleGame : FortGame
 		};
 
 		var lbAddWindow = new Label { Name = "AddWindow", Text = "Add window" };
-		lbAddWindow.OnClick += AddWindow;
+		lbAddWindow.OnMouseEvent += (_) => AddWindow();
 		_debugWindow.Add(lbAddWindow);
 
 		var lbRemoveWindow = new Label { Text = "Remove window" };
-		lbRemoveWindow.OnClick += RemoveWindow;
+		lbRemoveWindow.OnMouseEvent += (_) => RemoveWindow();
 		_debugWindow.Add(lbRemoveWindow);
 
 		int btCounter = 0;
-		var btCount = new Button { Text = "Button1", Size = new Vector2(256, 64) };
+		var btCount = new Button { Text = "Button1", Size = new Vector2(200, 48) };
 		btCount.Style.Background = Color.White * 1f;
 		btCount.AddSkin(new ThreeSlice { Texture = _threeSlice, Source = _threeSlice, BorderSize = 32 });
-		btCount.OnClick += () =>
-		{
-			btCount.Text = $"Button ({++btCounter})";
-
-		};
+		btCount.OnTriggerEvent += () => { btCount.Text = $"Button ({++btCounter})"; };
 		_debugWindow.Add(btCount);
 
 		_canvas.Add(_debugWindow);
@@ -98,15 +94,13 @@ public class ExampleGame : FortGame
 			Foreground = Color.White,
 		});
 
-
 		var bt1 = new Button
 		{
-			Text = "Button1",
+			Text = "BAUTTON",
 			Size = new Vector2(256, 64),
 		};
 		bt1.AddSkin(new ThreeSlice { Texture = _threeSlice, Source = _threeSlice, BorderSize = 32 });
-		win1.Add(new Button());
-
+		win1.Add(bt1);
 
 		var spSlider = new StackPanel { ItemOrientation = Orientation.Horizontal };
 
@@ -122,10 +116,14 @@ public class ExampleGame : FortGame
 		spSlider.Add(sliderValue);
 		win1.Add(spSlider);
 
-
 		var checkbox = new Checkbox();
-
 		win1.Add(checkbox);
+
+		var edlb = new EditLabel { Text = "Editable text" };
+		win1.Add(edlb);
+
+		var tb = new TextBox();
+		win1.Add(tb);
 
 		_canvas.Add(win1);
 	}

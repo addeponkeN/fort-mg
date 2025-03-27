@@ -57,6 +57,7 @@ public class Checkbox : GuiComponent
 
 	public Checkbox()
 	{
+		IsFocusable = true;
 		base.Size = new Vector2(24); // Default size for the checkbox
 	}
 
@@ -112,8 +113,14 @@ public class Checkbox : GuiComponent
 
 		if (Bounds.Contains(Canvas.MousePosition) && Input.LeftClick)
 		{
-			IsChecked = !IsChecked;
+			OnTrigger();
 		}
+	}
+
+	public override void OnTrigger()
+	{
+		base.OnTrigger();
+		IsChecked = !IsChecked;
 	}
 
 	public override void Draw()

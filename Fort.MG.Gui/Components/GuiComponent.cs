@@ -46,6 +46,10 @@ public class ComponentBase
 
 	}
 
+	public virtual void DrawContent()
+	{
+	}
+
 	public virtual void Draw()
 	{
 	}
@@ -66,8 +70,6 @@ public partial class GuiComponent : ComponentBase
 	private Vector2 _position;
 	private Vector2 _size;
 
-
-
 	public Style Style { get; set; } = new();
 
 	public Rectangle Bounds { get; private set; }
@@ -75,6 +77,9 @@ public partial class GuiComponent : ComponentBase
 	public string Name { get; set; }
 
 	internal bool IsPositionDirty = true;
+
+	public virtual bool IsFocused { get; set; }
+	public bool IsFocusable { get; set; }
 
 	public virtual Color Foreground
 	{
@@ -146,13 +151,28 @@ public partial class GuiComponent : ComponentBase
 
 	public override void Draw()
 	{
-		base.Draw();
+		DrawSelf();
 
+		DrawSkins();
+
+		DrawComponents();
+	}
+
+	internal void DrawSkins()
+	{
 		foreach (var skin in Skins)
 		{
 			skin.Draw();
 		}
+	}
 
+	internal void DrawSelf()
+	{
+		base.Draw();
+	}
+
+	internal void DrawComponents()
+	{
 		foreach (var comp in Components)
 		{
 			comp.Draw();
@@ -179,4 +199,15 @@ public partial class GuiComponent : ComponentBase
 		base.DrawDebug();
 		Bounds.DrawLined(Color.MonoGameOrange);
 	}
+
+	public virtual void OnFocus(bool isFocus)
+	{
+		IsFocused = isFocus;
+	}
+
+	public virtual void OnTrigger()
+	{
+		OnTriggerEvent?.Invoke();
+	}
+
 }

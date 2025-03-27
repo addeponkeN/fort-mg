@@ -38,8 +38,8 @@ public class Button : GuiComponent
 
 	public Button()
 	{
+		IsFocusable = true;
 		_title = new();
-
 		Size = MinSize;
 	}
 
@@ -56,6 +56,20 @@ public class Button : GuiComponent
 	{
 		base.Update(gt);
 		_title.Update(gt);
+	}
+
+	public override void OnMouse(MouseClickEvent arg)
+	{
+		base.OnMouse(arg);
+		if (arg.Button == MouseButton.Left && arg.IsClick)
+		{
+			OnTrigger();
+		}
+	}
+
+	public override void OnTrigger()
+	{
+		base.OnTrigger();
 	}
 
 	public override void Draw()

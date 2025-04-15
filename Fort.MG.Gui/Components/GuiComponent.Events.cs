@@ -42,6 +42,7 @@ public partial class GuiComponent
 			{
 				IsHovered = false;
 				OnMouseLeave?.Invoke();
+				OnHover(IsHovered);
 			}
 
 			if (Input.LeftClick)
@@ -56,6 +57,7 @@ public partial class GuiComponent
 			{
 				IsHovered = true;
 				OnMouseEnter?.Invoke();
+				OnHover(IsHovered);
 			}
 		}
 
@@ -76,9 +78,12 @@ public partial class GuiComponent
 		}
 	}
 
-	public virtual void OnMouse(MouseClickEvent arg)
+	protected virtual void OnMouse(MouseClickEvent arg)
 	{
 		OnMouseEvent?.Invoke(arg);
 	}
 
+	protected virtual void OnHover(bool isHovered)
+	{
+	}
 }

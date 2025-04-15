@@ -1,4 +1,5 @@
-﻿using Fort.MG.Extensions;
+﻿using FontStashSharp;
+using Fort.MG.Extensions;
 using Fort.MG.Gui.Controls;
 using Microsoft.Xna.Framework;
 
@@ -6,15 +7,27 @@ namespace Fort.MG.Gui.Components;
 
 public class Button : GuiComponent
 {
-	private readonly Label _title;
+	public Label Title { get; }
+
+	public DynamicSpriteFont Font
+	{
+		get => Title.Font;
+		set
+		{
+			Title.Font = value;
+			IsPositionDirty = true;
+			UpdateTextPosition();
+		}
+	}
 
 	public string Text
 	{
-		get => _title.Text;
+		get => Title.Text;
 		set
 		{
-			_title.Text = value;
+			Title.Text = value;
 			IsPositionDirty = true;
+			UpdateTextPosition();
 		}
 	}
 
@@ -24,23 +37,28 @@ public class Button : GuiComponent
 		set
 		{
 			base.Position = value;
-			_title.Position = GHelper.Center(value, _title.Size, Size);
+			UpdateTextPosition();
 		}
 	}
 
 	public override Vector2 Size
 	{
-		get => base.Size == Vector2.Zero ? _title.Size + new Vector2(8) : base.Size;
+		get => base.Size == Vector2.Zero ? Title.Size + new Vector2(8) : base.Size;
 		set => base.Size = Vector2.Clamp(value, MinSize, value);
 	}
 
 	public Vector2 MinSize { get; set; } = new Vector2(96, 24);
 
+	private void UpdateTextPosition()
+	{
+		Title.Position = GHelper.Center(base.Position, Title.Size, Size);
+	}
+
 	public Button()
 	{
 		IsFocusable = true;
-		_title = new();
-		Size = MinSize;
+		Title = new();
+		base.Size = MinSize;
 	}
 
 	public override void Start()
@@ -48,17 +66,17 @@ public class Button : GuiComponent
 		base.Start();
 		AddComponent(new InteractiveComponent());
 		if (Skins.Count == 0)
-			AddSkin(new Skin());
-		_title.Canvas = Canvas;
+			AddSkin(Skin.DefaultSkinBackground2);
+		Title.Canvas = Canvas;
 	}
 
 	public override void Update(GameTime gt)
 	{
 		base.Update(gt);
-		_title.Update(gt);
+		Title.Update(gt);
 	}
 
-	public override void OnMouse(MouseClickEvent arg)
+	protected override void OnMouse(MouseClickEvent arg)
 	{
 		base.OnMouse(arg);
 		if (arg.Button == MouseButton.Left && arg.IsClick)
@@ -80,6 +98,6 @@ public class Button : GuiComponent
 	public override void DrawText()
 	{
 		base.DrawText();
-		_title.DrawText();
+		Title.DrawText();
 	}
 }

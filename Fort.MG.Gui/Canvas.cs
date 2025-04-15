@@ -2,17 +2,16 @@
 using Fort.MG.VirtualViewports;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace Fort.MG.Gui;
 
 public class Canvas : Container
 {
-	private List<Window> _windows = new();
-	private List<GuiComponent> _items = new();
-	private FocusManager _focusManager = new();
+	private readonly FocusManager _focusManager = new();
 	private RenderTarget2D _target;
-	private TextRenderer _textRen;
+
+	protected List<Window> Windows = new();
+	protected List<GuiComponent> _items = new();
 
 	internal SpriteBatch Sb;
 
@@ -25,29 +24,41 @@ public class Canvas : Container
 	public Vector2 MousePosition => Input.MouseTransformedPos(TransformMatrix);
 	public GuiComponent FocusedComponent => _focusManager.FocusedComponent;
 
-	public Canvas()
+	public bool FitScreen { get; set; } = true;
+
+	public Canvas(int virtualWidth = 0, int virtualHeight = 0)
 	{
 		GuiContent.Load();
 		Sb = Graphics.SpriteBatch;
-		_textRen = new TextRenderer();
 		AutoSize = false;
 		VirtualViewport = new();
 		UpdateCanvasSize();
-		SetVirtualSize(Screen.Width, Screen.Height);
-		FortCore.WindowSizeChanged += (sender, args) => UpdateCanvasSize();
+
+		virtualWidth = virtualWidth > 0 ? virtualWidth : Screen.Width;
+		virtualHeight = virtualHeight > 0 ? virtualHeight : Screen.Height;
+		SetVirtualSize(virtualWidth, virtualHeight);
+
+		Screen.OnScreenSizeChanged += UpdateCanvasSize;
+	}
+
+	public T? GetWindow<T>() where T : Window
+	{
+		return Windows.Find(w => w is T) as T;
 	}
 
 	private void UpdateCanvasSize()
 	{
-		Size = new Vector2(Screen.Width, Screen.Height);
+		if (FitScreen)
+		{
+			Size = new Vector2(Screen.Width, Screen.Height);
+			_target?.Dispose();
+			_target = new RenderTarget2D(Graphics.GraphicsDevice, Screen.Width, Screen.Height, false, SurfaceFormat.Color, DepthFormat.Depth24);
+		}
 	}
 
-	private void SetVirtualSize(int w, int h)
+	public void SetVirtualSize(int w, int h)
 	{
-		VirtualViewport.Width = w;
-		VirtualViewport.Height = h;
-		_target?.Dispose();
-		_target = new(Sb.GraphicsDevice, w, h);
+		VirtualViewport = new VirtualViewportScaling(w, h);
 	}
 
 	public override void AddItem(GuiComponent item)
@@ -58,7 +69,7 @@ public class Canvas : Container
 
 		if (item is Window w)
 		{
-			_windows.Insert(0, w);
+			Windows.Insert(0, w);
 		}
 		else
 		{
@@ -86,7 +97,7 @@ public class Canvas : Container
 		Items.Remove(item);
 		if (item is Window w)
 		{
-			_windows.Remove(w);
+			Windows.Remove(w);
 		}
 		else
 		{
@@ -113,17 +124,31 @@ public class Canvas : Container
 	public void Render()
 	{
 		var gd = Sb.GraphicsDevice;
+
+		foreach (var win in Windows)
+		{
+			if (!win.IsVisible) continue;
+			win.DrawTarget();
+		}
+
 		gd.SetRenderTarget(_target);
 		gd.Clear(Color.Transparent);
 
-		foreach (var w in _windows)
+		foreach (var win in Windows)
 		{
-			w.Draw();
+			if (!win.IsVisible) continue;
+			win.Draw();
 		}
-
-		Sb.Begin(SpriteSortMode.Deferred, blendState: BlendState, samplerState: SamplerState);
+		
+		Sb.Begin(SpriteSortMode.Deferred,
+			BlendState.AlphaBlend,
+			SamplerState.PointClamp,
+			null, null, null,
+			TransformMatrix);
 		foreach (var item in _items)
 		{
+			if (!item.IsVisible)
+				continue;
 			item.Draw();
 		}
 
@@ -133,11 +158,8 @@ public class Canvas : Container
 
 	public override void Draw()
 	{
-		Sb.Begin(samplerState: SamplerState.PointClamp);
-		var scale = Size / new Vector2(VirtualViewport.Width, VirtualViewport.Height);
-		var rec = new Rectangle(0, 0, (int)VirtualViewport.Width, (int)VirtualViewport.Height);
-		Sb.Draw(_target, Position, rec, Style.Foreground, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
-		//DrawDebug();
+		Sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, samplerState: SamplerState.PointClamp);
+		Sb.Draw(_target, Vector2.Zero, Color.White);
 		Sb.End();
 
 	}

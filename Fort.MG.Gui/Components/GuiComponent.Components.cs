@@ -11,6 +11,7 @@ public partial class GuiComponent
 
 		Components.Add(comp);
 		comp.Parent = this;
+		comp.Canvas = Canvas;
 	}
 
 	public bool RemoveComponent(ComponentBase comp)
@@ -25,19 +26,18 @@ public partial class GuiComponent
 		return Components.Remove(comp);
 	}
 
-	protected void SetComponent<T>(ref T field, T value) where T : ComponentBase
+	protected void SetComponent<T>(ref T component, T newValue) where T : ComponentBase
 	{
-		if (field != null)
+		if (component != null)
 		{
-			RemoveComponent(field);
+			RemoveComponent(component);
 		}
 
-		field = value;
-		field.Canvas = Canvas;
+		component = newValue;
 
-		if (field != null)
+		if (component != null)
 		{
-			AddComponent(field);
+			AddComponent(component);
 		}
 
 		UpdateTransforms();

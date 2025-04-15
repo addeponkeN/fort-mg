@@ -31,6 +31,10 @@ public class NineSlice : Skin
 		set
 		{
 			_borderExtend = value;
+			if (SliceSize == 0 && _borderExtend > 0)
+			{
+				SliceSize = Source.Width / 3;
+			}
 			_regionsDirty = true;
 		}
 	}
@@ -55,6 +59,7 @@ public class NineSlice : Skin
 			if (base.Position == value)
 				return;
 			base.Position = value;
+			UpdateTransforms();
 			_regionsDirty = true;
 		}
 	}
@@ -159,13 +164,12 @@ public class NineSlice : Skin
 
 	public override void Draw()
 	{
-		base.Draw();
 		Draw(Texture, Style.Foreground);
 	}
 
 	internal override void Draw(Texture2D tx, Color clr)
 	{
-		base.Draw(tx, clr);
+		//base.Draw(tx, clr);
 		if (tx == null) return;
 
 		// Top row

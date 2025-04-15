@@ -1,6 +1,7 @@
 ﻿using Fort.MG.Extensions;
 using Fort.MG.Gui.Components;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Fort.MG.Gui.Controls;
 
@@ -25,24 +26,29 @@ public struct Outline
 	}
 }
 
-internal class InteractiveComponent : ComponentBase
+public class InteractiveComponent : ComponentBase
 {
+	public Color HoverColor { get; set; } = Color.White * 0.05f;
+	public Color ClickColor { get; set; } = Color.Black * 0.05f;
+
 	private GuiComponent _guiParent;
-
-	private readonly Color _clrHover = Color.White * 0.05f;
-	private readonly Color _clrClick = Color.Black * 0.05f;
-
 	private Color? _activeColor;
 
 	public Outline Outline;
 
-	public override void Start()
+	public override ComponentBase Parent
 	{
-		base.Start();
-		_guiParent = (GuiComponent)Parent;
-
-		Outline = new Outline(_guiParent, 1f, Color.Black);
+		get => base.Parent;
+		set
+		{
+			base.Parent = value;
+			_guiParent = (GuiComponent)value;
+			Outline = new Outline(_guiParent, 1f, Color.White * 0.1f);
+		}
 	}
+
+	public Texture2D? Texture { get; set; }
+	public Rectangle Source { get; set; }
 
 	public override void Update(GameTime gt)
 	{
@@ -50,11 +56,11 @@ internal class InteractiveComponent : ComponentBase
 
 		if (_guiParent.IsPressed)
 		{
-			_activeColor = _clrClick;
+			_activeColor = ClickColor;
 		}
 		else if (_guiParent.IsHovered)
 		{
-			_activeColor = _clrHover;
+			_activeColor = HoverColor;
 		}
 		else
 		{
@@ -75,6 +81,7 @@ internal class InteractiveComponent : ComponentBase
 			}
 		}
 
-		Outline.Draw();
+		if (_guiParent.IsHovered)
+			Outline.Draw();
 	}
 }

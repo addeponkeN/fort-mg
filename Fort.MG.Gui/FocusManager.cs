@@ -19,7 +19,7 @@ public class FocusManager
 
 	private IEnumerable<GuiComponent> GetAllComponents(GuiComponent component)
 	{
-		if(!component?.IsEnabled ?? false) yield break;
+		if (!component?.IsEnabled ?? false) yield break;
 
 		yield return component;
 
@@ -67,8 +67,9 @@ public class FocusManager
 
 	public void HandleMouseClick(Vector2 mousePosition)
 	{
-		var newFocus = GetAllComponents(_rootContainer)
-			.LastOrDefault(c => c.IsFocusable && c.IsVisible && c.Bounds.Contains(mousePosition));
+		var allComponents = GetAllComponents(_rootContainer).ToList();
+		if (allComponents.Count <= 0) return;
+		var newFocus = allComponents.LastOrDefault(c => c != null && c.IsFocusable && c.IsVisible && c.Bounds.Contains(mousePosition));
 
 		SetFocus(newFocus);
 	}

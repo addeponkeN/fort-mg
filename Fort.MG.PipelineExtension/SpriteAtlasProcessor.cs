@@ -7,7 +7,6 @@ using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 namespace Fort.MG.PipelineExtension;
 
 /// <summary>
-/// STEP 2: Processor
 /// Transforms a directory of PNG images into a single sprite atlas.
 /// </summary>
 
@@ -15,6 +14,7 @@ namespace Fort.MG.PipelineExtension;
 public class SpriteAtlasProcessor : ContentProcessor<Atlas, SpriteAtlasContent>
 {
 	[DisplayName("Region padding")] public int Padding { get; set; } = 0;
+	[DisplayName("Add pixel")] public bool IsAddPixel { get; set; } = true;
 
 	public override SpriteAtlasContent Process(Atlas input, ContentProcessorContext context)
 	{
@@ -23,6 +23,17 @@ public class SpriteAtlasProcessor : ContentProcessor<Atlas, SpriteAtlasContent>
 
 	private SpriteAtlasContent Pack(Atlas atlas)
 	{
+		if (IsAddPixel)
+		{
+			var pixelBitmap = new PixelBitmapContent<Color>(1, 1);
+			pixelBitmap.SetPixel(0, 0, Color.White);
+
+			var pixelTexture = new Texture2DContent { Name = "pixel" };
+			pixelTexture.Faces[0].Add(pixelBitmap);
+
+			atlas.textures.Add(pixelTexture);
+		}
+
 		var images = new BitmapContent[atlas.textures.Count];
 		var rectangles = new RectpackSharp.PackingRectangle[atlas.textures.Count];
 		var regions = new SpriteRegionContent[atlas.textures.Count];

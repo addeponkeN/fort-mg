@@ -1,5 +1,4 @@
 ﻿using FontStashSharp;
-using Fort.MG.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -16,6 +15,7 @@ public class Label : GuiComponent
 		{
 			_textRenderer.Font = value;
 			IsPositionDirty = true;
+			UpdateSize();
 		}
 	}
 
@@ -37,8 +37,10 @@ public class Label : GuiComponent
 		get => _textRenderer.Position;
 		set
 		{
-			_textRenderer.Position = value;
+			base.Position = value;
 			IsPositionDirty = true;
+			UpdateTransforms();
+			_textRenderer.Position = base.Position + LocalPosition;
 		}
 	}
 
@@ -50,17 +52,19 @@ public class Label : GuiComponent
 
 	private void UpdateSize()
 	{
-		if (_textRenderer.Font != null)
-			Size = _textRenderer.Font.MeasureString(_textRenderer.Text);
+		Size = _textRenderer.Font.MeasureString(_textRenderer.Text);
+		UpdateTransforms();
 	}
 
 	public override void DrawText()
 	{
 		base.DrawText();
-		UpdateTransforms();
-		_textRenderer.DrawText(_canvas.Sb);
+		_textRenderer.DrawText();
+	}
 
-		Bounds.DrawLined(Color.MonoGameOrange);
+	public override void DrawDebug()
+	{
+		base.DrawDebug();
 	}
 }
 
@@ -76,5 +80,16 @@ public class TextRenderer
 	public void DrawText(SpriteBatch sb)
 	{
 		Font.DrawText(sb, Text, Position, Color, 0f, Vector2.Zero, Vector2.One, 0f, 0f, 0f, TextStyle.None, FontSystemEffect.None, 0);
+	}
+
+	public static void Draw(string text, Vector2 pos)
+	{
+		var font = GuiContent.GetDefaultFont(16);
+		font.DrawText(Graphics.SpriteBatch, text, pos, Color.White);
+	}
+
+	public Vector2 GetSize()
+	{
+		return Font.MeasureString(Text);
 	}
 }

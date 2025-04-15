@@ -87,19 +87,19 @@ public class Checkbox : GuiComponent
 		Background ??= new Skin();
 		TickMark ??= new Image
 		{
-			Foreground = StyleManager.ForegroundColor,
+			Foreground = StyleManager.Foreground1Color,
 			IsVisible = IsChecked,
 		};
 
 		Content ??= new Label
 		{
 			Text = "Checkbox",
-			Foreground = StyleManager.ForegroundColor,
+			Foreground = StyleManager.Foreground1Color,
 		};
 
 		UpdateTransforms();
 		if (Skins.Count == 0)
-			AddSkin(new Skin());
+			AddSkin(Skin.DefaultSkinBackground2);
 	}
 
 	public override void Update(GameTime gt)

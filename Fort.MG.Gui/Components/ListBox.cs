@@ -1,14 +1,12 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Fort.MG.Extensions;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
 namespace Fort.MG.Gui.Components;
 
 public class ListBox : Container
 {
-	private readonly TextRenderer _t = new();
-	private int _tIndex = 0;
-
-	private readonly RasterizerState _rasterizer = new RasterizerState { ScissorTestEnable = true };
+	private readonly RasterizerState _rasterizer = new() { ScissorTestEnable = true };
 	private readonly List<GuiComponent> _visibleItems = new();
 
 	private readonly byte _scrollRateLength = 100;
@@ -16,10 +14,27 @@ public class ListBox : Container
 	private int _visibleItemStart;
 	private int _visibleItemEnd;
 	private float _totalHeight;
+	private int _selectedIndex;
+
+	private Rectangle _transformedBounds;
 
 	public bool CanScroll => Items.Count > 0 && _totalHeight > Size.Y;
 
-	public float ScrollRate { get; set; } = 5f;
+	public float ScrollRate { get; set; } = 45f;
+
+	public int SelectedIndex
+	{
+		get => _selectedIndex;
+		set
+		{
+			if (_selectedIndex == value)
+				return;
+			_selectedIndex = value;
+			SelectedItemChangedEvent?.Invoke(SelectedItem);
+		}
+	}
+
+	public GuiComponent? SelectedItem => SelectedIndex >= 0 && SelectedIndex < Items.Count ? Items[SelectedIndex] : null;
 
 	public override Vector2 Size
 	{
@@ -31,21 +46,34 @@ public class ListBox : Container
 		}
 	}
 
+	public event Action<GuiComponent?> SelectedItemChangedEvent;
+
 	public ListBox()
 	{
-		Size = new Vector2(160, 250);
+		base.Size = new Vector2(160, 250);
 		AutoSize = false;
+		base.AddSkin(new Skin());
 	}
 
 	public override void Start()
 	{
 		base.Start();
 
-		if (Skins.Count == 0)
-			AddSkin(new Skin());
-
 		CalculateTotalHeight();
 		UpdateVisibleItems();
+	}
+
+	protected override void UpdateTransforms()
+	{
+		base.UpdateTransforms();
+		_transformedBounds = Bounds;
+		if (Canvas != null)
+		{
+			var transformMatrix = Canvas.TransformMatrix;
+			var pos = Vector2.Transform(new Vector2(_transformedBounds.X, _transformedBounds.Y), transformMatrix);
+			var size = Vector2.Transform(new Vector2(_transformedBounds.Width, _transformedBounds.Height), transformMatrix);
+			_transformedBounds = new Rectangle((int)pos.X, (int)pos.Y, (int)size.X, (int)size.Y);
+		}
 	}
 
 	protected override void UpdateItemTransforms()
@@ -62,6 +90,20 @@ public class ListBox : Container
 			Scroll(_scrollRateLength * ScrollRate / Size.Y);
 		else if (Input.WheelUp)
 			Scroll(-(_scrollRateLength * ScrollRate / Size.Y));
+
+		if (base.IsPressed)
+		{
+			for (int i = 0; i < _visibleItems.Count; i++)
+			{
+				var item = _visibleItems[i];
+				if (item.Bounds.Contains(Canvas.MousePosition))
+				{
+					int actualIndex = _visibleItemStart + i;
+					SelectedIndex = actualIndex;
+					break;
+				}
+			}
+		}
 
 		foreach (var item in _visibleItems)
 		{
@@ -113,7 +155,7 @@ public class ListBox : Container
 			var item = Items[i];
 			float size = currentHeight + item.Size.Y + Spacing;
 			currentHeight += item.Size.Y + Spacing;
-			if (size > _scrollOffset + Size.Y + Spacing + 10)
+			if (size > _scrollOffset + Size.Y + Spacing + 32)
 			{
 				_visibleItemEnd = i + 1;
 				break;
@@ -131,6 +173,20 @@ public class ListBox : Container
 		}
 	}
 
+	private void DrawSelectedItem()
+	{
+		if (SelectedIndex < 0 || SelectedIndex >= Items.Count)
+			return;
+
+		var bounds = SelectedItem.Bounds;
+		var outerBounds = bounds;
+		outerBounds.Inflate(2, 2);
+
+		bounds.DrawRec(Color.SteelBlue * 0.025f);
+		outerBounds.DrawLined(Color.SteelBlue * 0.4f, 1f);
+
+	}
+
 	public override void DrawContent()
 	{
 		base.DrawContent();
@@ -140,13 +196,17 @@ public class ListBox : Container
 		Rectangle previousScissorRect = gd.ScissorRectangle;
 		RasterizerState originalRasterizerState = gd.RasterizerState;
 
-		gd.ScissorRectangle = Bounds;
+		var tf = Canvas.TransformMatrix;
+
+		gd.ScissorRectangle = _transformedBounds;
 		gd.RasterizerState = _rasterizer;
 
-		sb.Begin(SpriteSortMode.Deferred, Canvas.BlendState, Canvas.SamplerState, null, gd.RasterizerState);
+		sb.Begin(SpriteSortMode.Deferred, Canvas.BlendState, Canvas.SamplerState, null, gd.RasterizerState, transformMatrix: tf);
 
 		base.DrawSkins();
 		base.DrawComponents();
+
+		DrawSelectedItem();
 
 		for (int i = 0; i < _visibleItems.Count; i++)
 		{
@@ -156,13 +216,14 @@ public class ListBox : Container
 
 		sb.End();
 
-		sb.Begin(samplerState: SamplerState.AnisotropicClamp, rasterizerState: gd.RasterizerState);
+		sb.Begin(samplerState: SamplerState.AnisotropicClamp, rasterizerState: gd.RasterizerState, transformMatrix: tf);
 		foreach (var item in _visibleItems)
 		{
 			item.DrawText();
 		}
 
 		sb.End();
+
 		//sb.Begin();
 		//_tIndex = 0;
 		//draw($"start: {_visibleItemStart}");
@@ -172,14 +233,6 @@ public class ListBox : Container
 
 		gd.ScissorRectangle = previousScissorRect;
 		gd.RasterizerState = originalRasterizerState;
-	}
-
-	private void draw(string t)
-	{
-		var pos = Position + new Vector2(Size.X, _tIndex++ * 16);
-		_t.Position = pos;
-		_t.Text = t;
-		_t.DrawText();
 	}
 
 	public override void Draw() { }
@@ -210,6 +263,11 @@ public class ListBox : Container
 			item.Parent = null;
 			CalculateTotalHeight();
 			UpdateVisibleItems();
+
+			if (SelectedItem == item)
+			{
+				SelectedIndex--;
+			}
 		}
 	}
 }

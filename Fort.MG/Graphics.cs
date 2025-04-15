@@ -30,4 +30,30 @@ public static class Graphics
 		SpriteBatch?.Dispose();
 		GDM?.Dispose();
 	}
+
+	public static Texture2D CopyTextureRegion(Texture2D sourceTexture, Rectangle sourceRegion)
+	{
+		Color[] data = new Color[sourceRegion.Width * sourceRegion.Height];
+		sourceTexture.GetData(0, sourceRegion, data, 0, data.Length);
+
+		Texture2D newTexture = new Texture2D(GraphicsDevice, sourceRegion.Width, sourceRegion.Height);
+		newTexture.SetData(data);
+
+		return newTexture;
+	}
+
+	public static void SetRenderTarget(RenderTarget2D target)
+	{
+		GraphicsDevice.SetRenderTarget(target);
+	}
+
+	public static void ResetRenderTarget()
+	{
+		GraphicsDevice.SetRenderTarget(null);
+	}
+
+	public static void Clear(Color color)
+	{
+		GraphicsDevice.Clear(color);
+	}
 }

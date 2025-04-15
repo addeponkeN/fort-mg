@@ -5,7 +5,7 @@ namespace Fort.MG.Gui.Components;
 
 public class Image : GuiComponent
 {
-	public Texture2D Texture { get; set; } = GuiContent.Pixel;
+	public virtual Texture2D Texture { get; set; } = GuiContent.Pixel;
 	public Rectangle Source { get; set; } = GuiContent.Pixel.Bounds;
 
 	public override void Draw()
@@ -13,8 +13,9 @@ public class Image : GuiComponent
 		if (!IsVisible) return;
 		if (Texture == null) return;
 
-		base.Draw();
 		Draw(Texture, Style.Foreground);
+		base.DrawSkins();
+		base.DrawComponents();
 	}
 
 	internal override void Draw(Texture2D tx, Color clr)

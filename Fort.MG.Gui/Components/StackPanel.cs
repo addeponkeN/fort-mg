@@ -4,7 +4,7 @@ namespace Fort.MG.Gui.Components;
 
 public class Style
 {
-	public Color Background { get; set; } = StyleManager.BackgroundColor;
+	public Color Background { get; set; } = StyleManager.Background1Color;
 	public Color Foreground { get; set; } = Color.White;
 }
 
@@ -15,7 +15,7 @@ public class Container : GuiComponent
 	public override Canvas Canvas
 	{
 		get => _canvas;
-		internal set
+		set
 		{
 			_canvas = value;
 			foreach (var item in Items)
@@ -75,6 +75,25 @@ public class Container : GuiComponent
 		}
 	}
 
+	public virtual T? GetItem<T>() where T : GuiComponent
+	{
+		if (this is T t)
+			return t;
+		foreach (var item in Items)
+		{
+			if (item is T tItem)
+				return tItem;
+			if (item is Container itemContainer)
+			{
+				var ret = itemContainer.GetItem<T>();
+				if (ret != null)
+					return ret;
+			}
+		}
+
+		return null;
+	}
+
 	public virtual T? GetItem<T>(string name) where T : GuiComponent
 	{
 		if (Name == name)
@@ -96,7 +115,7 @@ public class Container : GuiComponent
 
 	public virtual void AddItem(GuiComponent item)
 	{
-		item._canvas = Canvas;
+		item.Canvas = Canvas;
 		item.Parent = this;
 		Items.Add(item);
 		UpdateItemTransforms();
@@ -181,6 +200,17 @@ public class Container : GuiComponent
 	{
 		base.Draw();
 		DrawItems();
+	}
+
+	public override void DrawTarget()
+	{
+		base.DrawTarget();
+		for (var i = 0; i < Items.Count; i++)
+		{
+			var item = Items[i];
+			if (!item.IsVisible) continue;
+			item.DrawTarget();
+		}
 	}
 
 	internal void DrawItems()

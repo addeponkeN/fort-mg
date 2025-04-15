@@ -19,8 +19,8 @@ public static class FortCore
 		if (Game == null)
 			throw new InvalidOperationException("Game instance is not set. Call Start() first.");
 
-		Game.Window.ClientSizeChanged += WindowOnClientSizeChanged;
 		Graphics.Init();
+		Game.Window.ClientSizeChanged += WindowOnClientSizeChanged;
 	}
 
 	public static void Update(GameTime gt)

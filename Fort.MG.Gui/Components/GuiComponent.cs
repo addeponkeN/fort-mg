@@ -15,16 +15,16 @@ public class ComponentBase
 	public virtual Canvas Canvas
 	{
 		get => _canvas;
-		internal set => _canvas = value;
+		set => _canvas = value;
 	}
 
-	public ComponentBase Parent
+	public virtual ComponentBase Parent
 	{
 		get => _parent;
-		internal set => _parent = value;
+		set => _parent = value;
 	}
 
-	public bool IsVisible { get; set; } = true;
+	public virtual bool IsVisible { get; set; } = true;
 	public bool IsEnabled { get; set; } = true;
 
 	public virtual void Start()
@@ -46,10 +46,23 @@ public class ComponentBase
 
 	}
 
+	/// <summary>	
+	/// Draw component to a custom target
+	/// </summary>
+	public virtual void DrawTarget()
+	{
+	}
+
+	/// <summary>
+	/// Draw component to a custom batch
+	/// </summary>
 	public virtual void DrawContent()
 	{
 	}
 
+	/// <summary>
+	/// Draw component to the main batch
+	/// </summary>
 	public virtual void Draw()
 	{
 	}
@@ -143,11 +156,21 @@ public partial class GuiComponent : ComponentBase
 			skin.Update(gt);
 		}
 
-		foreach (var child in Components)
+		foreach (var component in Components)
 		{
-			child.Update(gt);
+			component.Update(gt);
 		}
 	}
+
+	public override void UpdateInput()
+	{
+		base.UpdateInput();
+		foreach (var component in Components)
+		{
+			component.UpdateInput();
+		}
+	}
+
 
 	public override void Draw()
 	{
@@ -165,9 +188,14 @@ public partial class GuiComponent : ComponentBase
 		if (IsFocused)
 		{
 			var b = Bounds;
-			b.Inflate(1, 1);
-			b.DrawLined(Color.White * 0.5f);
+			b.Inflate(2, 2);
+			b.DrawLined(Color.White * 0.3f);
 		}
+	}
+
+	public override void DrawTarget()
+	{
+		base.DrawTarget();
 	}
 
 	internal void DrawSkins()
@@ -206,6 +234,7 @@ public partial class GuiComponent : ComponentBase
 
 	public override void DrawDebug()
 	{
+		if (!GuiSettings.Debug) return;
 		if (!IsVisible) return;
 
 		base.DrawDebug();

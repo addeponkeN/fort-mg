@@ -5,8 +5,17 @@ namespace Fort.MG;
 public static class Screen
 {
 	private static GraphicsDeviceManager Gd => Graphics.GDM;
+	private static Game Game => FortCore.Game;
+
+	public static event Action OnScreenSizeChanged;
 
 	public static Rectangle Bounds => new Rectangle(0, 0, Width, Height);
+
+	private static bool _applied = false;
+
+	private static int _currentWidth;
+	private static int _currentHeight;
+	private static bool _currentFullscreen;
 
 	public static int Width
 	{
@@ -38,6 +47,22 @@ public static class Screen
 		set => Gd.PreferMultiSampling = value;
 	}
 
-	public static void Apply() => Gd.ApplyChanges();
+	public static void Apply()
+	{
+		Gd.ApplyChanges();
+		if (_currentWidth != Width || _currentHeight != Height || _currentFullscreen != IsFullscreen)
+		{
+			_currentWidth = Width;
+			_currentHeight = Height;
+			_currentFullscreen = IsFullscreen;
+			OnScreenSizeChanged?.Invoke();
+		}
 
+		if (!_applied)
+		{
+			_applied = true;
+			Game.Window.ClientSizeChanged += (_, _) => OnScreenSizeChanged?.Invoke();
+		}
+
+	}
 }

@@ -2,11 +2,16 @@
 
 namespace Fort.MG;
 
+public struct GameConfig
+{
+	public bool PreferHalfPixelOffset;
+}
+
 public class FortCoreGame : Game
 {
 	private bool _isFirstFrame;
 
-	public FortCoreGame()
+	public FortCoreGame(GameConfig? gameConfig = null)
 	{
 		Content.RootDirectory = "content";
 
@@ -14,9 +19,13 @@ public class FortCoreGame : Game
 		IsMouseVisible = true;
 		IsFixedTimeStep = true;
 
-		LimitFPS(200);
-
 		FortCore.Start(this);
+
+		if (gameConfig.HasValue)
+		{
+			var v = gameConfig.Value;
+			Graphics.GDM.PreferHalfPixelOffset = v.PreferHalfPixelOffset;
+		}
 	}
 
 	public void LimitFPS(int limit)
@@ -26,13 +35,14 @@ public class FortCoreGame : Game
 
 	protected override void Initialize()
 	{
-		FortCore.Init();
-
+		LimitFPS(300);
 		Screen.Width = 1920;
 		Screen.Height = 1080;
 		Screen.MSAA = true;
 		Screen.VSync = true;
 		Screen.Apply();
+
+		FortCore.Init();
 
 		base.Initialize();
 	}

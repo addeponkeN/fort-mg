@@ -189,7 +189,7 @@ public class ExampleGame : FortGame
 		base.Draw(gt);
 
 		GraphicsDevice.SetRenderTarget(null);
-		GraphicsDevice.Clear(Color.CornflowerBlue);
+		GraphicsDevice.Clear(Color.Black);
 
 		var win1 = _canvas.GetItem<Window>("win1");
 		if (win1 != null)

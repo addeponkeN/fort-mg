@@ -5,22 +5,22 @@ namespace Fort.MG.Extensions;
 
 public static class DrawHelper
 {
-	private static SpriteBatch _sb;
-	private static Texture2D _pixel;
-	private static Rectangle _pixelSource;
+	internal static SpriteBatch Sb;
+	internal static Texture2D Pixel;
+	internal static Rectangle PixelSource;
 
 	public static void Initialize(SpriteBatch sb)
 	{
-		_pixel = new Texture2D(sb.GraphicsDevice, 1, 1);
-		_pixel.SetData(new[] { Color.White });
-		Initialize(sb, _pixel, new Rectangle(1, 1, 1, 1));
+		Pixel = new Texture2D(sb.GraphicsDevice, 1, 1);
+		Pixel.SetData(new[] { Color.White });
+		Initialize(sb, Pixel, new Rectangle(1, 1, 1, 1));
 	}
 
 	public static void Initialize(SpriteBatch sb, Texture2D pixel, Rectangle pixelSource)
 	{
-		_sb = sb;
-		_pixel = pixel;
-		_pixelSource = pixelSource;
+		Sb = sb;
+		Pixel = pixel;
+		PixelSource = pixelSource;
 	}
 
 	/// <summary>
@@ -31,7 +31,17 @@ public static class DrawHelper
 		Vector2 edge = end - start;
 		float angle = (float)Math.Atan2(edge.Y, edge.X);
 		float length = edge.Length();
-		_sb.Draw(_pixel, start, _pixelSource, color, angle, Vector2.Zero, new Vector2(length, size), SpriteEffects.None, 0);
+		Sb.Draw(Pixel, start, PixelSource, color, angle, Vector2.Zero, new Vector2(length, size), SpriteEffects.None, 0);
+	}
+
+	public static void DrawRec(Vector2 pos, Vector2 size, Color clr)
+	{
+		Sb.Draw(Pixel, pos, PixelSource, clr, 0f, Vector2.Zero, size, SpriteEffects.None, 0f);
+	}
+
+	public static void DrawRec(this Rectangle rect, Color color)
+	{
+		Sb.Draw(Pixel, rect, PixelSource, color);
 	}
 
 	/// <summary>

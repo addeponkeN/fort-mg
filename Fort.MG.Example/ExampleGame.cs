@@ -130,10 +130,10 @@ public class ExampleGame : FortGame
 			Spacing = 4,
 			ScrollRate = 25f,
 		};
-		for (int j = 0; j < 6; j++)
+		for (int j = 0; j < 56; j++)
 		{
-			lb.AddItem(new Image { Texture = _atlas.Regions[1], Source = _atlas.Regions[1] });
-			lb.AddItem(new Label { Text = $"labbel {j}" });
+			//lb.AddItem(new Image { Texture = _atlas.Regions[1], Source = _atlas.Regions[1] });
+			//lb.AddItem(new Label { Text = $"labbel {j}" });
 			lb.AddItem(new Button { Text = $"butti {j}" });
 		}
 		win1.AddItem(lb);

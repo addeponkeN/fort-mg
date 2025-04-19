@@ -33,7 +33,7 @@ public class Window : StackPanel
 
 		base.DrawContent();
 
-		sb.Begin(samplerState: Canvas.SamplerState, transformMatrix: tf);
+		sb.Begin(samplerState: Canvas.SamplerState, blendState: BlendState.AlphaBlend, transformMatrix: tf);
 		DrawItems();
 		if (GuiSettings.Debug)
 			base.DrawDebug();

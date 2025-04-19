@@ -1,6 +1,6 @@
 ﻿using Fort.MG.Extensions;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Fort.MG.Gui.Components;
 
@@ -14,11 +14,16 @@ public class ListBox : Container
 	private int _visibleItemStart;
 	private int _visibleItemEnd;
 	private float _totalHeight;
+	private float _totalWidth;
 	private int _selectedIndex;
 
 	private Rectangle _transformedBounds;
 
-	public bool CanScroll => Items.Count > 0 && _totalHeight > Size.Y;
+	public Orientation ItemOrientation { get; set; } = Orientation.Vertical;
+
+	public bool CanScroll => ItemOrientation == Orientation.Vertical
+			? Items.Count > 0 && _totalHeight > Size.Y
+			: Items.Count > 0 && _totalWidth > Size.X;
 
 	public float ScrollRate { get; set; } = 45f;
 
@@ -59,7 +64,7 @@ public class ListBox : Container
 	{
 		base.Start();
 
-		CalculateTotalHeight();
+		CalculateTotalDimensions();
 		UpdateVisibleItems();
 	}
 
@@ -78,7 +83,7 @@ public class ListBox : Container
 
 	protected override void UpdateItemTransforms()
 	{
-		CalculateTotalHeight();
+		CalculateTotalDimensions();
 		UpdateVisibleItems();
 	}
 
@@ -87,9 +92,9 @@ public class ListBox : Container
 		base.Update(gt);
 
 		if (Input.WheelDown)
-			Scroll(_scrollRateLength * ScrollRate / Size.Y);
+			Scroll(_scrollRateLength * ScrollRate / (ItemOrientation == Orientation.Vertical ? Size.Y : Size.X));
 		else if (Input.WheelUp)
-			Scroll(-(_scrollRateLength * ScrollRate / Size.Y));
+			Scroll(-(_scrollRateLength * ScrollRate / (ItemOrientation == Orientation.Vertical ? Size.Y : Size.X)));
 
 		if (base.IsPressed)
 		{
@@ -111,15 +116,30 @@ public class ListBox : Container
 		}
 	}
 
-	private void CalculateTotalHeight()
+	private void CalculateTotalDimensions()
 	{
 		_totalHeight = 0;
+		_totalWidth = 0;
+
 		foreach (var item in Items)
 		{
-			_totalHeight += item.Size.Y + Spacing;
+			if (ItemOrientation == Orientation.Vertical)
+			{
+				_totalHeight += item.Size.Y + Spacing;
+			}
+			else
+			{
+				_totalWidth += item.Size.X + Spacing;
+			}
 		}
+
 		if (Items.Count > 0)
-			_totalHeight -= Spacing;
+		{
+			if (ItemOrientation == Orientation.Vertical)
+				_totalHeight -= Spacing;
+			else
+				_totalWidth -= Spacing;
+		}
 	}
 
 	private void UpdateVisibleItems()
@@ -130,6 +150,19 @@ public class ListBox : Container
 		}
 
 		_visibleItems.Clear();
+
+		if (ItemOrientation == Orientation.Vertical)
+		{
+			UpdateVisibleItemsVertical();
+		}
+		else
+		{
+			UpdateVisibleItemsHorizontal();
+		}
+	}
+
+	private void UpdateVisibleItemsVertical()
+	{
 		float currentHeight = 0;
 		_visibleItemStart = 0;
 		_visibleItemEnd = Items.Count;
@@ -139,28 +172,31 @@ public class ListBox : Container
 		for (int i = 0; i < Items.Count; i++)
 		{
 			var item = Items[i];
-			float size = currentHeight + item.Size.Y + Spacing;
-			currentHeight += item.Size.Y + Spacing;
-			if (size >= _scrollOffset)
+			float size = currentHeight + item.Size.Y;
+			if (size > _scrollOffset)
 			{
 				_visibleItemStart = i;
 				break;
 			}
+			currentHeight += item.Size.Y + Spacing;
 			item.IsEnabled = false;
 			totalVisibleItemSize += item.Size.Y + Spacing;
 		}
 
+		currentHeight = totalVisibleItemSize;
+
 		for (int i = _visibleItemStart; i < Items.Count; i++)
 		{
 			var item = Items[i];
-			float size = currentHeight + item.Size.Y + Spacing;
-			currentHeight += item.Size.Y + Spacing;
-			if (size > _scrollOffset + Size.Y + Spacing + 32)
+			if (currentHeight > _scrollOffset + Size.Y)
 			{
-				_visibleItemEnd = i + 1;
+				_visibleItemEnd = i;
 				break;
 			}
+			currentHeight += item.Size.Y + Spacing;
 		}
+
+		_visibleItemEnd = Math.Min(_visibleItemEnd, Items.Count);
 
 		float offset = -(_scrollOffset - totalVisibleItemSize);
 		for (int i = _visibleItemStart; i < _visibleItemEnd; i++)
@@ -170,6 +206,54 @@ public class ListBox : Container
 			item.Position = new Vector2(Padding.X + Position.X, Padding.Y + Position.Y + offset);
 			item.IsEnabled = IsEnabled;
 			offset += item.Size.Y + Spacing;
+		}
+	}
+
+	private void UpdateVisibleItemsHorizontal()
+	{
+		float currentWidth = 0;
+		_visibleItemStart = 0;
+		_visibleItemEnd = Items.Count;
+
+		float totalVisibleItemSize = 0f;
+
+		for (int i = 0; i < Items.Count; i++)
+		{
+			var item = Items[i];
+			float size = currentWidth + item.Size.X;
+			if (size > _scrollOffset)
+			{
+				_visibleItemStart = i;
+				break;
+			}
+			currentWidth += item.Size.X + Spacing;
+			item.IsEnabled = false;
+			totalVisibleItemSize += item.Size.X + Spacing;
+		}
+
+		currentWidth = totalVisibleItemSize;
+
+		for (int i = _visibleItemStart; i < Items.Count; i++)
+		{
+			var item = Items[i];
+			if (currentWidth > _scrollOffset + Size.X)
+			{
+				_visibleItemEnd = i;
+				break;
+			}
+			currentWidth += item.Size.X + Spacing;
+		}
+
+		_visibleItemEnd = Math.Min(_visibleItemEnd, Items.Count);
+
+		float offset = -(_scrollOffset - totalVisibleItemSize);
+		for (int i = _visibleItemStart; i < _visibleItemEnd; i++)
+		{
+			var item = Items[i];
+			_visibleItems.Add(item);
+			item.Position = new Vector2(Padding.X + Position.X + offset, Padding.Y + Position.Y);
+			item.IsEnabled = IsEnabled;
+			offset += item.Size.X + Spacing;
 		}
 	}
 
@@ -184,7 +268,6 @@ public class ListBox : Container
 
 		bounds.DrawRec(Color.SteelBlue * 0.025f);
 		outerBounds.DrawLined(Color.SteelBlue * 0.4f, 1f);
-
 	}
 
 	public override void DrawContent()
@@ -207,7 +290,7 @@ public class ListBox : Container
 		base.DrawComponents();
 
 		DrawSelectedItem();
-
+		UpdateVisibleItems();
 		for (int i = 0; i < _visibleItems.Count; i++)
 		{
 			var item = _visibleItems[i];
@@ -225,15 +308,27 @@ public class ListBox : Container
 		sb.End();
 
 		//sb.Begin();
-		//_tIndex = 0;
+		//tIndex = 0;
 		//draw($"start: {_visibleItemStart}");
 		//draw($"end: {_visibleItemEnd}");
-		//draw($"scroll X: {_scrollOffset}");
+		//draw($"scroll: {_scrollOffset}");
+		//draw($"mode: {ItemOrientation}");
 		//sb.End();
 
 		gd.ScissorRectangle = previousScissorRect;
 		gd.RasterizerState = originalRasterizerState;
 	}
+
+	//private int tIndex = 0;
+	//private TextRenderer _ren = new();
+
+	//void draw(string tx)
+	//{
+	//	tIndex++;
+	//	_ren.Text = tx;
+	//	_ren.Position = Position + new Vector2(Size.X, 18 * tIndex);
+	//	_ren.DrawText();
+	//}
 
 	public override void Draw() { }
 	public override void DrawText() { }
@@ -242,7 +337,20 @@ public class ListBox : Container
 	{
 		if (!CanScroll) return;
 
-		_scrollOffset = Math.Clamp(_scrollOffset + direction, 0, _totalHeight - Size.Y);
+		_scrollOffset = ItemOrientation == Orientation.Vertical ? Math.Clamp(_scrollOffset + direction, 0, _totalHeight - Size.Y) : Math.Clamp(_scrollOffset + direction, 0, _totalWidth - Size.X);
+
+		UpdateVisibleItems();
+	}
+
+	// Method to switch the scroll mode
+	public void SetItemOrientation(Orientation mode)
+	{
+		if (ItemOrientation == mode)
+			return;
+
+		ItemOrientation = mode;
+		_scrollOffset = 0;
+		CalculateTotalDimensions();
 		UpdateVisibleItems();
 	}
 
@@ -251,23 +359,23 @@ public class ListBox : Container
 		item._canvas = Canvas;
 		item.Parent = this;
 		Items.Add(item);
-		CalculateTotalHeight();
+		CalculateTotalDimensions();
 		UpdateVisibleItems();
 		item.IsEnabled = false;
 	}
 
 	public override void RemoveItem(GuiComponent item)
 	{
-		if (Items.Remove(item))
-		{
-			item.Parent = null;
-			CalculateTotalHeight();
-			UpdateVisibleItems();
+		if (!Items.Remove(item))
+			return;
 
-			if (SelectedItem == item)
-			{
-				SelectedIndex--;
-			}
+		item.Parent = null;
+		CalculateTotalDimensions();
+		UpdateVisibleItems();
+
+		if (SelectedItem == item)
+		{
+			SelectedIndex--;
 		}
 	}
 }

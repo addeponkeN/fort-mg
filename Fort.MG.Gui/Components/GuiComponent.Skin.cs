@@ -24,7 +24,7 @@ public class Skin : Image
 
 	public override Vector2 Size
 	{
-		get => FitParentSize ? GuiParent.Size : _localSize;
+		get => FitParentSize && GuiParent != null ? GuiParent.Size : _localSize;
 		set => _localSize = value;
 	}
 
@@ -69,6 +69,7 @@ public partial class GuiComponent
 		}
 
 		skin.Parent = this;
+		skin.Canvas = Canvas;
 		Skins.Add(skin);
 	}
 

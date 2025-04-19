@@ -297,7 +297,6 @@ public class StackPanel : Container
 		}
 	}
 
-
 	protected override void UpdateItemTransforms()
 	{
 		if (Items == null || Items.Count == 0) return;

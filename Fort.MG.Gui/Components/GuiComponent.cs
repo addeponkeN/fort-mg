@@ -202,7 +202,8 @@ public partial class GuiComponent : ComponentBase
 	{
 		foreach (var skin in Skins)
 		{
-			skin.Draw();
+			if (skin.IsVisible)
+				skin.Draw();
 		}
 	}
 

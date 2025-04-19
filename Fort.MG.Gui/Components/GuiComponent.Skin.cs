@@ -22,6 +22,8 @@ public class Skin : Image
 
 	public bool FitParentSize { get; set; } = true;
 
+	public bool AlignCenter { get; set; } = true;
+
 	public override Vector2 Size
 	{
 		get => FitParentSize && GuiParent != null ? GuiParent.Size : _localSize;
@@ -49,7 +51,10 @@ public class Skin : Image
 		}
 		else
 		{
-			base.Position = GHelper.Center(GuiParent.Bounds, Size);
+			if (AlignCenter)
+				base.Position = GHelper.Center(GuiParent.Bounds, Size);
+			else
+				base.Position = GuiParent.Position;
 		}
 	}
 }

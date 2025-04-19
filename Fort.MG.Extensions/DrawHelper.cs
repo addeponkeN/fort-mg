@@ -31,7 +31,8 @@ public static class DrawHelper
 		Vector2 edge = end - start;
 		float angle = (float)Math.Atan2(edge.Y, edge.X);
 		float length = edge.Length();
-		Sb.Draw(Pixel, start, PixelSource, color, angle, Vector2.Zero, new Vector2(length, size), SpriteEffects.None, 0);
+		Vector2 origin = new Vector2(0f, 0.5f);
+		Sb.Draw(Pixel, start, PixelSource, color, angle, origin, new Vector2(length, size), SpriteEffects.None, 0);
 	}
 
 	public static void DrawRec(Vector2 pos, Vector2 size, Color clr)

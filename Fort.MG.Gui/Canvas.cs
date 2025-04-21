@@ -107,14 +107,17 @@ public class Canvas : Container
 
 	public override void Update(GameTime gt)
 	{
-		UpdateInput();
+		var inputHandlerArgs = new InputHandlerArgs(MousePosition);
+
+		UpdateInput(inputHandlerArgs);
 		base.Update(gt);
 	}
 
-	public override void UpdateInput()
+	public override void UpdateInput(InputHandlerArgs args)
 	{
-		base.UpdateInput();
-		_focusManager.UpdateInput();
+		base.UpdateInput(args);
+
+		_focusManager.UpdateInput(args);
 		if (Input.LeftClick)
 		{
 			_focusManager.HandleMouseClick(MousePosition);

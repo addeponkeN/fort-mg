@@ -1,4 +1,6 @@
-﻿namespace Fort.MG.Gui.Components;
+﻿using Microsoft.Xna.Framework;
+
+namespace Fort.MG.Gui.Components;
 
 public enum MouseButton
 {
@@ -21,6 +23,16 @@ public struct MouseClickEvent
 	public bool IsClick => State == MouseState.Click;
 }
 
+public struct InputHandlerArgs(Vector2 mousePos)
+{
+	public bool MouseHandled { get; set; }
+	public bool KeyboardHandled { get; set; }
+	public bool ScrollHandled { get; set; }
+	public bool HoverHandled { get; set; }
+
+	public Vector2 MousePosition { get; private set; } = mousePos;
+}
+
 public partial class GuiComponent
 {
 	public event Action<MouseClickEvent> OnMouseEvent;
@@ -32,32 +44,46 @@ public partial class GuiComponent
 	public bool IsHovered;
 	public bool IsPressed;
 
-	private void UpdateEventLogic()
+	private void HandleHover(InputHandlerArgs args)
 	{
-		var m = Canvas == null ? Input.MousePos : Input.MouseTransformedPos(Canvas.TransformMatrix);
-
+		var m = args.MousePosition;
 		if (IsHovered)
 		{
+			//	Exit hovered
 			if (!Bounds.Contains(m))
 			{
 				IsHovered = false;
 				OnMouseLeave?.Invoke();
 				OnHover(IsHovered);
 			}
-
-			if (Input.LeftClick)
+			else
 			{
-				IsPressed = true;
-				OnMouse(new MouseClickEvent { Button = MouseButton.Left, State = MouseState.Click });
+				args.HoverHandled = true;
 			}
 		}
 		else
 		{
+			// Enter hovered
 			if (Bounds.Contains(m))
 			{
 				IsHovered = true;
 				OnMouseEnter?.Invoke();
 				OnHover(IsHovered);
+				args.HoverHandled = true;
+			}
+
+		}
+	}
+
+	private void HandleLeftClick(InputHandlerArgs args)
+	{
+		if (IsHovered)
+		{
+			if (Input.LeftClick)
+			{
+				IsPressed = true;
+				OnMouse(new MouseClickEvent { Button = MouseButton.Left, State = MouseState.Click });
+				args.MouseHandled = true;
 			}
 		}
 
@@ -69,13 +95,23 @@ public partial class GuiComponent
 				if (IsHovered)
 				{
 					OnMouse(new MouseClickEvent { Button = MouseButton.Left, State = MouseState.Release });
+					args.MouseHandled = true;
 				}
 			}
 			else
 			{
 				OnMouse(new MouseClickEvent { Button = MouseButton.Left, State = MouseState.Hold });
+				args.MouseHandled = true;
 			}
 		}
+	}
+
+	private void UpdateEventLogic(InputHandlerArgs args)
+	{
+		if (!args.HoverHandled)
+			HandleHover(args);
+		if (!args.MouseHandled)
+			HandleLeftClick(args);
 	}
 
 	protected virtual void OnMouse(MouseClickEvent arg)

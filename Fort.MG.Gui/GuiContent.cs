@@ -68,7 +68,7 @@ public static class GuiContent
 				continue;
 			if (c is { R: < 1, G: < 1, B: < 1 })
 				continue;
-			data[i] = Color.White;
+			data[i] = new Color(Color.White, c.A);
 		}
 		var white = new Texture2D(Graphics.GraphicsDevice, tx.Width, tx.Height);
 		white.SetData(data);

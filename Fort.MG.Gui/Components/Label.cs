@@ -14,7 +14,7 @@ public class Label : GuiComponent
 		set
 		{
 			_textRenderer.Font = value;
-			IsPositionDirty = true;
+			IsDirty = true;
 			UpdateSize();
 		}
 	}
@@ -28,7 +28,7 @@ public class Label : GuiComponent
 				return;
 			_textRenderer.Text = value;
 			UpdateSize();
-			IsPositionDirty = true;
+			IsDirty = true;
 		}
 	}
 
@@ -38,7 +38,7 @@ public class Label : GuiComponent
 		set
 		{
 			base.Position = value;
-			IsPositionDirty = true;
+			IsDirty = true;
 			UpdateTransforms();
 			_textRenderer.Position = base.Position + LocalPosition;
 		}

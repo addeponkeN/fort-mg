@@ -107,9 +107,9 @@ public class Checkbox : GuiComponent
 		base.Update(gt);
 	}
 
-	public override void UpdateInput()
+	public override void UpdateInput(InputHandlerArgs args)
 	{
-		base.UpdateInput();
+		base.UpdateInput(args);
 
 		if (Bounds.Contains(Canvas.MousePosition) && Input.LeftClick)
 		{

@@ -41,6 +41,7 @@ public class Container : GuiComponent
 
 	public Container()
 	{
+		IsInputEnabled = false;
 		Spacing = 4;
 		Padding = new Vector2(4);
 	}
@@ -130,7 +131,7 @@ public class Container : GuiComponent
 		UpdateSize();
 	}
 
-	protected virtual void UpdateSize()
+	public virtual void UpdateSize()
 	{
 		if (!AutoSize) return;
 		if (Items.Count == 0) return;
@@ -147,16 +148,16 @@ public class Container : GuiComponent
 		Size = new Vector2(maxWidth + Padding.X * 2, totalHeight);
 	}
 
-	public override void UpdateInput()
+	public override void UpdateInput(InputHandlerArgs args)
 	{
-		base.UpdateInput();
+		base.UpdateInput(args);
 		for (int i = 0; i < Items.Count; i++)
 		{
 			var item = Items[i];
 			if (!item.IsVisible || !item.IsEnabled)
 				continue;
 
-			item.UpdateInput();
+			item.UpdateInput(args);
 		}
 	}
 
@@ -175,7 +176,7 @@ public class Container : GuiComponent
 		for (int i = 0; i < Items.Count; i++)
 		{
 			var item = Items[i];
-			if (item.IsPositionDirty)
+			if (item.IsDirty)
 			{
 				UpdateSize();
 				UpdateItemTransforms();
@@ -264,7 +265,7 @@ public class StackPanel : Container
 		UpdateItemTransforms();
 	}
 
-	protected override void UpdateSize()
+	public override void UpdateSize()
 	{
 		if (!AutoSize) return;
 		if (Items.Count == 0) return;
@@ -315,7 +316,7 @@ public class StackPanel : Container
 				? item.Size.Y + Spacing
 				: item.Size.X + Spacing;
 
-			item.IsPositionDirty = false;
+			item.IsDirty = false;
 		}
 	}
 

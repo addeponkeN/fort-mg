@@ -64,7 +64,7 @@ public class Slider : GuiComponent
 	{
 		IsFocusable = true;
 		base.Size = new Vector2(200, 20);
-		IsPositionDirty = true;
+		IsDirty = true;
 	}
 
 	protected override void UpdateTransforms()
@@ -119,9 +119,9 @@ public class Slider : GuiComponent
 		}
 	}
 
-	public override void UpdateInput()
+	public override void UpdateInput(InputHandlerArgs args)
 	{
-		base.UpdateInput();
+		base.UpdateInput(args);
 
 		var mpos = Canvas.MousePosition;
 		if (((Handle?.Bounds.Contains(mpos) ?? false) || Bounds.Contains(mpos)) && Input.LeftClick)

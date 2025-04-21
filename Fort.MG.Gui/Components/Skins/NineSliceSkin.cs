@@ -69,6 +69,12 @@ public class NineSlice : Skin
 		Style.Foreground = Color.White;
 	}
 
+	protected override void UpdateTransforms()
+	{
+		base.UpdateTransforms();
+		CalculateRegions();
+	}
+
 	private void SetSlice(SliceRegionType regionType, SliceRegion slice)
 	{
 		_regions[(int)regionType] = slice;
@@ -151,6 +157,7 @@ public class NineSlice : Skin
 	public override void Update(GameTime gt)
 	{
 		base.Update(gt);
+
 		if (_regionsDirty)
 			CalculateRegions();
 	}

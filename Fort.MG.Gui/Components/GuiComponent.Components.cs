@@ -2,7 +2,7 @@
 
 public partial class GuiComponent
 {
-	protected List<ComponentBase> Components { get; } = new();
+	public List<ComponentBase> Components { get; } = new();
 
 	public void AddComponent(ComponentBase comp)
 	{
@@ -13,6 +13,8 @@ public partial class GuiComponent
 		comp.Parent = this;
 		comp.Canvas = Canvas;
 	}
+
+	public T GetComponent<T>() where T : ComponentBase => Components.FirstOrDefault(x => x is T) as T;
 
 	public bool RemoveComponent(ComponentBase comp)
 	{

@@ -19,6 +19,11 @@ public class Window : StackPanel
 	}
 
 
+	public override void Update(GameTime gt)
+	{
+		base.Update(gt);
+	}
+
 	public override void Draw()
 	{
 		var sb = Graphics.SpriteBatch;

@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Fort.MG.Gui.Components;
 
-public class ListBox : Container
+public class ListBox : Container, IDisposable
 {
 	private readonly RasterizerState _rasterizer = new() { ScissorTestEnable = true };
 	private readonly List<GuiComponent> _visibleItems = new();
@@ -16,6 +16,8 @@ public class ListBox : Container
 	private float _totalHeight;
 	private float _totalWidth;
 	private int _selectedIndex;
+
+	public bool IsHighlightSelection { get; set; } = true;
 
 	private Rectangle _transformedBounds;
 
@@ -58,6 +60,13 @@ public class ListBox : Container
 		base.Size = new Vector2(160, 250);
 		AutoSize = false;
 		base.AddSkin(new Skin());
+
+		FortCore.WindowSizeChanged += FortCoreOnWindowSizeChanged;
+	}
+
+	private void FortCoreOnWindowSizeChanged(object? sender, EventArgs e)
+	{
+		UpdateTransforms();
 	}
 
 	public override void Start()
@@ -91,10 +100,15 @@ public class ListBox : Container
 	{
 		base.Update(gt);
 
-		if (Input.WheelDown)
-			Scroll(_scrollRateLength * ScrollRate / (ItemOrientation == Orientation.Vertical ? Size.Y : Size.X));
-		else if (Input.WheelUp)
-			Scroll(-(_scrollRateLength * ScrollRate / (ItemOrientation == Orientation.Vertical ? Size.Y : Size.X)));
+		UpdateDirtyItems();
+
+		if (IsHovered)
+		{
+			if (Input.WheelDown)
+				Scroll(_scrollRateLength * ScrollRate / (ItemOrientation == Orientation.Vertical ? Size.Y : Size.X));
+			else if (Input.WheelUp)
+				Scroll(-(_scrollRateLength * ScrollRate / (ItemOrientation == Orientation.Vertical ? Size.Y : Size.X)));
+		}
 
 		if (base.IsPressed)
 		{
@@ -144,6 +158,8 @@ public class ListBox : Container
 
 	private void UpdateVisibleItems()
 	{
+		UpdateTransforms();
+
 		foreach (var item in _visibleItems)
 		{
 			item.IsEnabled = false;
@@ -259,6 +275,7 @@ public class ListBox : Container
 
 	private void DrawSelectedItem()
 	{
+		if (!IsHighlightSelection) return;
 		if (SelectedIndex < 0 || SelectedIndex >= Items.Count)
 			return;
 
@@ -273,6 +290,7 @@ public class ListBox : Container
 	public override void DrawContent()
 	{
 		base.DrawContent();
+
 		var sb = Graphics.SpriteBatch;
 		var gd = Graphics.GraphicsDevice;
 
@@ -290,7 +308,6 @@ public class ListBox : Container
 		base.DrawComponents();
 
 		DrawSelectedItem();
-		UpdateVisibleItems();
 		for (int i = 0; i < _visibleItems.Count; i++)
 		{
 			var item = _visibleItems[i];
@@ -377,5 +394,11 @@ public class ListBox : Container
 		{
 			SelectedIndex--;
 		}
+	}
+
+	public void Dispose()
+	{
+		_rasterizer.Dispose();
+		FortCore.WindowSizeChanged -= FortCoreOnWindowSizeChanged;
 	}
 }

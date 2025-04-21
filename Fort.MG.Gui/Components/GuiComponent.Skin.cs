@@ -65,7 +65,7 @@ public partial class GuiComponent
 
 	public List<Skin> Skins { get; } = new();
 
-	public virtual void AddSkin(Skin skin)
+	public virtual Skin AddSkin(Skin skin)
 	{
 		if (_isDefaultSkin)
 		{
@@ -76,6 +76,7 @@ public partial class GuiComponent
 		skin.Parent = this;
 		skin.Canvas = Canvas;
 		Skins.Add(skin);
+		return skin;
 	}
 
 	public virtual void ClearSkins()

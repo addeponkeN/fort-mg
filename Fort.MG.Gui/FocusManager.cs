@@ -97,7 +97,7 @@ public class FocusManager
 		//FocusedComponent.Bounds.DrawLined(Color.White);
 	}
 
-	public void UpdateInput()
+	public void UpdateInput(InputHandlerArgs frameInputHandler)
 	{
 		if (Input.KeyClick(Keys.Tab))
 		{

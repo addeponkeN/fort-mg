@@ -27,12 +27,14 @@ public class ComponentBase
 	public virtual bool IsVisible { get; set; } = true;
 	public bool IsEnabled { get; set; } = true;
 
+	public bool IsInputEnabled { get; set; } = true;
+
 	public virtual void Start()
 	{
 		Started = true;
 	}
 
-	public virtual void UpdateInput()
+	public virtual void UpdateInput(InputHandlerArgs args)
 	{
 	}
 
@@ -89,7 +91,7 @@ public partial class GuiComponent : ComponentBase
 	public int Id { get; set; }
 	public string Name { get; set; }
 
-	internal bool IsPositionDirty = true;
+	public bool IsDirty = true;
 
 	public virtual bool IsFocused { get; set; }
 	public bool IsFocusable { get; set; }
@@ -107,7 +109,7 @@ public partial class GuiComponent : ComponentBase
 		{
 			_localPosition = value;
 			UpdateTransforms();
-			IsPositionDirty = true;
+			IsDirty = true;
 		}
 	}
 
@@ -118,7 +120,7 @@ public partial class GuiComponent : ComponentBase
 		{
 			_position = value;
 			UpdateTransforms();
-			IsPositionDirty = true;
+			IsDirty = true;
 		}
 	}
 
@@ -129,7 +131,7 @@ public partial class GuiComponent : ComponentBase
 		{
 			_size = value;
 			UpdateTransforms();
-			IsPositionDirty = true;
+			IsDirty = true;
 		}
 	}
 
@@ -137,19 +139,17 @@ public partial class GuiComponent : ComponentBase
 	{
 		_totalPosition = _position + _localPosition;
 		Bounds = new Rectangle((int)_totalPosition.X, (int)_totalPosition.Y, (int)Size.X, (int)Size.Y);
-		IsPositionDirty = false;
+		IsDirty = false;
 	}
 
 	public override void Update(GameTime gt)
 	{
 		base.Update(gt);
 
-		if (IsPositionDirty)
+		if (IsDirty)
 		{
 			UpdateTransforms();
 		}
-
-		UpdateEventLogic();
 
 		foreach (var skin in Skins)
 		{
@@ -162,12 +162,15 @@ public partial class GuiComponent : ComponentBase
 		}
 	}
 
-	public override void UpdateInput()
+	public override void UpdateInput(InputHandlerArgs args)
 	{
-		base.UpdateInput();
+		base.UpdateInput(args);
+
+		UpdateEventLogic(args);
+
 		foreach (var component in Components)
 		{
-			component.UpdateInput();
+			component.UpdateInput(args);
 		}
 	}
 
@@ -216,7 +219,8 @@ public partial class GuiComponent : ComponentBase
 	{
 		foreach (var comp in Components)
 		{
-			comp.Draw();
+			if (comp.IsVisible)
+				comp.Draw();
 		}
 	}
 
@@ -225,7 +229,8 @@ public partial class GuiComponent : ComponentBase
 		base.DrawText();
 		foreach (var comp in Components)
 		{
-			comp.DrawText();
+			if (comp.IsVisible)
+				comp.DrawText();
 		}
 	}
 

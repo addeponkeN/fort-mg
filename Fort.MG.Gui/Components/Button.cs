@@ -15,7 +15,7 @@ public class Button : GuiComponent
 		set
 		{
 			Title.Font = value;
-			IsPositionDirty = true;
+			IsDirty = true;
 			UpdateTextPosition();
 		}
 	}
@@ -26,7 +26,7 @@ public class Button : GuiComponent
 		set
 		{
 			Title.Text = value;
-			IsPositionDirty = true;
+			IsDirty = true;
 			UpdateTextPosition();
 		}
 	}

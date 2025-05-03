@@ -10,7 +10,7 @@ public class Canvas : Container
 	private readonly FocusManager _focusManager = new();
 	private RenderTarget2D _target;
 
-	protected List<Window> Windows = new();
+	public List<Window> Windows { get; private set; } = new();
 	protected List<GuiComponent> _items = new();
 
 	internal SpriteBatch Sb;
@@ -142,7 +142,7 @@ public class Canvas : Container
 			if (!win.IsVisible) continue;
 			win.Draw();
 		}
-		
+
 		Sb.Begin(SpriteSortMode.Deferred,
 			BlendState.AlphaBlend,
 			SamplerState.PointClamp,

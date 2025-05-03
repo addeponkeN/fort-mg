@@ -90,7 +90,7 @@ public class ListBox : Container, IDisposable
 		}
 	}
 
-	protected override void UpdateItemTransforms()
+	public override void UpdateItemTransforms()
 	{
 		CalculateTotalDimensions();
 		UpdateVisibleItems();
@@ -166,6 +166,14 @@ public class ListBox : Container, IDisposable
 		}
 
 		_visibleItems.Clear();
+
+		foreach (var item in Items)
+		{
+			if (item is Container container)
+			{
+				container.UpdateItemTransforms();
+			}
+		}
 
 		if (ItemOrientation == Orientation.Vertical)
 		{

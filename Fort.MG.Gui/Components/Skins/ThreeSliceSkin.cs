@@ -5,19 +5,15 @@ namespace Fort.MG.Gui.Components;
 
 public class ThreeSlice : Skin
 {
-	public enum Orientation { Horizontal, Vertical }
-
-	public int BorderSize { get; set; } = 5;
-	public Orientation SliceOrientation { get; set; } = Orientation.Horizontal;
-	public bool StretchCenter { get; set; } = true;
-
 	private enum SliceRegionTypes { LeftOrTop, Center, RightOrBottom }
+	public enum Orientation { Horizontal, Vertical }
 
 	private readonly SliceRegion[] _regions = new SliceRegion[3];
 	private bool _regionsDirty = true;
 
-	public Point SliceCornerSize = new Point(32, 32);
-	public Point SliceMidSize = new Point(32, 32);
+	public Orientation SliceOrientation { get; set; } = Orientation.Horizontal;
+	public bool StretchCenter { get; set; } = true;
+	public int SliceCornerSize { get; set; }
 
 	public override Vector2 Size
 	{
@@ -53,44 +49,103 @@ public class ThreeSlice : Skin
 		var pos = Position.ToPoint();
 		var size = Size.ToPoint();
 
-		int sliceCornerWidth = SliceCornerSize.X;
-		int sliceCornerHeight = SliceCornerSize.Y;
-		int sliceMidWidth = SliceMidSize.X;
-		int sliceMidHeight = SliceMidSize.Y;
-
 		if (SliceOrientation == Orientation.Horizontal)
 		{
+			int sourceWidth = src.Width / 3;
+			int sourceHeight = src.Height;
+
+			int sliceCornerWidth = SliceCornerSize == 0 ? sourceWidth : SliceCornerSize;
+
+			// Calculate adjusted corner sizes based on available space
+			int totalWidth = size.X;
+			float adjustedCornerSize = 0;
+			bool showCenter = true;
+
+			if (totalWidth <= sliceCornerWidth * 2)
+			{
+				// If total size is too small, scale corner pieces proportionally
+				adjustedCornerSize = (totalWidth) / 2f;
+				showCenter = false;
+			}
+			else
+			{
+				adjustedCornerSize = sliceCornerWidth;
+			}
+
 			// Left
 			SetSlice(SliceRegionTypes.LeftOrTop, new SliceRegion(
-				new Rectangle(src.X, src.Y, sliceCornerWidth, src.Height),
-				new Rectangle(pos.X, pos.Y, sliceCornerWidth, size.Y)));
+				new Rectangle(src.X, src.Y, sourceWidth, sourceHeight),
+				new Rectangle(pos.X, pos.Y, (int)adjustedCornerSize, size.Y)));
 
 			// Center (Stretchable)
-			SetSlice(SliceRegionTypes.Center, new SliceRegion(
-				new Rectangle(src.X + sliceCornerWidth, src.Y, src.Width - 2 * sliceCornerWidth, src.Height),
-				new Rectangle(pos.X + sliceCornerWidth, pos.Y, size.X - 2 * sliceCornerWidth, size.Y)));
+			if (showCenter)
+			{
+				int centerWidth = (int)(size.X - 2 * adjustedCornerSize);
+				SetSlice(SliceRegionTypes.Center, new SliceRegion(
+					new Rectangle(src.X + sourceWidth, src.Y, sourceWidth, sourceHeight),
+					new Rectangle((int)(pos.X + adjustedCornerSize), pos.Y, centerWidth, size.Y)));
+			}
+			else
+			{
+				// Hide center by setting zero width
+				SetSlice(SliceRegionTypes.Center, new SliceRegion(
+					new Rectangle(src.X + sourceWidth, src.Y, sourceWidth, sourceHeight),
+					new Rectangle((int)(pos.X + adjustedCornerSize), pos.Y, 0, size.Y)));
+			}
 
 			// Right
 			SetSlice(SliceRegionTypes.RightOrBottom, new SliceRegion(
-				new Rectangle(src.Right - sliceCornerWidth, src.Y, sliceCornerWidth, src.Height),
-				new Rectangle(pos.X + size.X - sliceCornerWidth, pos.Y, sliceCornerWidth, size.Y)));
+				new Rectangle(src.Right - sourceWidth, src.Y, sourceWidth, sourceHeight),
+				new Rectangle((int)(pos.X + size.X - adjustedCornerSize), pos.Y, (int)adjustedCornerSize, size.Y)));
 		}
 		else // Vertical
 		{
+			int sourceWidth = src.Width;
+			int sourceHeight = src.Height / 3;
+
+			int sliceCornerHeight = SliceCornerSize == 0 ? sourceHeight : SliceCornerSize;
+
+			// Calculate adjusted corner sizes based on available space
+			int totalHeight = size.Y;
+			int adjustedCornerSize = 0;
+			bool showCenter = true;
+
+			if (totalHeight <= sliceCornerHeight * 2)
+			{
+				// If total size is too small, scale corner pieces proportionally
+				adjustedCornerSize = totalHeight / 2;
+				showCenter = false;
+			}
+			else
+			{
+				adjustedCornerSize = sliceCornerHeight;
+			}
+
 			// Top
 			SetSlice(SliceRegionTypes.LeftOrTop, new SliceRegion(
-				new Rectangle(src.X, src.Y, src.Width, sliceCornerHeight),
-				new Rectangle(pos.X, pos.Y, size.X, sliceCornerHeight)));
+				new Rectangle(src.X, src.Y, sourceWidth, sourceHeight),
+				new Rectangle(pos.X, pos.Y, size.X, adjustedCornerSize)));
 
 			// Center (Stretchable)
-			SetSlice(SliceRegionTypes.Center, new SliceRegion(
-				new Rectangle(src.X, src.Y + sliceCornerHeight, src.Width, src.Height - 2 * sliceCornerHeight),
-				new Rectangle(pos.X, pos.Y + sliceCornerHeight, size.X, size.Y - 2 * sliceCornerHeight)));
+			if (showCenter)
+			{
+				int centerHeight = size.Y - 2 * adjustedCornerSize;
+				SetSlice(SliceRegionTypes.Center, new SliceRegion(
+					new Rectangle(src.X, src.Y + sourceHeight, sourceWidth, sourceHeight),
+					new Rectangle(pos.X, pos.Y + adjustedCornerSize, size.X, centerHeight)));
+			}
+			else
+			{
+				// Hide center by setting zero height
+				SetSlice(SliceRegionTypes.Center, new SliceRegion(
+					new Rectangle(src.X, src.Y + sourceHeight, sourceWidth, sourceHeight),
+					new Rectangle(pos.X, pos.Y + adjustedCornerSize, size.X, 0)));
+			}
 
 			// Bottom
 			SetSlice(SliceRegionTypes.RightOrBottom, new SliceRegion(
-				new Rectangle(src.X, src.Bottom - sliceCornerHeight, src.Width, sliceCornerHeight),
-				new Rectangle(pos.X, pos.Y + size.Y - sliceCornerHeight, size.X, sliceCornerHeight)));
+				new Rectangle(src.X, src.Bottom - sourceHeight, sourceWidth, sourceHeight),
+				new Rectangle(pos.X, pos.Y + size.Y - adjustedCornerSize, size.X, adjustedCornerSize)));
 		}
 	}
 
@@ -103,12 +158,16 @@ public class ThreeSlice : Skin
 
 	public override void Draw()
 	{
-		Draw(Texture, GuiParent.Style.Background);
+		Draw(Texture, Style.Foreground);
 	}
 
 	internal override void Draw(Texture2D tx, Color clr)
 	{
 		if (Texture == null) return;
+
+		// Skip drawing completely if size is zero
+		if (Size.X <= 0 || Size.Y <= 0)
+			return;
 
 		// Draw Left/Top
 		DrawRegion(0, tx, clr);
@@ -130,6 +189,11 @@ public class ThreeSlice : Skin
 	private void DrawRegion(int regionType, Texture2D tx, Color clr)
 	{
 		var regionData = _regions[regionType];
+
+		// Skip drawing regions with zero width or height
+		if (regionData.Destination.Width <= 0 || regionData.Destination.Height <= 0)
+			return;
+
 		Graphics.SpriteBatch.Draw(tx, regionData.Destination, regionData.Source, clr);
 	}
 

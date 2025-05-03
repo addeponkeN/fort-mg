@@ -65,7 +65,7 @@ public class Container : GuiComponent
 		return new Vector2(Position.X, Position.Y);
 	}
 
-	protected virtual void UpdateItemTransforms()
+	public virtual void UpdateItemTransforms()
 	{
 		float sizeY = 0;
 		for (int i = 0; i < Items.Count; i++)
@@ -123,6 +123,15 @@ public class Container : GuiComponent
 		UpdateSize();
 	}
 
+	public virtual void InsertItem(int index, GuiComponent item)
+	{
+		item.Canvas = Canvas;
+		item.Parent = this;
+		Items.Insert(index, item);
+		UpdateItemTransforms();
+		UpdateSize();
+	}
+
 	public virtual void RemoveItem(GuiComponent item)
 	{
 		Items.Remove(item);
@@ -154,6 +163,7 @@ public class Container : GuiComponent
 		for (int i = 0; i < Items.Count; i++)
 		{
 			var item = Items[i];
+
 			if (!item.IsVisible || !item.IsEnabled)
 				continue;
 
@@ -298,7 +308,7 @@ public class StackPanel : Container
 		}
 	}
 
-	protected override void UpdateItemTransforms()
+	public override void UpdateItemTransforms()
 	{
 		if (Items == null || Items.Count == 0) return;
 

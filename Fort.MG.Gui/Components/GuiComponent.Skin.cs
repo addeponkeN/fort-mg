@@ -38,6 +38,7 @@ public class Skin : Image
 
 	public override void Update(GameTime gt)
 	{
+		base.UpdateComponents(gt);
 		if (!Started)
 		{
 			Start();

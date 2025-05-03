@@ -33,16 +33,22 @@ public struct InputHandlerArgs(Vector2 mousePos)
 	public Vector2 MousePosition { get; private set; } = mousePos;
 }
 
+public struct TriggerArgs
+{
+	public GuiComponent Component { get; set; }
+}
+
 public partial class GuiComponent
 {
 	public event Action<MouseClickEvent> OnMouseEvent;
 	public event Action OnMouseEnter;
 	public event Action OnMouseLeave;
 
-	public event Action OnTriggerEvent;
+	public event Action<TriggerArgs> OnTriggerEvent;
 
 	public bool IsHovered;
 	public bool IsPressed;
+	public bool IsReleased;
 
 	private void HandleHover(InputHandlerArgs args)
 	{
@@ -77,6 +83,8 @@ public partial class GuiComponent
 
 	private void HandleLeftClick(InputHandlerArgs args)
 	{
+		IsReleased = false;
+
 		if (IsHovered)
 		{
 			if (Input.LeftClick)
@@ -91,6 +99,7 @@ public partial class GuiComponent
 		{
 			if (Input.LeftRelease)
 			{
+				IsReleased = true;
 				IsPressed = false;
 				if (IsHovered)
 				{

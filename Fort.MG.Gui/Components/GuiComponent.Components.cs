@@ -4,14 +4,16 @@ public partial class GuiComponent
 {
 	public List<ComponentBase> Components { get; } = new();
 
-	public void AddComponent(ComponentBase comp)
+	public T AddComponent<T>(T comp) where T : ComponentBase
 	{
 		if (comp == null)
-			return;
+			return null;
 
 		Components.Add(comp);
 		comp.Parent = this;
 		comp.Canvas = Canvas;
+
+		return comp;
 	}
 
 	public T GetComponent<T>() where T : ComponentBase => Components.FirstOrDefault(x => x is T) as T;

@@ -36,16 +36,21 @@ public class ComponentBase
 
 	public virtual void UpdateInput(InputHandlerArgs args)
 	{
+		OnFirstFrame();
 	}
 
 	public virtual void Update(GameTime gt)
+	{
+		OnFirstFrame();
+	}
+
+	internal void OnFirstFrame()
 	{
 		if (!Started)
 		{
 			Start();
 			Started = true;
 		}
-
 	}
 
 	/// <summary>	
@@ -153,12 +158,19 @@ public partial class GuiComponent : ComponentBase
 
 		foreach (var skin in Skins)
 		{
-			skin.Update(gt);
+			if (skin.IsEnabled)
+				skin.Update(gt);
 		}
 
+		UpdateComponents(gt);
+	}
+
+	internal void UpdateComponents(GameTime gt)
+	{
 		foreach (var component in Components)
 		{
-			component.Update(gt);
+			if (component.IsEnabled)
+				component.Update(gt);
 		}
 	}
 
@@ -254,6 +266,6 @@ public partial class GuiComponent : ComponentBase
 
 	public virtual void OnTrigger()
 	{
-		OnTriggerEvent?.Invoke();
+		OnTriggerEvent?.Invoke(new TriggerArgs { Component = this });
 	}
 }

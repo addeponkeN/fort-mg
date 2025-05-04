@@ -18,7 +18,6 @@ public class Window : StackPanel
 			AddSkin(Skin.DefaultSkinBackground1);
 	}
 
-
 	public override void Update(GameTime gt)
 	{
 		base.Update(gt);
@@ -27,7 +26,6 @@ public class Window : StackPanel
 	public override void Draw()
 	{
 		var sb = Graphics.SpriteBatch;
-
 		var tf = Canvas.TransformMatrix;
 
 		sb.Begin(samplerState: Canvas.SamplerState, transformMatrix: tf);

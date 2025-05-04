@@ -11,7 +11,7 @@ public partial class GuiComponent
 
 		Components.Add(comp);
 		comp.Parent = this;
-		comp.Canvas = Canvas;
+		comp.Canvas = (this is Canvas c) ? c : Canvas;
 
 		return comp;
 	}

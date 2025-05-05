@@ -27,7 +27,7 @@ public class ListBox : Container, IDisposable
 			? Items.Count > 0 && _totalHeight > Size.Y
 			: Items.Count > 0 && _totalWidth > Size.X;
 
-	public float ScrollRate { get; set; } = 45f;
+	public float ScrollRate { get; set; } = 100f;
 
 	public int SelectedIndex
 	{

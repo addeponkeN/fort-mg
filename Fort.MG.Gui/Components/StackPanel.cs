@@ -155,6 +155,7 @@ public class Container : GuiComponent
 		}
 
 		Size = new Vector2(maxWidth + Padding.X * 2, totalHeight);
+		IsDirty = true;
 	}
 
 	public override void UpdateInput(InputHandlerArgs args)

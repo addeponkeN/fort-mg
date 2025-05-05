@@ -90,6 +90,6 @@ public class TextRenderer
 
 	public Vector2 GetSize()
 	{
-		return Font.MeasureString(Text);
+		return new Vector2(Font.MeasureString(Text).X, Font.FontSize - 4);
 	}
 }

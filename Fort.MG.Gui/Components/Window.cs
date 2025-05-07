@@ -42,7 +42,7 @@ public class Window : StackPanel
 			base.DrawDebug();
 		sb.End();
 
-		sb.Begin(blendState: BlendState.AlphaBlend, samplerState: SamplerState.AnisotropicClamp, transformMatrix: tf);
+		sb.Begin(blendState: BlendState.NonPremultiplied, samplerState: SamplerState.AnisotropicClamp, transformMatrix: tf);
 		base.DrawText();
 		sb.End();
 	}

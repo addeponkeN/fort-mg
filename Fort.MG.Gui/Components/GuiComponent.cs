@@ -33,6 +33,10 @@ public class ComponentBase
 	{
 		Started = true;
 	}
+	
+	public virtual void OnAdded()
+	{
+	}
 
 	public virtual void UpdateInput(InputHandlerArgs args)
 	{
@@ -256,7 +260,10 @@ public partial class GuiComponent : ComponentBase
 		if (!IsVisible) return;
 
 		base.DrawDebug();
-		Bounds.DrawLined(Color.MonoGameOrange);
+		var clr = this is Container
+			? Color.DodgerBlue
+			: Color.MonoGameOrange;
+		Bounds.DrawLined(clr);
 	}
 
 	public virtual void OnFocus(bool isFocus)

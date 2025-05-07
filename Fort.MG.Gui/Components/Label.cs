@@ -6,90 +6,123 @@ namespace Fort.MG.Gui.Components;
 
 public class Label : GuiComponent
 {
-	private readonly TextRenderer _textRenderer = new();
+    private readonly TextRenderer _textRenderer = new();
 
-	public DynamicSpriteFont Font
-	{
-		get => _textRenderer.Font;
-		set
-		{
-			_textRenderer.Font = value;
-			IsDirty = true;
-			UpdateSize();
-		}
-	}
+    public DynamicSpriteFont Font
+    {
+        get => _textRenderer.Font;
+        set
+        {
+            _textRenderer.Font = value;
+            IsDirty = true;
+            UpdateSize();
+        }
+    }
 
-	public string Text
-	{
-		get => _textRenderer.Text;
-		set
-		{
-			if (_textRenderer.Text.Equals(value))
-				return;
-			_textRenderer.Text = value;
-			UpdateSize();
-			IsDirty = true;
-		}
-	}
+    public string Text
+    {
+        get => _textRenderer.Text;
+        set
+        {
+            if (_textRenderer.Text.Equals(value))
+                return;
+            _textRenderer.Text = value;
+            UpdateSize();
+            IsDirty = true;
+        }
+    }
 
-	public override Vector2 Position
-	{
-		get => _textRenderer.Position;
-		set
-		{
-			base.Position = value;
-			IsDirty = true;
-			UpdateTransforms();
-			_textRenderer.Position = base.Position + LocalPosition;
-		}
-	}
+    public override Vector2 Position
+    {
+        get => _textRenderer.Position;
+        set
+        {
+            base.Position = value;
+            IsDirty = true;
+            UpdateTransforms();
+            _textRenderer.Position = base.Position + LocalPosition;
+        }
+    }
 
-	public override Color Foreground
-	{
-		get => _textRenderer.Color;
-		set => _textRenderer.Color = value;
-	}
+    public bool TextShadow
+    {
+        get => _textRenderer.Shadow;
+        set => _textRenderer.Shadow = value;
+    }
 
-	private void UpdateSize()
-	{
-		Size = _textRenderer.Font.MeasureString(_textRenderer.Text);
-		UpdateTransforms();
-	}
+    public override Color Foreground
+    {
+        get => base.Foreground * Style.Opacity;
+        set => base.Foreground = value;
+    }
 
-	public override void DrawText()
-	{
-		base.DrawText();
-		_textRenderer.DrawText();
-	}
+    private void UpdateSize()
+    {
+        Size = _textRenderer.Font.MeasureString(_textRenderer.Text);
+        UpdateTransforms();
+    }
 
-	public override void DrawDebug()
-	{
-		base.DrawDebug();
-	}
+    public override void DrawText()
+    {
+        base.DrawText();
+        _textRenderer.Color = Foreground;
+        _textRenderer.DrawText();
+    }
+
+    public override void DrawDebug()
+    {
+        base.DrawDebug();
+    }
 }
 
 public class TextRenderer
 {
-	public DynamicSpriteFont Font = GuiContent.GetDefaultFont();
-	public Vector2 Position;
-	public Color Color = Color.White;
-	public string Text = "";
+    public DynamicSpriteFont Font = GuiContent.GetDefaultFont();
+    private Vector2 _position;
+    private Vector2 _drawPosition;
 
-	public void DrawText() => DrawText(Graphics.SpriteBatch);
+    public Vector2 Position
+    {
+        get => _position;
+        set
+        {
+            _position = value;
+            _drawPosition = _position; // + new Vector2(0, -2);
+        }
+    }
 
-	public void DrawText(SpriteBatch sb)
-	{
-		Font.DrawText(sb, Text, Position, Color, 0f, Vector2.Zero, Vector2.One, 0f, 0f, 0f, TextStyle.None, FontSystemEffect.None, 0);
-	}
+    public Color Color = Color.White;
+    public string Text = "";
+    public bool Shadow = false;
 
-	public static void Draw(string text, Vector2 pos)
-	{
-		var font = GuiContent.GetDefaultFont(16);
-		font.DrawText(Graphics.SpriteBatch, text, pos, Color.White);
-	}
+    public void DrawText() => DrawText(Graphics.SpriteBatch);
 
-	public Vector2 GetSize()
-	{
-		return new Vector2(Font.MeasureString(Text).X, Font.FontSize - 4);
-	}
+    public void DrawText(SpriteBatch sb)
+    {
+        if (Shadow)
+        {
+            DrawTextShadow(sb);
+        }
+
+        Font.DrawText(sb, Text, _drawPosition, Color, 0f, Vector2.Zero, Vector2.One, 0f, 0f, 0f, TextStyle.None,
+            FontSystemEffect.None, 0);
+    }
+
+    public void DrawTextShadow(SpriteBatch sb)
+    {
+        Font.DrawText(sb, Text, _drawPosition + Vector2.One, Color.Black * (Color.A / 255f), 0f, Vector2.Zero, Vector2.One, 0f,
+            0f, 0f,
+            TextStyle.None, FontSystemEffect.None, 0);
+    }
+
+    public static void Draw(string text, Vector2 pos)
+    {
+        var font = GuiContent.GetDefaultFont(16);
+        font.DrawText(Graphics.SpriteBatch, text, pos, Color.White);
+    }
+
+    public Vector2 GetSize()
+    {
+        return new Vector2(Font.MeasureString(Text).X + 1, Font.FontSize - 6);
+    }
 }

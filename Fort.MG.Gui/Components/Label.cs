@@ -65,6 +65,7 @@ public class Label : GuiComponent
     public override void DrawText()
     {
         base.DrawText();
+        _textRenderer.Transform = Canvas?.TransformMatrix ?? Canvas.DefaultScaleTransform;
         _textRenderer.Color = Foreground;
         _textRenderer.DrawText();
     }
@@ -87,13 +88,31 @@ public class TextRenderer
         set
         {
             _position = value;
-            _drawPosition = _position; // + new Vector2(0, -2);
+            _drawPosition = Vector2.Transform(_position, Transform);
         }
     }
 
+    private Vector2 _scale = Vector2.One;
     public Color Color = Color.White;
     public string Text = "";
     public bool Shadow = false;
+    private Matrix _transform = Matrix.Identity;
+
+    internal Matrix Transform
+    {
+        get => _transform;
+        set
+        {
+            if (value.Equals(_transform))
+                return;
+
+            _transform = value;
+            _scale = _transform.Decompose(out var scale3, out _, out _)
+                ? new Vector2(scale3.X, scale3.Y)
+                : Vector2.One;
+            _drawPosition = Vector2.Transform(_position, Transform);
+        }
+    }
 
     public void DrawText() => DrawText(Graphics.SpriteBatch);
 
@@ -104,13 +123,16 @@ public class TextRenderer
             DrawTextShadow(sb);
         }
 
-        Font.DrawText(sb, Text, _drawPosition, Color, 0f, Vector2.Zero, Vector2.One, 0f, 0f, 0f, TextStyle.None,
+
+        Font.DrawText(sb, Text, _drawPosition, Color, 0f, Vector2.Zero, _scale, 0f, 0f, 0f, TextStyle.None,
             FontSystemEffect.None, 0);
     }
 
     public void DrawTextShadow(SpriteBatch sb)
     {
-        Font.DrawText(sb, Text, _drawPosition + Vector2.One, Color.Black * (Color.A / 255f), 0f, Vector2.Zero, Vector2.One, 0f,
+        var clr = Color.Black * (Color.A / 255f);
+        Font.DrawText(sb, Text, _drawPosition + Vector2.One, clr, 0f, Vector2.Zero,
+            _scale, 0f,
             0f, 0f,
             TextStyle.None, FontSystemEffect.None, 0);
     }

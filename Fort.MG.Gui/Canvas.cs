@@ -7,6 +7,8 @@ namespace Fort.MG.Gui;
 
 public class Canvas : Container
 {
+	public static Matrix DefaultScaleTransform => Matrix.CreateScale(Screen.Width / 1280f, Screen.Height / 720f, 1f);
+	
 	private readonly FocusManager _focusManager = new();
 	private RenderTarget2D _target;
 

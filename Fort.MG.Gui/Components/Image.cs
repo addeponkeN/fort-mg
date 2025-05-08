@@ -13,8 +13,8 @@ public class Image : GuiComponent
 		if (!IsVisible) return;
 		if (Texture == null) return;
 
-		Draw(Texture, Style.Foreground);
 		base.DrawSkins();
+		Draw(Texture, Style.Foreground);
 		base.DrawComponents();
 	}
 

@@ -43,9 +43,7 @@ public class Window : StackPanel
         sb.End();
 
 
-        sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp,
-            DepthStencilState.None,
-            RasterizerState.CullNone, null, null);
+        Graphics.BeginText();
         base.DrawText();
         sb.End();
     }

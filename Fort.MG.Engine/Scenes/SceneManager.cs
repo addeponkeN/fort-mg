@@ -17,8 +17,9 @@ public class SceneManager : EngineSystem, IRenderable
 
 	public Scene Scene { get; private set; }
 
-	public SceneManager()
+	public SceneManager(EngineSystemManager systemManager)
 	{
+		base.SystemManager = systemManager;
 		_queuedScenes = new Queue<Scene>();
 		_popupScenes = new List<Scene>();
 	}

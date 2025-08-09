@@ -4,16 +4,46 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Fort.MG.Gui;
 
-public static class GuiContent
+internal static class GuiContent
 {
+	private static Texture2D _pixelSource;
+	private static FontSystem _defaultFontSystem;
+	private static Texture2D _pixel;
+
 	internal static bool IsLoaded { get; private set; }
 
 	private static string _contentRoot;
 	private static Dictionary<string, FontSystem> _fonts = new();
 
-	internal static FontSystem DefaultFontSystem { get; private set; }
-	internal static Texture2D Pixel { get; private set; }
-	internal static Texture2D PixelSource { get; private set; }
+	internal static FontSystem DefaultFontSystem
+	{
+		get
+		{
+			Load();
+			return _defaultFontSystem;
+		}
+		private set => _defaultFontSystem = value;
+	}
+
+	internal static Texture2D Pixel
+	{
+		get
+		{
+			Load();
+			return _pixel;
+		}
+		private set => _pixel = value;
+	}
+
+	internal static Texture2D PixelSource
+	{
+		get
+		{
+			Load();
+			return _pixelSource;
+		}
+		private set => _pixelSource = value;
+	}
 
 	internal static Dictionary<Texture2D, Texture2D> _whites = new();
 
@@ -43,7 +73,7 @@ public static class GuiContent
 	}
 	internal static DynamicSpriteFont GetDefaultFont(float size = 16f) => DefaultFontSystem.GetFont(size);
 
-	public static Texture2D GetWhiteTexture(Texture2D tx)
+	internal static Texture2D GetWhiteTexture(Texture2D tx)
 	{
 		if (tx == null) return null;
 		if (tx == Pixel) return Pixel;
@@ -64,7 +94,7 @@ public static class GuiContent
 		for (int i = 0; i < txData.Length; i++)
 		{
 			var c = txData[i];
-			if (c.A == 0) 
+			if (c.A == 0)
 				continue;
 			if (c is { R: < 1, G: < 1, B: < 1 })
 				continue;

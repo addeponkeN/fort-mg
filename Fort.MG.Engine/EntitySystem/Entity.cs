@@ -8,7 +8,7 @@ public class BaseObject
 	internal bool InitedFirstFrame;
 	internal bool Inited;
 
-	public bool Enabled = true;
+	public bool Enabled { get; set; } = true;
 	public bool IsDestroyed;
 
 	/// <summary>

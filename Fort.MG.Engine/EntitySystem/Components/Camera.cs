@@ -22,19 +22,19 @@ public class Camera : Component
 	/// </summary>
 	public Matrix UpdateMatrix;
 
-	public Rectangle Bounds
-	{
-		get
-		{
-			return new Rectangle(
-				(int)(Transform.Position.X - Viewport.Width / Zoom / 2f),
-				(int)(Transform.Position.Y - Viewport.Height / Zoom / 2f),
-				(int)(Viewport.Width / Zoom),
-				(int)(Viewport.Height / Zoom));
-		}
-	}
+	public Rectangle Bounds => new(
+			(int)(Transform.Position.X - Viewport.Width / Zoom / 2f),
+			(int)(Transform.Position.Y - Viewport.Height / Zoom / 2f),
+			(int)(Viewport.Width / Zoom),
+			(int)(Viewport.Height / Zoom));
 
-	Vector2 _zoomOffset;
+	public Rectangle BoundsExcldueZoom => new(
+		(int)(Transform.Position.X - Viewport.Width / 2f),
+		(int)(Transform.Position.Y - Viewport.Height / 2f),
+		(int)Viewport.Width,
+		(int)Viewport.Height);
+
+	private Vector2 _zoomOffset;
 
 	public Camera()
 	{

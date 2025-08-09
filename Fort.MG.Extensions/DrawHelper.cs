@@ -9,20 +9,6 @@ public static class DrawHelper
 	internal static Texture2D Pixel;
 	internal static Rectangle PixelSource;
 
-	public static void Initialize(SpriteBatch sb)
-	{
-		Pixel = new Texture2D(sb.GraphicsDevice, 1, 1);
-		Pixel.SetData(new[] { Color.White });
-		Initialize(sb, Pixel, new Rectangle(1, 1, 1, 1));
-	}
-
-	public static void Initialize(SpriteBatch sb, Texture2D pixel, Rectangle pixelSource)
-	{
-		Sb = sb;
-		Pixel = pixel;
-		PixelSource = pixelSource;
-	}
-
 	/// <summary>
 	/// Draws a straight line between two points.
 	/// </summary>

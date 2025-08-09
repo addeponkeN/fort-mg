@@ -6,17 +6,20 @@ public interface IRenderable
 {
 	void Draw();
 	void Render();
+	bool Enabled { get; }
 }
 
 public interface IDrawableGui
 {
 	void DrawGui();
+	bool Enabled { get; }
 }
 
 public interface IDrawableControl
 {
 	void OnDrawBegin();
 	void OnDrawEnd();
+	bool Enabled { get; }
 }
 
 public class BasicEntityCollection : EntityCollection

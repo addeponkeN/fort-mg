@@ -8,9 +8,9 @@ public class FortGame : FortCoreGame
 {
     public SceneManager SceneManager { get; private set; }
 
-    public FortGame()
+    public FortGame(GameConfig? config = null) : base(config)
     {
-        SceneManager = new SceneManager();
+	    SceneManager = FortEngine.CreateSceneManager();
         FortEngine.Start(this);
     }
 
@@ -33,7 +33,7 @@ public class FortGame : FortCoreGame
 
     protected override void Update(GameTime gt)
     {
-        FortEngine.Gt = gt;
+        FortEngine.Time = gt;
         base.Update(gt);
     }
 

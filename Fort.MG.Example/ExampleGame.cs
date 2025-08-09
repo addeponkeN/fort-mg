@@ -66,8 +66,8 @@ public class ExampleGame : FortGame
 		int btCounter = 0;
 		var btCount = new Button { Text = "Button1", Size = new Vector2(200, 48) };
 		btCount.Style.Background = Color.White * 1f;
-		btCount.AddSkin(new ThreeSlice { Texture = _threeSlice, Source = _threeSlice, BorderSize = 32 });
-		btCount.OnTriggerEvent += () => { btCount.Text = $"Button ({++btCounter})"; };
+		btCount.AddSkin(new ThreeSlice { Texture = _threeSlice, Source = _threeSlice, SliceCornerSize = 32 });
+		btCount.OnTriggerEvent += (_) => { btCount.Text = $"Button ({++btCounter})"; };
 		_debugWindow.AddItem(btCount);
 
 		_canvas.AddItem(_debugWindow);
@@ -99,7 +99,7 @@ public class ExampleGame : FortGame
 			Text = "BAUTTON",
 			Size = new Vector2(256, 64),
 		};
-		bt1.AddSkin(new ThreeSlice { Texture = _threeSlice, Source = _threeSlice, BorderSize = 32 });
+		bt1.AddSkin(new ThreeSlice { Texture = _threeSlice, Source = _threeSlice, SliceCornerSize = 32 });
 		win1.AddItem(bt1);
 
 		var spSlider = new StackPanel { ItemOrientation = Orientation.Horizontal };

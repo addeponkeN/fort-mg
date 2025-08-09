@@ -60,12 +60,11 @@ public class ListBox : Container, IDisposable
     {
         base.Size = new Vector2(160, 250);
         AutoSize = false;
-        base.AddSkin(new Skin());
 
-        FortCore.WindowSizeChanged += FortCoreOnWindowSizeChanged;
+        Screen.OnScreenSizeChanged += ScreenOnOnScreenSizeChanged;
     }
 
-    private void FortCoreOnWindowSizeChanged(object? sender, EventArgs e)
+    private void ScreenOnOnScreenSizeChanged()
     {
         UpdateTransforms();
     }
@@ -81,6 +80,12 @@ public class ListBox : Container, IDisposable
     protected override void UpdateTransforms()
     {
         base.UpdateTransforms();
+
+        UpdateTransformedBounds();
+    }
+
+    private void UpdateTransformedBounds()
+    {
         _transformedBounds = Bounds;
         if (Canvas != null)
         {
@@ -101,7 +106,6 @@ public class ListBox : Container, IDisposable
     public override void Update(GameTime gt)
     {
         base.Update(gt);
-
         UpdateDirtyItems();
 
         if (IsHovered)
@@ -331,7 +335,12 @@ public class ListBox : Container, IDisposable
 
         sb.End();
 
-        Graphics.BeginText();
+        sb.Begin(SpriteSortMode.Deferred,
+            BlendState.NonPremultiplied,
+            SamplerState.AnisotropicClamp,
+            DepthStencilState.None,
+            gd.RasterizerState,
+            null, null);
 
         for (var i = 0; i < _visibleItems.Count; i++)
         {
@@ -402,6 +411,6 @@ public class ListBox : Container, IDisposable
     public void Dispose()
     {
         _rasterizer.Dispose();
-        FortCore.WindowSizeChanged -= FortCoreOnWindowSizeChanged;
+        Screen.OnScreenSizeChanged -= ScreenOnOnScreenSizeChanged;
     }
 }

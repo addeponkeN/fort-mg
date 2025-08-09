@@ -33,6 +33,6 @@ public static class Time
 
 public class DefaultGameTime : IGameTime
 {
-    public float Delta => FortEngine.Gt.Delta();
-    public float TotalGameTime => (float)FortEngine.Gt.TotalGameTime.TotalSeconds;
+    public float Delta => FortEngine.Time.Delta();
+    public float TotalGameTime => (float)FortEngine.Time.TotalGameTime.TotalSeconds;
 }

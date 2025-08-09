@@ -94,10 +94,16 @@ public class Button : GuiComponent
     {
         base.Draw();
     }
-
+    
     public override void DrawText()
     {
         base.DrawText();
         Title.DrawText();
+    }
+
+    public override void DrawDebug()
+    {
+        base.DrawDebug();
+        Title.DrawDebug();
     }
 }

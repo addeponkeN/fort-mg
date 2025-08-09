@@ -16,7 +16,7 @@ public enum SceneStates
 	Exited,
 }
 
-public partial class Scene
+public class Scene
 {
 	private RenderTarget2D _target;
 	private FortTimer _enterTime;
@@ -25,14 +25,15 @@ public partial class Scene
 	internal SceneStates State;
 
 	internal SceneManager SceneManager;
-	public EngineSystemManager SystemManager;
-	public EntityManager EntityManagerSystem;
+	internal EngineSystemManager SceneSystemManager;
 	internal CanvasSystem CanvasSystem;
+
+	public EntityManager EntityManagerSystem;
 
 	public Camera Cam;
 
-	public Vector2 MousePosition;
-	public Vector2 MousePositionWorld;
+	public Vector2 MousePosition { get; private set; }
+	public Vector2 MousePositionWorld { get; private set; }
 
 	public SpriteSortMode SortMode;
 	public BlendState BlendState;
@@ -71,9 +72,9 @@ public partial class Scene
 	public virtual void Init()
 	{
 		IsInited = true;
-		SystemManager = new EngineSystemManager();
-		SystemManager.Add(EntityManagerSystem = new EntityManager(new BasicEntityCollection()));
-		SystemManager.Add(CanvasSystem = new CanvasSystem());
+		SceneSystemManager = new EngineSystemManager();
+		SceneSystemManager.Add(EntityManagerSystem = new EntityManager(new BasicEntityCollection()));
+		SceneSystemManager.Add(CanvasSystem = new CanvasSystem());
 
 		Cam = Entity.Create<Camera>();
 		EntityManagerSystem.Add(Cam.Entity);
@@ -127,7 +128,7 @@ public partial class Scene
 			Start();
 			InitedFirstFrame = true;
 		}
-		SystemManager.Update(t);
+		SceneSystemManager.Update(t);
 		switch (State)
 		{
 			case SceneStates.Active:
@@ -145,7 +146,7 @@ public partial class Scene
 
 	public virtual void Render()
 	{
-		SystemManager.Render();
+		SceneSystemManager.Render();
 	}
 
 	public virtual void Draw()
@@ -156,7 +157,7 @@ public partial class Scene
 		gd.Clear(new Color(25, 25, 25));
 
 		sb.Begin(SortMode, BlendState, SamplerState, Stencil, Rasterizer, Effect, Cam.DrawMatrix);
-		SystemManager.Draw();
+		SceneSystemManager.Draw();
 		sb.End();
 
 		float lerp = State == SceneStates.Active ? 0f :
@@ -179,7 +180,7 @@ public partial class Scene
 		sb.Draw(_target, Screen.Bounds, Color.White);
 		sb.End();
 
-		SystemManager.DrawGui();
+		SceneSystemManager.DrawGui();
 	}
 
 	public virtual void Exit()

@@ -10,9 +10,9 @@ namespace Fort.MG;
 
 public static class FortEngine
 {
-	public static FortGame Game;
-	public static GameTime Time;
-	public static SceneManager SceneManager;
+	public static FortGame Game { get; private set; }
+	public static GameTime Time { get; internal set; }
+	public static SceneManager SceneManager { get; private set; }
 
 	/// <summary>
 	/// get current scene
@@ -26,7 +26,7 @@ public static class FortEngine
 
 	internal static EngineSystemManager SystemManager;
 
-	public static AssetManager AssetManager;
+	public static AssetManager Assets { get; private set; }
 
 	private static bool _startedExiting;
 
@@ -55,7 +55,7 @@ public static class FortEngine
 
 		SystemManager.Register<TimerSystem>();
 		SystemManager.Register<DebugPrinter>();
-		AssetManager = new AssetManager();
+		Assets = new AssetManager();
 	}
 
 	public static void RegisterSystem<T>() where T : EngineSystem, new()
@@ -73,7 +73,6 @@ public static class FortEngine
 	internal static void FirstFrameInit(GameTime gameTime)
 	{
 		Time = gameTime;
-		// Time = new Time(gt);
 	}
 
 	internal static void Update()

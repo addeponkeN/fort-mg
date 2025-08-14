@@ -1,8 +1,5 @@
-﻿using System;
-using Microsoft.Xna.Framework.Content.Pipeline;
+﻿using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
-using System.Collections.Generic;
-using System.IO;
 using System.Text.Json;
 
 namespace Fort.MG.PipelineExtension;
@@ -21,8 +18,7 @@ public class SpriteAtlasImporter : ContentImporter<Atlas>
 
 		EnsureJson(json);
 
-		var data = JsonSerializer.Deserialize<Atlas>(json);
-		var atlas = data;
+		var atlas = JsonSerializer.Deserialize<Atlas>(json);
 
 		if (!Directory.Exists(atlas.sourceFolder))
 			throw new DirectoryNotFoundException(atlas.sourceFolder);
@@ -31,19 +27,28 @@ public class SpriteAtlasImporter : ContentImporter<Atlas>
 
 		var texImporter = new TextureImporter();
 		var textures = new List<TextureContent>(files.Length);
+
 		foreach (var f in files)
 		{
 			context.AddDependency(f);
 			var texture = texImporter.Import(f, context);
+
+			if (texture == null)
+				throw new InvalidContentException($"Failed to import texture {f}");
+
+			if (texture.Faces.Count == 0 || texture.Faces[0].Count == 0)
+				throw new InvalidContentException($"Texture {f} has no valid bitmap data");
+
 			texture.Name = Path.GetFileNameWithoutExtension(f);
 			textures.Add(texture);
 		}
 
+		atlas.name = string.IsNullOrEmpty(atlas.name) ? Path.GetFileNameWithoutExtension(filename) : atlas.name;
 		atlas.textures = textures;
 
 		Console.WriteLine($"Found {textures.Count} images in {atlas.sourceFolder}");
 
-		return data;
+		return atlas;
 	}
 
 	private void EnsureJson(string json)

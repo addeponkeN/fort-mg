@@ -168,8 +168,8 @@ public class Scene
 		if (State != SceneStates.Active)
 		{
 			sb.Begin();
-			sb.Draw(FortEngine.AssetManager.Pixel, new Rectangle(0, 0, Cam.Viewport.Width, Cam.Viewport.Height),
-				FortEngine.AssetManager.Pixel, Color.Black * lerp);
+			sb.Draw(FortEngine.Assets.Pixel, new Rectangle(0, 0, Cam.Viewport.Width, Cam.Viewport.Height),
+				FortEngine.Assets.Pixel, Color.Black * lerp);
 			sb.End();
 		}
 

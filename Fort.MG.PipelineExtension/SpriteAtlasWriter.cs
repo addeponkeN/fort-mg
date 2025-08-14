@@ -11,8 +11,11 @@ public class SpriteAtlasWriter : ContentTypeWriter<SpriteAtlasContent>
 {
 	protected override void Write(ContentWriter output, SpriteAtlasContent value)
 	{
+		Console.WriteLine($"Writing texture: {value.Name}");
+
 		// Write the texture
 		output.WriteObject(value.Texture);
+		output.Write(value.Name); // null/empty
 
 		// Write the regions
 		output.Write(value.Regions.Length);

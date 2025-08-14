@@ -1,43 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using FontStashSharp;
+﻿using FontStashSharp;
 using Fort.MG.Assets.Data;
 using Fort.MG.Assets.Storage;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Fort.MG.Assets;
 
-public class AssetManager
+public class AssetManager : IDisposable
 {
-	private Dictionary<Type, IAssetStorage> Storage
-	{
-		get
-		{
-			if (_storage == null)
-			{
-				_storage = new();
-				RegisterBaseStorage();
-			}
-			return _storage;
-		}
-	}
+	private readonly Dictionary<Type, object> _storage = new();
 
-	internal static string FullContentPath;
-	internal static Microsoft.Xna.Framework.Content.ContentManager ContentManager;
+	public static string FullContentPath { get; private set; }
+	public static string ContentRoot { get; private set; }
+	public static ContentManager ContentManager { get; private set; }
 
-	public SpriteRegion Pixel;
-	public DynamicSpriteFont DefaultFont;
-	public FontSystem DefaultFontSystem;
-	private Dictionary<Type, IAssetStorage> _storage;
+	public SpriteRegion Pixel { get; private set; }
+	public DynamicSpriteFont DefaultFont { get; private set; }
+	public FontSystem DefaultFontSystem { get; private set; }
 
 	public AssetManager(AssetConfig? config = null)
 	{
 		ContentManager = FortCore.Game.Content;
-		FullContentPath = Path.Combine($"{Directory.GetCurrentDirectory()}", ContentManager.RootDirectory);
-
+		ContentRoot = ContentManager.RootDirectory;
+		FullContentPath = Path.Combine(Directory.GetCurrentDirectory(), ContentRoot);
+		RegisterBaseStorage();
 		SetConfig(config);
 	}
 
@@ -51,22 +38,25 @@ public class AssetManager
 
 	public void RegisterStorage<T>(BaseStorage<T> storage)
 	{
-		var t = typeof(T);
-		Storage.Add(t, storage);
+		_storage[typeof(T)] = storage;
 	}
 
-	public T GetStorage<T>() where T : IAssetStorage
+	public BaseStorage<T> GetStorage<T>()
 	{
-		return (T)Storage.Values.Where(x => x is T);
+		if (_storage.TryGetValue(typeof(T), out var store))
+			return (BaseStorage<T>)store;
+
+		throw new KeyNotFoundException($"No storage registered for type {typeof(T).Name}");
 	}
 
-	public T GetAsset<T>(string name)
+	public T LoadAsset<T>(string name)
 	{
-		var t = typeof(T);
-		return (T)Storage[t].Get(name);
+		return GetStorage<T>().Load(name);
 	}
 
-	private void SetConfig(AssetConfig cfg)
+	public T GetAsset<T>(string name) => GetStorage<T>().Get(name);
+
+	private void SetConfig(AssetConfig? cfg)
 	{
 		if (cfg == null || cfg.Pixel == null)
 		{
@@ -91,5 +81,13 @@ public class AssetManager
 		}
 
 		DefaultFont = DefaultFontSystem.GetFont(18f);
+	}
+
+	public void Dispose()
+	{
+		foreach (var store in _storage.Values)
+			if (store is IDisposable disposable)
+				disposable.Dispose();
+		_storage.Clear();
 	}
 }

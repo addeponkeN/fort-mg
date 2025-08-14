@@ -46,7 +46,7 @@ public class ParticleEmitter : Entity
     {
         this.E = data;
         D = data.Particle;
-        _spriteRegion = FortEngine.AssetManager.Pixel;
+        _spriteRegion = FortEngine.Assets.Pixel;
     }
 
     private void SpawnParticle()

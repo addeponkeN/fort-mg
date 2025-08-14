@@ -3,9 +3,9 @@ using Microsoft.Xna.Framework;
 
 namespace Fort.MG.Assets.Storage;
 
-public class FontStorage : BaseStorage<FontSystem>
+public class FontStorage() : BaseStorage<FontSystem>("fonts")
 {
-    public override object Load(string name)
+    public override FontSystem Load(string name)
     {
         var f = new FontSystem();
         f.AddFont(TitleContainer.OpenStream(GetFilePath(name)));

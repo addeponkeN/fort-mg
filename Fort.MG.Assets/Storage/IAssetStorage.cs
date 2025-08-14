@@ -1,7 +1,7 @@
 ﻿namespace Fort.MG.Assets.Storage;
 
-public interface IAssetStorage
+public interface IAssetStorage<T>
 {
-    object Load(string name);
-    object Get(string name);
+    T Load(string name);
+    T Get(string name);
 }

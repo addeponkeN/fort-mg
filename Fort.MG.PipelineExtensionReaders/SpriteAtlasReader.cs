@@ -14,6 +14,7 @@ public class SpriteAtlasReader : ContentTypeReader<SpriteAtlas>
 	{
 		// Read the texture
 		var texture = input.ReadObject<Texture2D>();
+		var atlasName = input.ReadString();
 
 		// Read the sprite region metadata
 		int regionCount = input.ReadInt32();
@@ -28,7 +29,7 @@ public class SpriteAtlasReader : ContentTypeReader<SpriteAtlas>
 			int height = input.ReadInt32();
 
 			var frame = new Rectangle(x, y, width, height);
-			regions.Add(new SpriteRegion(name, texture, frame));
+			regions.Add(new SpriteRegion(name, texture, frame) { AtlasName = atlasName });
 		}
 
 		return new SpriteAtlas(texture, regions);

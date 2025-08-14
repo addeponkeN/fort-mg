@@ -6,9 +6,11 @@ namespace Fort.MG.Assets.Data;
 
 public class SpriteRegion
 {
+	public string AtlasName { get; set; }
 	public string Name { get; set; }
 	public Rectangle Frame { get; set; }
 	[JsonIgnore] public Texture2D Texture { get; set; }
+
 	public SpriteRegion(string name, Texture2D texture, Rectangle frame)
 	{
 		Name = name;

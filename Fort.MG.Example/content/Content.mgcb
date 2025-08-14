@@ -13,14 +13,22 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin textures/world.atlas
-/importer:SpriteAtlasImporter
-/processor:SpriteAtlasProcessor
-/processorParam:Padding=4
-/build:textures/world.atlas
+#begin textures/gui/3slice.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyEnabled=false
+/processorParam:GenerateMipmaps=false
+/processorParam:PremultiplyAlpha=true
+/build:textures/gui/3slice.png
 
 #begin textures/gui.atlas
 /importer:SpriteAtlasImporter
 /processor:SpriteAtlasProcessor
 /processorParam:Padding=4
 /build:textures/gui.atlas
+
+#begin textures/world.atlas
+/importer:SpriteAtlasImporter
+/processor:SpriteAtlasProcessor
+/processorParam:Padding=4
+/build:textures/world.atlas

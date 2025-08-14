@@ -6,26 +6,27 @@ namespace Fort.MG.EntitySystem.Components;
 
 public class Sprite : Component
 {
-	public Texture2D Texture;
-    public Rectangle Frame;
-    public Color Color;
-    public float Rotation;
-    public Vector2 Origin;
-    public SpriteEffects SpriteEffect;
+	[Serialize] public SpriteRegion Region;
+    [Serialize] public Color Color;
+    [Serialize] public float Rotation;
+    [Serialize] public Vector2 Origin;
+	[Serialize] public SpriteEffects SpriteEffect;
+
     public float DrawLayer;
+
+    public Texture2D Texture => Region;
+    public Rectangle Frame => Region;
 
     public override void Init()
     {
         base.Init();
-        Texture = FortEngine.AssetManager.Pixel;
-        Frame = FortEngine.AssetManager.Pixel;
+        Region = FortEngine.Assets.Pixel;
         Color = Color.White;
     }
 
     public void SetSprite(SpriteRegion region)
     {
-        Texture = region;
-        Frame = region;
+	    Region = region;
         Transform.Size = Frame.Size.ToVector2();
     }
     

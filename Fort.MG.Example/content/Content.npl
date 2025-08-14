@@ -4,6 +4,17 @@
     "Fort.MG.PipelineExtension.dll"
   ],
   "content": {
+    "grass": {
+      "path": "textures/gui/3slice.png",
+      "action": "build",
+      "importer": "TextureImporter",
+      "processor": "TextureProcessor",
+      "processorParam": {
+        "ColorKeyEnabled": "false",
+        "GenerateMipmaps": "false",
+        "PremultiplyAlpha": "true"
+      }
+    },
     "spriteatlas": {
       "path": "textures/world.atlas",
       "recursive": "false",

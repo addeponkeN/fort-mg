@@ -21,5 +21,4 @@ public class AssetConfig
     {
         this.DefaultFont = defaultFont;
     }
-    
 }

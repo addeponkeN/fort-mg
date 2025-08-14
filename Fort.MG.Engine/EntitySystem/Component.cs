@@ -1,22 +1,18 @@
 ﻿namespace Fort.MG.EntitySystem;
 
-public class Component : BaseObject
+public abstract class Component : BaseObject
 {
 	public int Id { get; set; }
 	public Entity Entity { get; set; }
-	public Transform Transform => Entity.Transform;
 
-	public virtual void OnAdded()
-	{
-	}
+	public Transform Transform => Entity?.Transform;
 
-	public virtual void OnDestroyed()
-	{
-	}
+	public virtual void OnAdded() { }
+	public virtual void OnDestroyed() { }
 
 	public static T Create<T>() where T : Component, new()
 	{
-		var t = new T(); // PoolManager<T>.Spawn();
+		var t = new T();
 		t.Init();
 		return t;
 	}
@@ -30,4 +26,8 @@ public class Component : BaseObject
 	{
 		return Entity.GetComponent<T>();
 	}
+
+	// Serialization methods
+	internal virtual void OnBeforeSerialize() { }
+	internal virtual void OnAfterDeserialize() { }
 }

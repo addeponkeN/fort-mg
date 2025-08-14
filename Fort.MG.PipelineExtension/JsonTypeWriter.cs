@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework.Content.Pipeline;
+﻿using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 
 namespace Fort.MG.PipelineExtension;

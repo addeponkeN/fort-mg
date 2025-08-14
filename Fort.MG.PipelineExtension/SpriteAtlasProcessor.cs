@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
@@ -23,6 +22,8 @@ public class SpriteAtlasProcessor : ContentProcessor<Atlas, SpriteAtlasContent>
 
 	private SpriteAtlasContent Pack(Atlas atlas)
 	{
+		Console.WriteLine("Packing started");
+
 		if (IsAddPixel)
 		{
 			var pixelBitmap = new PixelBitmapContent<Color>(1, 1);
@@ -38,12 +39,22 @@ public class SpriteAtlasProcessor : ContentProcessor<Atlas, SpriteAtlasContent>
 		var rectangles = new RectpackSharp.PackingRectangle[atlas.textures.Count];
 		var regions = new SpriteRegionContent[atlas.textures.Count];
 
+		Console.WriteLine("Setting rectangles");
 		for (int i = 0; i < atlas.textures.Count; i++)
 		{
 			var texture = atlas.textures[i];
+
+			if (texture.Faces.Count == 0 || texture.Faces[0].Count == 0)
+				throw new InvalidContentException(
+					$"Texture {texture.Name} has no faces/bitmaps (import failed)");
+
 			var face = texture.Faces.First();
 			var bitmap = face.First();
+			if (bitmap == null)
+				throw new InvalidContentException($"Texture {texture.Name} has a null bitmap");
+
 			images[i] = bitmap;
+
 			rectangles[i] = new RectpackSharp.PackingRectangle
 			{
 				Id = i,
@@ -52,6 +63,7 @@ public class SpriteAtlasProcessor : ContentProcessor<Atlas, SpriteAtlasContent>
 			};
 		}
 
+		Console.WriteLine("Packing 'RectanglePacker.Pack()'");
 		RectpackSharp.RectanglePacker.Pack(rectangles, out RectpackSharp.PackingRectangle bounds);
 
 		var width = (int)bounds.Width;
@@ -76,6 +88,7 @@ public class SpriteAtlasProcessor : ContentProcessor<Atlas, SpriteAtlasContent>
 		var retTexture = new Texture2DContent();
 		retTexture.Mipmaps.Add(resultImage);
 
+		Console.WriteLine($"Atlas processed: {atlas.name}, {regions.Length} regions");
 		return new SpriteAtlasContent(atlas.name, retTexture, regions);
 	}
 }

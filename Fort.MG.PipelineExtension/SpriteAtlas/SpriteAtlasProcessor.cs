@@ -24,7 +24,7 @@ public class SpriteAtlasProcessor : ContentProcessor<Atlas, SpriteAtlasContent>
 	{
 		Console.WriteLine("Packing started");
 
-		if (IsAddPixel)
+		if (IsAddPixel && atlas.textures.All(x => x.Name != "pixel"))
 		{
 			var pixelBitmap = new PixelBitmapContent<Color>(1, 1);
 			pixelBitmap.SetPixel(0, 0, Color.White);

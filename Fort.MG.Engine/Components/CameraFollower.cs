@@ -1,15 +1,15 @@
-﻿using Fort.MG.Utils;
+﻿using Fort.MG.EntitySystem;
 using Microsoft.Xna.Framework;
 
-namespace Fort.MG.EntitySystem.Components;
+namespace Fort.MG.Components;
 
 public class CameraFollower : Component
 {
 	private Camera _cam;
 
-	public Transform? Target;
-	public float Speed = 10f;
-	public float MinDistance = 1f;
+	[Serialize] public Transform? Target;
+	[Serialize] public float Speed = 10f;
+	[Serialize] public float MinDistance = 1f;
 
 	public override void OnAdded()
 	{

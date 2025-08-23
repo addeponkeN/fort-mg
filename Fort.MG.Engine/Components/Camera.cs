@@ -1,8 +1,8 @@
-﻿using Fort.MG.Utils;
+﻿using Fort.MG.EntitySystem;
 using Fort.MG.VirtualViewports;
 using Microsoft.Xna.Framework;
 
-namespace Fort.MG.EntitySystem.Components;
+namespace Fort.MG.Components;
 
 public class Camera : Component
 {

@@ -7,6 +7,11 @@ public abstract class EngineSystem : BaseObject
 {
     public EngineSystemManager SystemManager { get; internal set; }
 
+    public virtual void PreUpdate(IGameTime gt)
+    {
+
+    }
+
     public virtual void OnSceneChanged(Scene scene)
     {
     }

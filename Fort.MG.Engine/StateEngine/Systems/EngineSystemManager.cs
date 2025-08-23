@@ -54,6 +54,13 @@ public sealed class EngineSystemManager
 			Systems[i].OnSceneChanged(newScene);
 	}
 
+	public void PreUpdate(IGameTime t)
+	{
+		for (int i = 0; i < Systems.Count; i++)
+			if (Systems[i].Enabled)
+				Systems[i].PreUpdate(t);
+	}
+
 	public void Update(IGameTime t)
 	{
 		for (int i = 0; i < Systems.Count; i++)

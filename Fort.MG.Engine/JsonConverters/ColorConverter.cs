@@ -8,10 +8,13 @@ public class ColorConverter : JsonConverter<Color>
 {
 	public override Color Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 	{
-		if (reader.TokenType != JsonTokenType.StartObject)
-			throw new JsonException();
-
 		var strClr = reader.GetString();
+
+		if (string.IsNullOrWhiteSpace(strClr))
+			return Color.Transparent;
+
+		if (!strClr.Contains(','))
+			return new Color(int.Parse(strClr), int.Parse(strClr), int.Parse(strClr), 255);
 
 		var split = strClr.Split(',');
 
@@ -26,6 +29,6 @@ public class ColorConverter : JsonConverter<Color>
 	public override void Write(Utf8JsonWriter writer, Color value, JsonSerializerOptions options)
 	{
 		var strClr = $"{value.R},{value.G},{value.B},{value.A}";
-		writer.WriteString("vec", strClr);
+		writer.WriteStringValue(strClr);
 	}
 }

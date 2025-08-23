@@ -9,7 +9,7 @@ public class SpriteRegionConverter : JsonConverter<SpriteRegion>
 	public override SpriteRegion Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 	{
 		var json = JsonDocument.ParseValue(ref reader).RootElement;
-		var atlasName ="world";// json.GetProperty("atlasName").GetString();
+		var atlasName = json.GetProperty("atlasName").GetString();
 		var name = json.GetProperty("name").GetString();
 
 		var atlas = FortEngine.Assets.GetAsset<SpriteAtlas>(atlasName);
@@ -23,7 +23,7 @@ public class SpriteRegionConverter : JsonConverter<SpriteRegion>
 	public override void Write(Utf8JsonWriter writer, SpriteRegion value, JsonSerializerOptions options)
 	{
 		writer.WriteStartObject();
-		//writer.WriteString("atlasName", value.AtlasName);
+		writer.WriteString("atlasName", value.AtlasName);
 		writer.WriteString("name", value.Name);
 		writer.WriteEndObject();
 	}

@@ -7,6 +7,8 @@ public class FortTimer
 	public float Interval { get; set; }
 	public float Timer { get; internal set; }
 
+	public bool Loop { get; set; }
+
     public bool TimeScaled;
     public bool IsRunning;
     
@@ -48,6 +50,10 @@ public class FortTimer
         if(Timer <= 0)
         {
             OnTick?.Invoke();
+            if (Loop)
+            {
+	            Timer += Interval;
+            }
         }
     }
 }

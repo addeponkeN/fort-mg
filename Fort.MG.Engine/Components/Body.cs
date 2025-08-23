@@ -1,11 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Fort.MG.EntitySystem;
+using Microsoft.Xna.Framework;
 
-namespace Fort.MG.EntitySystem.Components;
+namespace Fort.MG.Components;
 
 public class Body : Component
 {
+	[Serialize] public float Mass = 1f;
 	public Vector2 Velocity;
-	public float Mass = 1f;
 
 	public void ApplyMovement(Vector2 movement)
 	{

@@ -4,7 +4,7 @@ using Fort.MG.Systems;
 using Fort.MG.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Camera = Fort.MG.EntitySystem.Components.Camera;
+using Camera = Fort.MG.Components.Camera;
 
 namespace Fort.MG.Scenes;
 

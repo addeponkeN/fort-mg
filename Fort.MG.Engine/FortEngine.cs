@@ -1,5 +1,5 @@
 ﻿using Fort.MG.Assets;
-using Fort.MG.EntitySystem.Components;
+using Fort.MG.Components;
 using Fort.MG.Extensions;
 using Fort.MG.Scenes;
 using Fort.MG.Systems;
@@ -73,6 +73,11 @@ public static class FortEngine
 	internal static void FirstFrameInit(GameTime gameTime)
 	{
 		Time = gameTime;
+	}
+
+	internal static void PreUpdate()
+	{
+		SystemManager.PreUpdate(Utils.Time.GetTimeManager());
 	}
 
 	internal static void Update()

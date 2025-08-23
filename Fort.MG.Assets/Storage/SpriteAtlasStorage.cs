@@ -8,6 +8,10 @@ public class SpriteAtlasStorage() : BaseStorage<SpriteAtlas>("textures")
 	{
 		var path = GetFilePath(name);
 		var atlas = AssetManager.ContentManager.Load<SpriteAtlas>(path);
+		foreach (var region in atlas.Regions)
+		{
+			AssetManager.RegisterSpriteRegion(region);
+		}
 		Add(name, atlas);
 		return atlas;
 	}

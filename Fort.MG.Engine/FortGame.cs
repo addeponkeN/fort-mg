@@ -34,6 +34,7 @@ public class FortGame : FortCoreGame
     protected override void Update(GameTime gt)
     {
         FortEngine.Time = gt;
+        FortEngine.PreUpdate();
         base.Update(gt);
     }
 

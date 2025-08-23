@@ -3,6 +3,7 @@
 public abstract class BaseStorage<T>(string folder) : IAssetStorage<T>, IDisposable
 {
 	protected readonly Dictionary<string, T> Storage = new();
+	internal AssetManager AssetManager;
 
 	public string Folder { get; set; } = folder;
 	public string ContentPath => Path.Combine(AssetManager.ContentRoot, Folder);

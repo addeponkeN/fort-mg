@@ -1,125 +1,141 @@
-﻿using System.Reflection;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using Fort.MG.Assets.Data;
-using Fort.MG.JsonConverters;
+﻿using Fort.MG.YamlConverters;
+using System.Reflection;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace Fort.MG.EntitySystem.Parsing;
 
 public static class ComponentSerializer
 {
-	private static readonly JsonSerializerOptions Options = new()
+	public static Dictionary<string, object> SerializeComponentToDict(Component component)
 	{
-		WriteIndented = true,
-		PropertyNamingPolicy = null,
-		Converters =
+		var dict = new Dictionary<string, object>
 		{
-			new Vector2Converter(),
-			new Vector3Converter(),
-			new ColorConverter(),
-			new RectangleConverter(),
-			new SpriteRegionConverter(),
-		}
-	};
-
-	public static JsonNode SerializeComponent(Component component)
-	{
-		var componentType = component.GetType();
-		var jsonObject = new JsonObject
-		{
-			["$type"] = ComponentRegistry.GetTypeName(componentType),
-			["Enabled"] = component.Enabled
+			["type"] = ComponentRegistry.GetTypeName(component.GetType()),
+			["enabled"] = component.Enabled
 		};
 
 		component.OnBeforeSerialize();
 
-		// Use reflection to find serializable properties/fields
-		var members = GetSerializableMembers(componentType);
-
-		foreach (var member in members)
+		foreach (var member in GetSerializableMembers(component.GetType()))
 		{
-			var value = GetMemberValue(member, component);
 			var name = GetSerializationName(member);
-
+			var value = GetMemberValue(member, component);
 			if (value != null)
-			{
-				// Serialize the value to JSON using System.Text.Json
-				var jsonValue = JsonSerializer.SerializeToNode(value, Options);
-				jsonObject[name] = jsonValue;
-			}
+				dict[name] = value;
 		}
 
-		return jsonObject;
+		return dict;
 	}
 
-	public static T DeserializeComponent<T>(JsonNode json) where T : Component
+	public static Component DeserializeComponentFromDict(Dictionary<string, object> dict)
 	{
-		return (T)DeserializeComponent(json);
-	}
-
-	public static Component DeserializeComponent(JsonNode json)
-	{
-		if (json is not JsonObject jsonObject)
+		if (!dict.TryGetValue("type", out var typeNameObj))
 			return null;
 
-		var typeName = jsonObject["$type"]?.ToString();
-		if (string.IsNullOrEmpty(typeName))
-			return null;
-
+		var typeName = typeNameObj.ToString();
 		var component = ComponentRegistry.CreateComponent(typeName);
 		if (component == null)
 			return null;
 
 		component.Init();
 
-		// Set enabled state
-		if (jsonObject.TryGetPropertyValue("Enabled", out var enabledNode))
+		// Make a copy of the dictionary without "type"
+		var yamlDict = new Dictionary<string, object>(dict);
+		yamlDict.Remove("type");
+
+		var tempYaml = YamlSerializationFactory.Serializer.Serialize(yamlDict);
+		var typedComponent = (Component)YamlSerializationFactory.Deserializer.Deserialize(tempYaml, component.GetType());
+
+		// Copy all deserialized fields and properties to the existing component instance
+		foreach (var member in GetSerializableMembers(component.GetType()))
 		{
-			component.Enabled = enabledNode.GetValue<bool>();
+			var value = GetMemberValue(member, typedComponent);
+			SetMemberValue(member, component, value);
 		}
 
-		// Deserialize properties using reflection
-		var componentType = component.GetType();
-		var members = GetSerializableMembers(componentType);
-
-		foreach (var member in members)
-		{
-			var name = GetSerializationName(member);
-			if (jsonObject.TryGetPropertyValue(name, out var valueNode))
-			{
-				var memberType = GetMemberType(member);
-				try
-				{
-					var value = valueNode.Deserialize(memberType, Options);
-					SetMemberValue(member, component, value);
-				}
-				catch (JsonException)
-				{
-					// Skip invalid values
-				}
-			}
-		}
+		// Handle enabled separately
+		if (dict.TryGetValue("enabled", out var enabledObj))
+			component.Enabled = Convert.ToBoolean(enabledObj);
 
 		component.OnAfterDeserialize();
 		return component;
 	}
 
+	private static object ConvertValue(object value, Type targetType)
+	{
+		if (value == null || targetType == null) return value;
+
+		// If types already match, return as-is
+		if (targetType.IsInstanceOfType(value))
+			return value;
+
+		// Handle special types using YamlDotNet's converters
+		if (TryConvertWithYamlConverters(value, targetType, out var convertedValue))
+			return convertedValue;
+
+		// Handle enums
+		if (targetType.IsEnum && value is string enumString)
+		{
+			try
+			{
+				return Enum.Parse(targetType, enumString, true);
+			}
+			catch
+			{
+				// Fall through to default conversion
+			}
+		}
+
+		// Default conversion
+		try
+		{
+			return Convert.ChangeType(value, targetType);
+		}
+		catch
+		{
+			return value; // Fall back to original value if conversion fails
+		}
+	}
+
+	private static bool TryConvertWithYamlConverters(object value, Type targetType, out object convertedValue)
+	{
+		convertedValue = null;
+
+		var converters = YamlSerializationFactory.AllConverters;
+
+		var converter = converters.FirstOrDefault(c => c.Accepts(targetType));
+		if (converter == null) return false;
+
+		try
+		{
+			var tempYaml = YamlSerializationFactory.Serializer.Serialize(value);
+			using var reader = new StringReader(tempYaml);
+			var parser = new YamlDotNet.Core.Parser(reader);
+
+			// Skip the stream start and document start
+			parser.MoveNext(); // StreamStart
+			parser.MoveNext(); // DocumentStart or first event
+
+			convertedValue = converter.ReadYaml(parser, targetType, null);
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	// Keep existing helper methods unchanged
 	private static IEnumerable<MemberInfo> GetSerializableMembers(Type type)
 	{
-		var members = new List<MemberInfo>();
-
-		// Get properties with [Serialize] attribute
 		var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-			.Where(p => p.CanRead && p.CanWrite && HasSerializeAttribute(p));
+							 .Where(p => p.CanRead && p.CanWrite && HasSerializeAttribute(p));
 
-		// Get fields with [Serialize] attribute
 		var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance)
-			.Where(f => HasSerializeAttribute(f));
+						 .Where(HasSerializeAttribute);
 
-		members.AddRange(properties);
-		members.AddRange(fields);
-
-		return members;
+		return properties.Cast<MemberInfo>().Concat(fields);
 	}
 
 	private static bool HasSerializeAttribute(MemberInfo member) =>
@@ -128,39 +144,44 @@ public static class ComponentSerializer
 	private static string GetSerializationName(MemberInfo member)
 	{
 		var attr = member.GetCustomAttribute<SerializeAttribute>();
-		return attr?.Name ?? member.Name;
+		if (!string.IsNullOrEmpty(attr?.Name))
+			return attr.Name;
+
+		var yamlMemberAttr = member.GetCustomAttribute<YamlMemberAttribute>();
+		if (!string.IsNullOrEmpty(yamlMemberAttr?.Alias))
+			return yamlMemberAttr.Alias;
+
+		return CamelCaseNamingConvention.Instance.Apply(member.Name);
 	}
 
-	private static Type GetMemberType(MemberInfo member)
+	private static string ToCamelCase(string name)
 	{
-		return member switch
-		{
-			PropertyInfo prop => prop.PropertyType,
-			FieldInfo field => field.FieldType,
-			_ => null
-		};
+		if (string.IsNullOrEmpty(name) || char.IsLower(name[0]))
+			return name;
+
+		return char.ToLowerInvariant(name[0]) + name.Substring(1);
 	}
 
-	private static object GetMemberValue(MemberInfo member, object obj)
+	private static Type GetMemberType(MemberInfo member) => member switch
 	{
-		return member switch
-		{
-			PropertyInfo prop => prop.GetValue(obj),
-			FieldInfo field => field.GetValue(obj),
-			_ => null
-		};
-	}
+		PropertyInfo prop => prop.PropertyType,
+		FieldInfo field => field.FieldType,
+		_ => null
+	};
+
+	private static object GetMemberValue(MemberInfo member, object obj) => member switch
+	{
+		PropertyInfo prop => prop.GetValue(obj),
+		FieldInfo field => field.GetValue(obj),
+		_ => null
+	};
 
 	private static void SetMemberValue(MemberInfo member, object obj, object value)
 	{
 		switch (member)
 		{
-			case PropertyInfo prop:
-				prop.SetValue(obj, value);
-				break;
-			case FieldInfo field:
-				field.SetValue(obj, value);
-				break;
+			case PropertyInfo prop: prop.SetValue(obj, value); break;
+			case FieldInfo field: field.SetValue(obj, value); break;
 		}
 	}
 }

@@ -1,10 +1,10 @@
-﻿using Fort.MG.Utils;
+﻿using Fort.MG.EntitySystem;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace Fort.MG.EntitySystem.Components;
+namespace Fort.MG.Components;
 
-public class CameraControls : Component
+public class DefaultCameraControls : Component
 {
     private Camera _cam;
 

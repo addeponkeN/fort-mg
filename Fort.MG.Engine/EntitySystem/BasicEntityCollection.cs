@@ -27,9 +27,13 @@ public class BasicEntityCollection : EntityCollection
 	private readonly List<IRenderable> _renderables = new();
 	public List<Entity> Entities = new();
 
+	private List<Entity> _newEntities = new();
+	private List<Entity> _initedEntities = new();
+
 	public override void Add(Entity ent)
 	{
 		// ent.Start();
+		_newEntities.Add(ent);
 		Entities.Add(ent);
 		if (ent is IRenderable entRenderable)
 			_renderables.Add(entRenderable);
@@ -45,16 +49,19 @@ public class BasicEntityCollection : EntityCollection
 
 	public override void Update(IGameTime t)
 	{
-		for (int i = 0; i < Entities.Count; i++)
+		for (int i = 0; i < _newEntities.Count; i++)
 		{
-			var e = Entities[i];
-			if (e.Killed)
-			{
-				Remove(e);
-				continue;
-			}
+			var e = _newEntities[i];
+			e.UpdateFirstFrame(t);
+			_newEntities.RemoveAt(i--);
+			_initedEntities.Add(e);
+		}
 
-			e.Update(t);
+		for (int i = 0; i < _initedEntities.Count; i++)
+		{
+			var e = _initedEntities[i];
+			if (e.InitedFirstFrame)
+				e.Update(t);
 		}
 	}
 
@@ -70,7 +77,9 @@ public class BasicEntityCollection : EntityCollection
 	{
 		for (int i = 0; i < Entities.Count; i++)
 		{
-			Entities[i].Draw();
+			var e = Entities[i];
+			if (e.InitedFirstFrame)
+				e.Draw();
 		}
 	}
 }

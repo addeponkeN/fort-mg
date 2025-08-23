@@ -5,7 +5,7 @@ namespace Fort.MG.EntitySystem;
 public class BaseObject
 {
 	internal bool Killed;
-	internal bool InitedFirstFrame;
+	internal bool InitedFirstFrame = false;
 	internal bool Inited;
 
 	public bool Enabled { get; set; } = true;
@@ -24,6 +24,15 @@ public class BaseObject
 	public virtual void Kill()
 	{
 		Killed = true;
+	}
+
+	internal virtual void UpdateFirstFrame(IGameTime t)
+	{
+		if (!InitedFirstFrame)
+		{
+			Start();
+			InitedFirstFrame = true;
+		}
 	}
 
 	public virtual void Update(IGameTime t)
@@ -48,6 +57,7 @@ public class BaseObject
 public class Entity : BaseObject
 {
 	public int Id { get; set; }
+	public string Name { get; set; }
 
 	public Entity Parent;
 	public List<Component> Components;
@@ -164,13 +174,15 @@ public class Entity : BaseObject
 	{
 		base.Update(t);
 
-		if (!InitedFirstFrame)
+		Transform?.Update(t);
+
+		for (int i = 0; i < Components.Count; i++)
 		{
-			Start();
-			InitedFirstFrame = true;
+			var c = Components[i];
+			if (!c.InitedFirstFrame)
+				c.UpdateFirstFrame(t);
 		}
 
-		Transform?.Update(t);
 		for (int i = 0; i < Components.Count; i++)
 		{
 			var c = Components[i];
@@ -286,4 +298,11 @@ public class Entity : BaseObject
 		Parent = null;
 		Transform = null;
 	}
+
+	public override string ToString()
+	{
+		var firstCompName = Components.Count > 1 ? Components[1].GetType().Name : "transform";
+		return $"({Id}){Name}-{firstCompName} ({Transform.Position})";
+	}
+
 }

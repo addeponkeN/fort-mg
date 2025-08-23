@@ -8,9 +8,6 @@ public class RectangleConverter : JsonConverter<Rectangle>
 {
 	public override Rectangle Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 	{
-		if (reader.TokenType != JsonTokenType.StartObject)
-			throw new JsonException();
-
 		var strRect = reader.GetString();
 
 		var split = strRect.Split(',');
@@ -26,6 +23,6 @@ public class RectangleConverter : JsonConverter<Rectangle>
 	public override void Write(Utf8JsonWriter writer, Rectangle value, JsonSerializerOptions options)
 	{
 		string strRect = $"{value.X},{value.Y},{value.Width},{value.Height}";
-		writer.WriteString("rect", strRect);
+		writer.WriteStringValue(strRect);
 	}
 }

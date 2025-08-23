@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework.Content.Pipeline;
+﻿using System.Text.Json;
+using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
-using System.Text.Json;
 
 namespace Fort.MG.PipelineExtension;
 

@@ -1,5 +1,6 @@
 ﻿using Fort.MG.EntitySystem;
 using Fort.MG.Gui;
+using Fort.MG.Rendering;
 using Fort.MG.Systems;
 using Fort.MG.Utils;
 using Microsoft.Xna.Framework;
@@ -10,181 +11,204 @@ namespace Fort.MG.Scenes;
 
 public enum SceneStates
 {
-	Active,
-	Entering,
-	Exiting,
-	Exited,
+    Active,
+    Entering,
+    Exiting,
+    Exited,
 }
 
 public class Scene
 {
-	private RenderTarget2D _target;
-	private FortTimer _enterTime;
-	private FortTimer _exitTime;
+    public static Scene Current => SceneManager.CurrentScene;
 
-	internal SceneStates State;
+    private RenderTarget2D _target;
+    private FortTimer _enterTime;
+    private FortTimer _exitTime;
 
-	internal SceneManager SceneManager;
-	internal EngineSystemManager SceneSystemManager;
-	internal CanvasSystem CanvasSystem;
+    internal SceneStates State;
 
-	public EntityManager EntityManagerSystem;
+    internal SceneManager SceneManager;
+    internal EngineSystemManager SceneSystemManager;
+    internal CanvasSystem CanvasSystem;
 
-	public Camera Cam;
+    public EntityManager EntityManagerSystem;
 
-	public Vector2 MousePosition { get; private set; }
-	public Vector2 MousePositionWorld { get; private set; }
+    public Camera Cam;
 
-	public SpriteSortMode SortMode;
-	public BlendState BlendState;
-	public SamplerState SamplerState;
-	public DepthStencilState Stencil;
-	public RasterizerState Rasterizer;
-	public Effect Effect;
+    public Vector2 MousePosition { get; private set; }
+    public Vector2 MousePositionWorld { get; private set; }
 
-	public Canvas Canvas => CanvasSystem.Canvas;
+    public Canvas Canvas => CanvasSystem.Canvas;
 
-	protected bool InitedFirstFrame;
+    protected bool InitedFirstFrame;
 
-	internal bool IsLoaded;
-	internal bool IsInited;
+    internal bool IsLoaded;
+    internal bool IsInited;
 
-	public FortTimer EnterTime
-	{
-		get => _enterTime;
-		set
-		{
-			_enterTime = value;
-			_enterTime.OnTick += () => SetState(SceneStates.Active);
-		}
-	}
+    public FortTimer EnterTime
+    {
+        get => _enterTime;
+        set
+        {
+            _enterTime = value;
+            _enterTime.OnTick += () => SetState(SceneStates.Active);
+        }
+    }
 
-	public FortTimer ExitTime
-	{
-		get => _exitTime;
-		set
-		{
-			_exitTime = value;
-			_exitTime.OnTick += () => SetState(SceneStates.Exited);
-		}
-	}
+    public FortTimer ExitTime
+    {
+        get => _exitTime;
+        set
+        {
+            _exitTime = value;
+            _exitTime.OnTick += () => SetState(SceneStates.Exited);
+        }
+    }
 
-	public virtual void Init()
-	{
-		IsInited = true;
-		SceneSystemManager = new EngineSystemManager();
-		SceneSystemManager.Add(EntityManagerSystem = new EntityManager(new BasicEntityCollection()));
-		SceneSystemManager.Add(CanvasSystem = new CanvasSystem());
+    public virtual void Init()
+    {
+        IsInited = true;
+        SceneSystemManager = new EngineSystemManager();
+        SceneSystemManager.Add(EntityManagerSystem = new EntityManager(new BasicEntityCollection()));
+        SceneSystemManager.Add(CanvasSystem = new CanvasSystem());
 
-		Cam = Entity.Create<Camera>();
-		EntityManagerSystem.Add(Cam.Entity);
+        Cam = Entity.Create<Camera>();
+        EntityManagerSystem.Add(Cam.Entity);
 
-		EnterTime = 0.1f;
-		ExitTime = 0.1f;
+        EnterTime = 0.1f;
+        ExitTime = 0.1f;
 
-		_target = new RenderTarget2D(Graphics.GraphicsDevice, Cam.Viewport.Width, Cam.Viewport.Height,
-			false, SurfaceFormat.Color, DepthFormat.Depth24);
+        _target = new RenderTarget2D(Graphics.GraphicsDevice, Screen.Width, Screen.Height,
+            false, SurfaceFormat.Color, DepthFormat.Depth24);
 
-		SetState(SceneStates.Entering);
-	}
+        SetState(SceneStates.Entering);
+    }
 
-	public virtual void LoadContent()
-	{
-		IsLoaded = true;
-	}
+    public virtual void LoadContent()
+    {
+        IsLoaded = true;
+    }
 
-	/// <summary>
-	/// before the first frame
-	/// </summary>
-	public virtual void Start()
-	{
-		InitedFirstFrame = true;
-	}
+    /// <summary>
+    /// before the first frame
+    /// </summary>
+    public virtual void Start()
+    {
+        InitedFirstFrame = true;
+    }
 
-	public void SetScene(Scene scene) => SceneManager.SetScene(scene);
+    public void SetScene(Scene scene) => SceneManager.SetScene(scene);
 
-	internal void SetState(SceneStates sceneState)
-	{
-		this.State = sceneState;
-		switch (sceneState)
-		{
-			case SceneStates.Entering:
-				if (!EnterTime.IsRunning)
-					EnterTime.Start();
-				break;
-			case SceneStates.Exiting:
-				if (!ExitTime.IsRunning)
-					ExitTime.Start();
-				break;
-		}
-	}
+    internal void SetState(SceneStates sceneState)
+    {
+        this.State = sceneState;
+        switch (sceneState)
+        {
+            case SceneStates.Entering:
+                if (!EnterTime.IsRunning)
+                    EnterTime.Start();
+                break;
+            case SceneStates.Exiting:
+                if (!ExitTime.IsRunning)
+                    ExitTime.Start();
+                break;
+        }
+    }
 
-	public virtual void Update(IGameTime t)
-	{
-		MousePosition = Input.MousePos;
-		MousePositionWorld = Input.MouseTransformedPos(Cam.UpdateMatrix);
-		if (!InitedFirstFrame)
-		{
-			Start();
-			InitedFirstFrame = true;
-		}
-		SceneSystemManager.Update(t);
-		switch (State)
-		{
-			case SceneStates.Active:
-				ActiveUpdate();
-				break;
-		}
-	}
+    public virtual void Update(IGameTime t)
+    {
+        MousePosition = Input.MousePos;
+        MousePositionWorld = Input.MouseTransformedPos(Cam.DrawMatrix);
+        if (!InitedFirstFrame)
+        {
+            Start();
+            InitedFirstFrame = true;
+        }
+        SceneSystemManager.Update(t);
+        switch (State)
+        {
+            case SceneStates.Active:
+                ActiveUpdate();
+                break;
+        }
+    }
 
-	/// <summary>
-	/// updates when the screen is done entering and is not exiting
-	/// </summary>
-	public virtual void ActiveUpdate()
-	{
-	}
+    /// <summary>
+    /// updates when the screen is done entering and is not exiting
+    /// </summary>
+    public virtual void ActiveUpdate()
+    {
+    }
 
-	public virtual void Render()
-	{
-		SceneSystemManager.Render();
-	}
+    public virtual void Render()
+    {
+        SceneSystemManager.Render();
+    }
 
-	public virtual void Draw()
-	{
-		var gd = Graphics.GraphicsDevice;
-		var sb = Graphics.SpriteBatch;
-		gd.SetRenderTarget(_target);
-		gd.Clear(new Color(25, 25, 25));
+    internal readonly RenderPassManager _renderPassManager = new RenderPassManager();
+    internal readonly List<PooledRenderPassBucket> _bucketsBuffer = new List<PooledRenderPassBucket>(16);
 
-		sb.Begin(SortMode, BlendState, SamplerState, Stencil, Rasterizer, Effect, Cam.DrawMatrix);
-		SceneSystemManager.Draw();
-		sb.End();
+    private void UpdateInternal()
+    {
+        RenderPasses.AlphaTestEffectDefault.Projection =
+            Scene.Current.Cam.DrawMatrix *
+            Matrix.CreateOrthographicOffCenter(0, Screen.Width, Screen.Height, 0, 0, -1);
+    }
 
-		float lerp = State == SceneStates.Active ? 0f :
-			State == SceneStates.Entering ? EnterTime.LerpReverse :
-			ExitTime.Lerp;
+    public virtual void Draw()
+    {
+        UpdateInternal();
 
-		//  screen enter/exit fade in/out
-		if (State != SceneStates.Active)
-		{
-			sb.Begin();
-			sb.Draw(FortEngine.Assets.Pixel, new Rectangle(0, 0, Cam.Viewport.Width, Cam.Viewport.Height),
-				FortEngine.Assets.Pixel, Color.Black * lerp);
-			sb.End();
-		}
+        var gd = Graphics.GraphicsDevice;
+        var sb = Graphics.SpriteBatch;
+        gd.SetRenderTarget(_target);
+        gd.Clear(new Color(25, 25, 25));
 
-		gd.SetRenderTarget(null);
-		gd.Clear(new Color(25, 25, 25));
+        // In Draw():
+        var renderables = EntityManagerSystem.GetRenderables(); // ideally returns List<IFortRenderable> for performance
+        _renderPassManager.CollectIntoBuckets(renderables, _bucketsBuffer);
 
-		sb.Begin();
-		sb.Draw(_target, Screen.Bounds, Color.White);
-		sb.End();
+        for (int bi = 0; bi < _bucketsBuffer.Count; bi++)
+        {
+            var bucket = _bucketsBuffer[bi];
+            if (bucket.Renderables.Count == 0)
+                continue;
 
-		SceneSystemManager.DrawGui();
-	}
+            var pass = bucket.Pass;
+            sb.Begin(pass.SortMode, pass.BlendState, pass.SamplerState,
+                     pass.DepthStencilState, pass.RasterizerState, pass.Effect, Cam.DrawMatrix);
 
-	public virtual void Exit()
-	{
-		SetState(SceneStates.Exiting);
-	}
+            var list = bucket.Renderables;
+            for (int i = 0, n = list.Count; i < n; i++)
+                list[i].Draw();
+
+            sb.End();
+        }
+
+        if (State != SceneStates.Active)
+        {
+            float lerp = State == SceneStates.Active ? 0f :
+                State == SceneStates.Entering ? EnterTime.LerpReverse :
+                ExitTime.Lerp;
+
+            sb.Begin();
+            sb.Draw(FortEngine.Assets.Pixel, new Rectangle(0, 0, Cam.Viewport.Width, Cam.Viewport.Height),
+                FortEngine.Assets.Pixel, Color.Black * lerp);
+            sb.End();
+        }
+
+        gd.SetRenderTarget(null);
+        gd.Clear(new Color(25, 25, 25));
+
+        sb.Begin();
+        sb.Draw(_target, Screen.Bounds, Color.White);
+        sb.End();
+
+        SceneSystemManager.DrawGui();
+    }
+
+    public virtual void Exit()
+    {
+        SetState(SceneStates.Exiting);
+    }
 }

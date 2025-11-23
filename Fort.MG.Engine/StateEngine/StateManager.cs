@@ -1,51 +1,93 @@
-using Fort.MG.Utils;
-
 namespace Fort.MG.StateEngine;
+
+public class StateUpdater
+{
+    public void UpdateState<T>(IGameTime t, ref T state) where T : State
+    {
+        switch (state.CurrentState)
+        {
+            case StateType.Starting:
+                state.UpdateStarting(t);
+                if (state.StartProgress >= 1.0f)
+                {
+                    state.OnUpdate();
+                }
+                break;
+
+            case StateType.Updating:
+                state.Update(t);
+                break;
+
+            case StateType.Exiting:
+                state.UpdateExiting(t);
+                if (state.ExitProgress >= 1.0f)
+                {
+                    state.OnExited();
+                    state = null;
+                }
+                break;
+        }
+    }
+}
 
 public class StateManager
 {
-    public List<State> States;
+    public State? Current;
+    private State? _next;
 
-    public StateManager()
+    private readonly Type? _defaultStateType;
+    private readonly StateUpdater _updater;
+
+    public StateManager(Type? defaultState = null)
     {
-        States = new List<State>();
+        _defaultStateType = defaultState;
+        _updater = new();
     }
-    
-    public virtual void AddState(State state)
+
+    public virtual void SetState(State state)
     {
-        state.StateManager = this;
+        state._manager = this;
         state.Init();
-        States.Add(state);
+        if (Current != null)
+        {
+            Current.Exit();
+            _next = state;
+            return;
+        }
+
+        Current = state;
+        Current.Start();
     }
 
-    public void SetState(State state)
+    public virtual void OnStateExit(State newState)
     {
-        for(int i = 0; i < States.Count; i++)
-            RemoveState(States[i--]);
-        AddState(state);
     }
 
-    public void RemoveState(State st)
+    private void GoNextState()
     {
-        st.OnDestroyed();
-        States.Remove(st);
+        if (_next == null)
+        {
+            if (_defaultStateType == null)
+                return;
+            var defState = (State)Activator.CreateInstance(_defaultStateType)!;
+            SetState(defState);
+            return;
+        }
+
+        Current = _next;
+        Current.Start();
+
+        _next = null;
     }
 
     public virtual void Update(IGameTime t)
     {
-        for(int i = 0; i < States.Count; i++)
+        if (Current == null)
         {
-            var st = States[i];
-            if(!st.Started)
-            {
-                st.Start();
-                st.Started = true;
-            }
-            if(st.IsAlive)
-                st.Update(t);
-            if(!st.IsAlive)
-                RemoveState(st);
+            GoNextState();
+            return;
         }
+
+        _updater.UpdateState(t, ref Current);
     }
-    
 }

@@ -4,26 +4,31 @@ namespace Fort.MG.EntitySystem;
 
 public class BaseObject
 {
-	internal bool Killed;
 	internal bool InitedFirstFrame = false;
 	internal bool Inited;
 
 	public bool Enabled { get; set; } = true;
-	public bool IsDestroyed;
+	public bool IsDestroyed { get; internal set; }
 
 	/// <summary>
 	/// One time init - called when the entity object is created - once ever.
 	/// </summary>
 	public virtual void Init() { Inited = true; }
 
-	public virtual void Start()
+    /// <summary>
+    /// Called on the first frame after Init
+    /// </summary>
+    public virtual void Start()
 	{
 		InitedFirstFrame = true;
 	}
 
-	public virtual void Kill()
+	/// <summary>
+	/// Marks the object as destroyed, preventing further operations that require it to be active
+	/// </summary>
+	public virtual void Destroy()
 	{
-		Killed = true;
+        IsDestroyed = true;
 	}
 
 	internal virtual void UpdateFirstFrame(IGameTime t)
@@ -56,6 +61,8 @@ public class BaseObject
 
 public class Entity : BaseObject
 {
+    internal EntityCollection _collection;
+
 	public int Id { get; set; }
 	public string Name { get; set; }
 
@@ -83,6 +90,12 @@ public class Entity : BaseObject
 	{
 		var comp = Component.Create<T>();
 		comp.Entity = this;
+
+        if (comp is IFortRenderable renderable)
+        {
+			_collection?.AddRenderable(renderable);
+        }
+
 		if (!comp.Inited)
 		{
 			comp.Init();
@@ -97,7 +110,13 @@ public class Entity : BaseObject
 	public virtual void AddComponent(Component comp)
 	{
 		comp.Entity = this;
-		if (!comp.Inited)
+
+        if (comp is IFortRenderable renderable)
+        {
+            _collection?.AddRenderable(renderable);
+        }
+
+        if (!comp.Inited)
 		{
 			comp.Init();
 			comp.Inited = true;
@@ -109,17 +128,16 @@ public class Entity : BaseObject
 
 	public virtual void RemoveComponent(Component comp)
 	{
-		if (!comp.Killed)
-			comp.Kill();
+		if (!comp.IsDestroyed)
+			comp.Destroy();
 		comp.OnDestroyed();
-		Components.Remove(comp);
-	}
 
-	public virtual void ClearComponents()
-	{
-		for (int i = 0; i < Components.Count; i++)
-			Components[i].OnDestroyed();
-		Components.Clear();
+        if (comp is IFortRenderable renderable)
+        {
+            _collection.RemoveRenderable(renderable);
+        }
+
+        Components.Remove(comp);
 	}
 
 	/// <summary>
@@ -148,9 +166,9 @@ public class Entity : BaseObject
 	/// <summary>
 	/// kill this entity
 	/// </summary>
-	public override void Kill()
+	public override void Destroy()
 	{
-		base.Kill();
+		base.Destroy();
 	}
 
 	/// <summary>
@@ -165,8 +183,15 @@ public class Entity : BaseObject
 		}
 
 		IsDestroyed = true;
-		for (int i = 0; i < Components.Count; i++)
-			Components[i].OnDestroyed();
+        for (int i = 0; i < Components.Count; i++)
+        {
+			var comp = Components[i];
+            comp.OnDestroyed();
+            if (comp is IFortRenderable renderable)
+            {
+                _collection.RemoveRenderable(renderable);
+            }
+        }
 		Components.Clear();
 	}
 
@@ -186,7 +211,7 @@ public class Entity : BaseObject
 		for (int i = 0; i < Components.Count; i++)
 		{
 			var c = Components[i];
-			if (c.Killed)
+			if (c.IsDestroyed)
 			{
 				RemoveComponent(c);
 				i--;
@@ -270,7 +295,6 @@ public class Entity : BaseObject
 	internal virtual void Spawn()
 	{
 		Parent = null;
-		Killed = false;
 		IsDestroyed = false;
 		InitedFirstFrame = false;
 		// UpdateLife = true;

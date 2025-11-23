@@ -6,9 +6,9 @@ namespace Fort.MG.Systems;
 public sealed class EngineSystemManager
 {
 	public readonly List<EngineSystem> Systems = new();
-	private readonly List<IRenderable> _renderables = new();
-	private readonly List<IDrawableGui> _guiDrawables = new();
-	private readonly List<IDrawableControl> _drawableControls = new();
+	private readonly List<IFortRenderable> _renderables = new();
+	private readonly List<IFortDrawableGui> _guiDrawables = new();
+	private readonly List<IFortDrawable> _drawableControls = new();
 
 	public T Get<T>() where T : EngineSystem
 	{
@@ -40,11 +40,11 @@ public sealed class EngineSystemManager
 		}
 		Systems.Add(system);
 
-		if (system is IRenderable entRenderable)
+		if (system is IFortRenderable entRenderable)
 			_renderables.Add(entRenderable);
-		if (system is IDrawableControl entDrawableControl)
+		if (system is IFortDrawable entDrawableControl)
 			_drawableControls.Add(entDrawableControl);
-		if (system is IDrawableGui entGui)
+		if (system is IFortDrawableGui entGui)
 			_guiDrawables.Add(entGui);
 	}
 

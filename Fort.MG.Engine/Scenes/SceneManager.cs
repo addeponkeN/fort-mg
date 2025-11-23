@@ -4,7 +4,7 @@ using Fort.MG.Systems;
 namespace Fort.MG.Scenes;
 
 //  aka scene aka world
-public class SceneManager : EngineSystem, IRenderable
+public class SceneManager : EngineSystem
 {
 	public static Scene CurrentScene => FortEngine.SceneManager.Scene;
 

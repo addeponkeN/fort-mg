@@ -1,34 +1,89 @@
-using Fort.MG.Utils;
-
 namespace Fort.MG.StateEngine;
+
+public enum StateType
+{
+    None,
+    Starting,
+    Updating,
+    Exiting,
+}
 
 public class State
 {
-    public StateManager StateManager { get; set; }
-    public bool IsAlive = true;
+    internal StateManager _manager;
 
-    internal bool Started;
+    public StateType CurrentState { get; private set; }
 
-    public virtual void Init()
+    public float StartTime = 0.0f;
+    public float ExitTime = 0.0f;
+    public float Timer;
+
+    public float StartProgress => Timer / StartTime;
+    public float StartProgressInverted => (StartTime - Timer) / StartTime;
+    public float ExitProgress => Timer / ExitTime;
+    public float ExitProgressInverted => (ExitTime - Timer) / ExitTime;
+
+    public virtual void Init() { }
+
+    protected void SetState(State state)
     {
+        _manager.SetState(state);
     }
 
+    /// <summary>
+    /// Step 1: Start
+    /// </summary>
     public virtual void Start()
     {
-        Started = true;
+        CurrentState = StateType.Starting;
+        Timer = 0f;
     }
 
+    /// <summary>
+    /// Step 1: Update loop while starting
+    /// </summary>
+    public virtual void UpdateStarting(IGameTime t)
+    {
+        Timer += t.Delta;
+    }
+
+    /// <summary>
+    /// Step 2: Starting is done, entering Update
+    /// </summary>
+    public virtual void OnUpdate()
+    {
+        CurrentState = StateType.Updating;
+    }
+
+    /// <summary>
+    /// Step 2: The main update loop of the state
+    /// </summary>
     public virtual void Update(IGameTime t)
     {
     }
 
-    public void Kill()
+    /// <summary>
+    /// Step 3: Exit
+    /// </summary>
+    public virtual void Exit()
     {
-        IsAlive = false;
+        CurrentState = StateType.Exiting;
+        Timer = 0f;
+        _manager.OnStateExit(this);
     }
 
-    public virtual void OnDestroyed()
+    /// <summary>
+    /// During step 3 - Updating
+    /// </summary>
+    public virtual void UpdateExiting(IGameTime t)
+    {
+        Timer += t.Delta;
+    }
+
+    /// <summary>
+    /// Step 3 finished - Exit state.
+    /// </summary>
+    public virtual void OnExited()
     {
     }
-    
 }

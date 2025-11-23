@@ -1,11 +1,9 @@
 ﻿using Fort.MG.Systems;
-using Fort.Utility;
 
 namespace Fort.MG.EntitySystem;
 
-public class EntityManager : EngineSystem, IRenderable
+public class EntityManager : EngineSystem
 {
-	private readonly IdPool _idPool = new();
 
 	public EntityCollection Collection;
 
@@ -14,16 +12,17 @@ public class EntityManager : EngineSystem, IRenderable
 		SetEntityCollection(collection);
 	}
 
-	public void Add(Entity ent)
+    public T? GetComponent<T>() where T : Component => Collection.GetComponent<T>();
+    public Entity? GetEntity(string name) => Collection.Get(name);
+
+    public void Add(Entity ent)
 	{
-		ent.Id = _idPool.Get();
 		Collection.Add(ent);
 	}
 
 	public void Remove(Entity ent)
 	{
 		Collection.Remove(ent);
-		_idPool.Return(ent.Id);
 	}
 
 	public void SetEntityCollection(EntityCollection collection)
@@ -48,4 +47,9 @@ public class EntityManager : EngineSystem, IRenderable
 		// base.Draw();
 		Collection.Draw();
 	}
+
+    public List<IFortRenderable> GetRenderables()
+    {
+        return Collection.GetRenderables();
+    }
 }

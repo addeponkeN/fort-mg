@@ -86,7 +86,7 @@ public static class EntitySerializer
 
 		foreach (var componentDict in template.Components)
 		{
-			var component = ComponentSerializer.DeserializeComponentFromDict(componentDict);
+			var component = ComponentSerializer.DeserializeComponentFromDict(componentDict, entity);
 			if (component != null)
 				entity.AddComponent(component);
 		}

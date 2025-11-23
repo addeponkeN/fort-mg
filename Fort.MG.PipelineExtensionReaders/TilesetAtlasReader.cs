@@ -33,7 +33,7 @@ internal class TilesetAtlasReader : ContentTypeReader<TilesetAtlas>
 			};
 			tiles.Add(t);
 
-			Console.WriteLine($"Read tile: {t.Tileset},{t.Orientation},{t.Variant} ({t.Frame})");
+			//Console.WriteLine($"Read tile: {t.Tileset},{t.Orientation},{t.Variant} ({t.Frame})");
 		}
 
 		return new TilesetAtlas(texture, tiles);

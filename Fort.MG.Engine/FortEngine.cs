@@ -54,7 +54,9 @@ public static class FortEngine
 		SystemManager = new EngineSystemManager();
 
 		SystemManager.Register<TimerSystem>();
-		SystemManager.Register<DebugPrinter>();
+		//SystemManager.Register<DebugPrinter>();
+		SystemManager.Register<PerformanceMetricsSystem>();
+		SystemManager.Register<SystemMessageSystem>();
 		Assets = new AssetManager();
 	}
 

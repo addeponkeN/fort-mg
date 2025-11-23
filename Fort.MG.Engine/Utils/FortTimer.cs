@@ -2,7 +2,7 @@
 
 namespace Fort.MG.Utils;
 
-public class FortTimer
+public class FortTimer : IDisposable
 {
 	public float Interval { get; set; }
 	public float Timer { get; internal set; }
@@ -38,9 +38,9 @@ public class FortTimer
     {
         IsRunning = false;
         Timer = -1;
+        FortEngine.SystemManager.Get<TimerSystem>().Remove(this);
     }
 
-    /// <returns>true when time is done hehe</returns>
     public void Update(IGameTime t)
     {
         if(!IsRunning) return;
@@ -55,5 +55,11 @@ public class FortTimer
 	            Timer += Interval;
             }
         }
+    }
+
+    public void Dispose()
+    {
+        OnTick = null;
+        FortEngine.SystemManager.Get<TimerSystem>().Remove(this);
     }
 }

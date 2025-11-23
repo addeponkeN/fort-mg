@@ -51,10 +51,11 @@ public class ThreeSlice : Skin
 
 		if (SliceOrientation == Orientation.Horizontal)
 		{
+			int sizeWidth = size.X / 3;
 			int sourceWidth = src.Width / 3;
 			int sourceHeight = src.Height;
 
-			int sliceCornerWidth = SliceCornerSize == 0 ? sourceWidth : SliceCornerSize;
+			int sliceCornerWidth = SliceCornerSize == 0 ? sizeWidth : SliceCornerSize;
 
 			// Calculate adjusted corner sizes based on available space
 			int totalWidth = size.X;

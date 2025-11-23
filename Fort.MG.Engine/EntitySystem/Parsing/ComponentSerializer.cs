@@ -28,17 +28,16 @@ public static class ComponentSerializer
 		return dict;
 	}
 
-	public static Component DeserializeComponentFromDict(Dictionary<string, object> dict)
+	public static Component DeserializeComponentFromDict(Dictionary<string, object> dict, Entity entity)
 	{
 		if (!dict.TryGetValue("type", out var typeNameObj))
 			return null;
 
 		var typeName = typeNameObj.ToString();
 		var component = ComponentRegistry.CreateComponent(typeName);
+		component.Entity = entity;
 		if (component == null)
 			return null;
-
-		component.Init();
 
 		// Make a copy of the dictionary without "type"
 		var yamlDict = new Dictionary<string, object>(dict);
@@ -59,7 +58,8 @@ public static class ComponentSerializer
 			component.Enabled = Convert.ToBoolean(enabledObj);
 
 		component.OnAfterDeserialize();
-		return component;
+        component.Init();
+        return component;
 	}
 
 	private static object ConvertValue(object value, Type targetType)

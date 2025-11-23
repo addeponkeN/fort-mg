@@ -1,6 +1,4 @@
-﻿using Fort.MG.Utils;
-
-namespace Fort.MG.EntitySystem;
+﻿namespace Fort.MG.EntitySystem;
 
 public abstract class EntityCollection
 {
@@ -12,4 +10,12 @@ public abstract class EntityCollection
     public abstract void Update(IGameTime t);
     public abstract void Render();
     public abstract void Draw();
+
+    public abstract T? GetComponent<T>() where T : Component;
+    public abstract Entity? Get(string name);
+
+    public abstract List<IFortRenderable> GetRenderables();
+
+    public abstract void AddRenderable(IFortRenderable renderable);
+    public abstract void RemoveRenderable(IFortRenderable renderable);
 }

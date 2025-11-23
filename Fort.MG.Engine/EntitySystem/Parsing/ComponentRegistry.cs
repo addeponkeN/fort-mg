@@ -98,7 +98,7 @@ public static class ComponentRegistry
 		TypeNames[type] = name;
 		ComponentFactories[type] = CreateComponentFactory(type);
 
-		Console.WriteLine($"Registered component: {name} -> {type.FullName}");
+		//Console.WriteLine($"Registered component: {name} -> {type.FullName}");
 	}
 
 	private static string GetComponentName(Type type)
@@ -148,7 +148,7 @@ public static class ComponentRegistry
 		if (ComponentFactories.TryGetValue(type, out var factory))
 		{
 			var component = factory();
-			component.Init(); // Make sure to initialize
+			//component.Init(); // Make sure to initialize
 			return component;
 		}
 

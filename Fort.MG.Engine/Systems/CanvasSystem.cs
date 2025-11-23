@@ -1,9 +1,8 @@
-﻿using Fort.MG.EntitySystem;
-using Fort.MG.Gui;
+﻿using Fort.MG.Gui;
 
 namespace Fort.MG.Systems;
 
-public class CanvasSystem : EngineSystem, IRenderable, IDrawableGui
+public class CanvasSystem : EngineSystem
 {
 	public Canvas Canvas { get; set; }
 

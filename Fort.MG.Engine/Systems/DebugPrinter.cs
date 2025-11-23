@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using Fort.MG.EntitySystem;
 using Fort.MG.Gui.Components;
 using Microsoft.Xna.Framework;
 
@@ -10,7 +9,7 @@ public interface IDebugDrawable
 	void DrawDebug();
 }
 
-public class DebugPrinter : EngineSystem, IRenderable, IDrawableControl
+public class DebugPrinter : EngineSystem
 {
 	private static Vector2 _position = new Vector2(4, 10);
 	private static int _spacing = 14;

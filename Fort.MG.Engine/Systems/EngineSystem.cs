@@ -19,4 +19,14 @@ public abstract class EngineSystem : BaseObject
     public virtual void PostUpdate(IGameTime t)
     {
     }
+
+    public virtual void Render()
+    {
+
+    }
+
+    public virtual void Draw()
+    {
+
+    }
 }

@@ -142,6 +142,7 @@ public class Scene
 
     public virtual void Render()
     {
+        Canvas.Render();
         SceneSystemManager.Render();
     }
 
@@ -165,7 +166,7 @@ public class Scene
         gd.Clear(new Color(25, 25, 25));
 
         // In Draw():
-        var renderables = EntityManagerSystem.GetRenderables(); // ideally returns List<IFortRenderable> for performance
+        var renderables = EntityManagerSystem.GetRenderables();
         _renderPassManager.CollectIntoBuckets(renderables, _bucketsBuffer);
 
         for (int bi = 0; bi < _bucketsBuffer.Count; bi++)
@@ -185,6 +186,10 @@ public class Scene
             sb.End();
         }
 
+        sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullClockwise, null, Cam.DrawMatrix);
+        EntityManagerSystem.DrawGizmos();
+        sb.End();
+
         if (State != SceneStates.Active)
         {
             float lerp = State == SceneStates.Active ? 0f :
@@ -203,6 +208,8 @@ public class Scene
         sb.Begin();
         sb.Draw(_target, Screen.Bounds, Color.White);
         sb.End();
+
+        Canvas.Draw();
 
         SceneSystemManager.DrawGui();
     }

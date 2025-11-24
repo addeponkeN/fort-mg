@@ -2,6 +2,7 @@
 using Fort.MG.EntitySystem;
 using Fort.MG.Extensions;
 using Fort.MG.ParticleEngine.EmitterStates;
+using Fort.MG.Rendering;
 using Fort.MG.Utils;
 using Fort.Utility;
 using Microsoft.Xna.Framework;
@@ -9,9 +10,13 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Fort.MG.ParticleEngine;
 
-public class ParticleEmitter : Entity
+public class ParticleEmitter : Entity, IFortRenderable
 {
-	private static readonly Color ShadowColor = new Color(1, 1, 1, 50);
+    public float DrawLayer { get; }
+    public RenderPass RenderPass { get; }
+
+
+    private static readonly Color ShadowColor = new Color(1, 1, 1, 50);
 
 	public int Type;
 
@@ -82,9 +87,10 @@ public class ParticleEmitter : Entity
         }
     }
 
-    public override void Draw()
+    public void Render() { }
+
+    public void Draw()
     {
-        base.Draw();
         for(int i = 0; i < _particles.Count; i++)
         {
             var p = _particles[i];

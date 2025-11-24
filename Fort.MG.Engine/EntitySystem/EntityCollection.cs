@@ -8,8 +8,6 @@ public abstract class EntityCollection
         //PoolManager<Entity>.Free(ent);
     }
     public abstract void Update(IGameTime t);
-    public abstract void Render();
-    public abstract void Draw();
 
     public abstract T? GetComponent<T>() where T : Component;
     public abstract Entity? Get(string name);
@@ -18,4 +16,6 @@ public abstract class EntityCollection
 
     public abstract void AddRenderable(IFortRenderable renderable);
     public abstract void RemoveRenderable(IFortRenderable renderable);
+
+    public abstract void DrawGizmos();
 }

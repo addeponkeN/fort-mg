@@ -39,26 +39,22 @@ public static class ComponentSerializer
 		if (component == null)
 			return null;
 
-		// Make a copy of the dictionary without "type"
 		var yamlDict = new Dictionary<string, object>(dict);
 		yamlDict.Remove("type");
 
 		var tempYaml = YamlSerializationFactory.Serializer.Serialize(yamlDict);
 		var typedComponent = (Component)YamlSerializationFactory.Deserializer.Deserialize(tempYaml, component.GetType());
 
-		// Copy all deserialized fields and properties to the existing component instance
 		foreach (var member in GetSerializableMembers(component.GetType()))
 		{
 			var value = GetMemberValue(member, typedComponent);
 			SetMemberValue(member, component, value);
 		}
 
-		// Handle enabled separately
 		if (dict.TryGetValue("enabled", out var enabledObj))
 			component.Enabled = Convert.ToBoolean(enabledObj);
 
 		component.OnAfterDeserialize();
-        component.Init();
         return component;
 	}
 
@@ -66,15 +62,12 @@ public static class ComponentSerializer
 	{
 		if (value == null || targetType == null) return value;
 
-		// If types already match, return as-is
 		if (targetType.IsInstanceOfType(value))
 			return value;
 
-		// Handle special types using YamlDotNet's converters
 		if (TryConvertWithYamlConverters(value, targetType, out var convertedValue))
 			return convertedValue;
 
-		// Handle enums
 		if (targetType.IsEnum && value is string enumString)
 		{
 			try
@@ -83,18 +76,17 @@ public static class ComponentSerializer
 			}
 			catch
 			{
-				// Fall through to default conversion
+				// ignore
 			}
 		}
 
-		// Default conversion
 		try
 		{
 			return Convert.ChangeType(value, targetType);
 		}
 		catch
 		{
-			return value; // Fall back to original value if conversion fails
+			return value;
 		}
 	}
 
@@ -113,7 +105,6 @@ public static class ComponentSerializer
 			using var reader = new StringReader(tempYaml);
 			var parser = new YamlDotNet.Core.Parser(reader);
 
-			// Skip the stream start and document start
 			parser.MoveNext(); // StreamStart
 			parser.MoveNext(); // DocumentStart or first event
 
@@ -126,7 +117,6 @@ public static class ComponentSerializer
 		}
 	}
 
-	// Keep existing helper methods unchanged
 	private static IEnumerable<MemberInfo> GetSerializableMembers(Type type)
 	{
 		var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)

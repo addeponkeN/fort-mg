@@ -13,7 +13,7 @@ public class SpriteRegionYamlConverter : IYamlTypeConverter
 	{
 		var spriteName = parser.Consume<Scalar>().Value ?? "";
 		var sprite = FortEngine.Assets.GetSprite(spriteName);
-		return new SpriteRegion(spriteName, sprite, sprite);
+        return sprite;// new SpriteRegion(spriteName, sprite, sprite);
 	}
 
 	public void WriteYaml(IEmitter emitter, object? value, Type type, ObjectSerializer serializer)

@@ -95,10 +95,7 @@ public class TileRenderData
 public struct TileRenderCache
 {
     public int X, Y;
-    public int FrameX, FrameY, FrameW, FrameH;
-
-    public Rectangle DestRect => new Rectangle(X, Y, FrameW, FrameH);
-    public Rectangle SourceRect => new Rectangle(FrameX, FrameY, FrameW, FrameH);
+    public ushort FrameX, FrameY;
 }
 
 public sealed class TileRenderLayerCache
@@ -149,7 +146,7 @@ public sealed class TileRenderLayerCache
         {
             ref var cache = ref _tileCache[layer, i];
             _positions[i] = new Vector2(cache.X, cache.Y);
-            _sourceRects[i] = new Rectangle(cache.FrameX, cache.FrameY, cache.FrameW, cache.FrameH);
+            _sourceRects[i] = new Rectangle(cache.FrameX, cache.FrameY, 32, 32);
         }
 
         const int batchSize = 512;
@@ -255,10 +252,8 @@ public class TileMapRenderer : Component, IFortRenderable
                     {
                         X = worldX,
                         Y = worldY,
-                        FrameX = frameData.X,
-                        FrameY = frameData.Y,
-                        FrameW = frameData.Width,
-                        FrameH = frameData.Height
+                        FrameX = (ushort)frameData.X,
+                        FrameY = (ushort)frameData.Y,
                     };
 
                     _cache.AddCache(layerIndex, in tileCache);
@@ -291,8 +286,6 @@ public class TileMapRenderer : Component, IFortRenderable
     public override void Start()
     {
         base.Start();
-
-        _coordsText = new Label();
 
         //var canvas = SceneManager.CurrentScene.Canvas;
         //canvas.AddItem(_coordsText);
@@ -391,9 +384,12 @@ public class TileMapRenderer : Component, IFortRenderable
         RefreshCurrentChunks();
     }
 
-    public override void Draw()
+    public void Render()
     {
-        base.Draw();
+    }
+
+    public void Draw()
+    {
 
         DrawTilemap();
         //DrawTilemapUnsafe();

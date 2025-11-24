@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Fort\Fort.Utility\Fort.Utility.csproj" />
+    <ProjectReference Include="..\Fort.MG\Fort.MG.csproj" />
   </ItemGroup>
 
 </Project>

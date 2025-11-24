@@ -2,10 +2,17 @@
 
 public abstract class Component : BaseObject
 {
+    private static int _idPool = 1;
 	public int Id { get; set; }
+    public string Name { get; set; }
 	public Entity Entity { get; set; }
 
 	public Transform Transform => Entity?.Transform;
+
+    protected Component()
+    {
+        Id = _idPool++;
+    }
 
 	public virtual void OnAdded() { }
 	public virtual void OnDestroyed() { }
@@ -27,7 +34,12 @@ public abstract class Component : BaseObject
 		return Entity.GetComponent<T>();
 	}
 
-	// Serialization methods
-	internal virtual void OnBeforeSerialize() { }
+    public virtual T GetComponent<T>(string name) where T : Component
+    {
+        return Entity.GetComponent<T>(name);
+    }
+
+    // Serialization methods
+    internal virtual void OnBeforeSerialize() { }
 	internal virtual void OnAfterDeserialize() { }
 }

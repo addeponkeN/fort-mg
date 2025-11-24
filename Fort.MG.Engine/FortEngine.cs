@@ -15,11 +15,6 @@ public static class FortEngine
 	public static SceneManager SceneManager { get; private set; }
 
 	/// <summary>
-	/// get current scene
-	/// </summary>
-	public static Scene Scene => SceneManager.Scene;
-
-	/// <summary>
 	/// get camera from current scene
 	/// </summary>
 	public static Camera Cam => SceneManager.Scene.Cam;

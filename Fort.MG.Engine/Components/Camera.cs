@@ -1,4 +1,5 @@
 ﻿using Fort.MG.EntitySystem;
+using Fort.MG.Scenes;
 using Fort.MG.VirtualViewports;
 using Microsoft.Xna.Framework;
 
@@ -6,6 +7,8 @@ namespace Fort.MG.Components;
 
 public class Camera : Component
 {
+    public static Camera Main => Scene.Current.Cam;
+
     public VirtualViewport Viewport;
 
     public float Zoom = 1f;
@@ -49,8 +52,9 @@ public class Camera : Component
             (Viewport.Width - Viewport.Width / Zoom) / 2f,
             (Viewport.Height - Viewport.Height / Zoom) / 2f);
 
-        var pos = new Vector3((-Transform.Position.X - _zoomOffset.X + Viewport.Width * 0.5f),
-            (-Transform.Position.Y - _zoomOffset.Y + Viewport.Height * 0.5f), 0f);
+        var tfPos = Transform.Position;
+        var pos = new Vector3((-tfPos.X - _zoomOffset.X + Viewport.Width * 0.5f),
+            (-tfPos.Y - _zoomOffset.Y + Viewport.Height * 0.5f), 0f);
 
         DrawMatrix = Matrix.CreateTranslation(pos) *
                      Matrix.CreateRotationZ(Rotation) *

@@ -4,18 +4,24 @@ namespace Fort.MG.EntitySystem;
 
 public class Transform : Component
 {
-    private Vector3 _localPosition;
-    private Vector3 _position;
+    private Vector3 _localPosition = Vector3.Zero;  // local space
+    private Vector3 _worldPosition = Vector3.Zero;  // cached
     private bool _dirty = true;
+
+    public Transform? Parent => Entity.Parent?.Transform;
+
+    // ------------------------
+    // Public API
+    // ------------------------
 
     public Vector2 Position
     {
-        get => new Vector2(_position.X, _position.Y);
-        set
+        get
         {
-            _position = new Vector3(value, _position.Z);
-            _dirty = true;
+            CalculateWorldPosition();
+            return new Vector2(_worldPosition.X, _worldPosition.Y);
         }
+        set => Position3 = new Vector3(value, _worldPosition.Z);
     }
 
     public Vector3 Position3
@@ -23,34 +29,25 @@ public class Transform : Component
         get => CalculateWorldPosition();
         set
         {
-            if (Entity.Parent != null)
+            if (Parent != null)
             {
-                var parentTransform = Entity.Parent.Transform;
-                if (parentTransform != null)
-                {
-                    _localPosition = value - parentTransform.Position3;
-                }
-                else
-                {
-                    _localPosition = value;
-                }
+                // Convert world → local
+                _localPosition = value - Parent.Position3;
             }
             else
             {
-                _position = value;
+                // Root entity → world = local
+                _localPosition = value;
             }
-            _dirty = true;
+
+            MarkDirty();
         }
     }
 
     public Vector2 LocalPosition
     {
-        get => new Vector2(_localPosition.X, _localPosition.Y);
-        set
-        {
-            _localPosition = new Vector3(value, _localPosition.Z);
-            _dirty = true;
-        }
+        get => new(_localPosition.X, _localPosition.Y);
+        set => LocalPosition3 = new Vector3(value, _localPosition.Z);
     }
 
     public Vector3 LocalPosition3
@@ -59,35 +56,55 @@ public class Transform : Component
         set
         {
             _localPosition = value;
-            _dirty = true;
+            MarkDirty();
         }
     }
 
+    public override void Start()
+    {
+        base.Start();
+        MarkDirty();
+    }
+
     public Vector2 Size { get; set; }
-    //public Vector2 Scale { get; set; } = Vector2.One;
+
+    // ------------------------
+    // Dirty propagation
+    // ------------------------
+
+    private void MarkDirty()
+    {
+        if (_dirty) return;
+
+        _dirty = true;
+
+        // Notify children that world position must be recalculated
+        if (Entity._children != null)
+            foreach (var child in Entity._children)
+            {
+                child.Transform.MarkDirty();
+            }
+    }
+
+    // ------------------------
+    // Calculate world position
+    // ------------------------
 
     internal Vector3 CalculateWorldPosition()
     {
         if (!_dirty)
-            return _position;
+            return _worldPosition;
 
-        if (Entity?.Parent != null)
+        if (Parent != null)
         {
-            var parentTransform = Entity.Parent.Transform;
-            if (parentTransform != null)
-            {
-                _position = parentTransform.Position3 + _localPosition;
-            }
-            else
-            {
-                _position = _localPosition;
-            }
+            _worldPosition = Parent.CalculateWorldPosition() + _localPosition;
         }
         else
         {
-            //_position = _localPosition;
+            _worldPosition = _localPosition; // Root transform
         }
+
         _dirty = false;
-        return _position;
+        return _worldPosition;
     }
 }

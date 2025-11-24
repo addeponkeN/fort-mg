@@ -4,7 +4,7 @@ namespace Fort.MG.ParticleEngine;
 
 public class ParticleEngine : EngineSystem
 {
-    List<ParticleEmitter> _emitters;
+    private List<ParticleEmitter> _emitters;
 
     public ParticleEngine()
     {
@@ -43,12 +43,10 @@ public class ParticleEngine : EngineSystem
 
     }
 
-    public override void Draw()
+    public  void Draw()
     {
-        base.Draw();
-
         for (int i = 0; i < _emitters.Count; i++)
             _emitters[i].Draw();
-
     }
+
 }

@@ -117,25 +117,7 @@ public class BasicEntityCollection : EntityCollection
 
     }
 
-    public override void Render()
-    {
-        //for (int i = 0; i < _initedEntities.Count; i++)
-        //{
-        //    var e = _initedEntities[i];
-        //    if (e.InitedFirstFrame)
-        //        e.Render();
-        //}
-    }
-
-    public override void Draw()
-    {
-        //for (int i = 0; i < _initedEntities.Count; i++)
-        //{
-        //    var e = _initedEntities[i];
-        //    if (e.InitedFirstFrame)
-        //        e.Draw();
-        //}
-    }
+    
 
     public override T GetComponent<T>()
     {
@@ -171,5 +153,13 @@ public class BasicEntityCollection : EntityCollection
     {
         _renderables.Remove(renderable);
         Scene.Current._renderPassManager.MarkDirty();
+    }
+
+    public override void DrawGizmos()
+    {
+        foreach (var ent in Entities)
+        {
+            ent.DrawGizmos();
+        }
     }
 }

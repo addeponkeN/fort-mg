@@ -1,5 +1,6 @@
 ﻿using Fort.MG.Assets.Data;
 using Fort.MG.EntitySystem;
+using Fort.MG.Gui.Components;
 using Fort.MG.Rendering;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -46,6 +47,15 @@ public class Sprite : Component, IFortRenderable
 
     public void SetSprite(SpriteRegion region)
     {
+        Region = region;
+        Frame = region;
+        Transform.Size = Frame.Size.ToVector2();
+        Origin = Frame.Size.ToVector2() * .5f;
+    }
+
+    public void SetSprite(string spriteName)
+    {
+        var region = FortEngine.Assets.GetSprite(spriteName);
         Region = region;
         Frame = region;
         Transform.Size = Frame.Size.ToVector2();

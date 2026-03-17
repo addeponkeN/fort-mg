@@ -2,12 +2,12 @@
 using Fort.MG.Assets.Storage;
 using Fort.MG.EntitySystem;
 using Fort.MG.Extensions;
-using Fort.MG.Gui.Components;
 using Fort.MG.Rendering;
 using Fort.MG.Scenes;
 using Fort.MG.TilemapEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace Fort.MG.Renderers;
 
@@ -197,9 +197,9 @@ public class TileMapRenderer : Component, IFortRenderable
             }
         }
 
-        for (int x = _chunkBounds.X; x <= _chunkBounds.Right; x++)
+        for (int x = _chunkBounds.X; x < _chunkBounds.Right; x++)
         {
-            for (int y = _chunkBounds.Y; y <= _chunkBounds.Bottom; y++)
+            for (int y = _chunkBounds.Y; y < _chunkBounds.Bottom; y++)
             {
                 if (!_prevRefreshChunkBounds.Contains(x, y))
                 {
@@ -213,6 +213,14 @@ public class TileMapRenderer : Component, IFortRenderable
         }
 
         _cache.Reset();
+
+        CurrentChunks.Sort((a, b) =>
+        {
+            int y = a.Y.CompareTo(b.Y);
+            if (y != 0) return y;
+            return a.X.CompareTo(b.X);
+        });
+
         RebuildCache();
 
         _prevRefreshChunkBounds = _chunkBounds;
@@ -262,12 +270,6 @@ public class TileMapRenderer : Component, IFortRenderable
         }
     }
 
-    public override void Init()
-    {
-        base.Init();
-
-    }
-
     public void SetTileMap(TileMap tilemap)
     {
         _map = tilemap;
@@ -314,53 +316,9 @@ public class TileMapRenderer : Component, IFortRenderable
     {
         base.Update(t);
 
-        //if (Input.KeyHold(Keys.D1))
-        //{
-        //	SetTile(1, 0, 2);
-        //}
-        //else if (Input.KeyHold(Keys.D2))
-        //{
-        //	SetTile(2, 1, 1);
-        //}
-        //else if (Input.KeyHold(Keys.D3))
-        //{
-        //	SetTile(3, 2, 0);
-        //}
-        //else if (Input.KeyHold(Keys.D4))
-        //{
-        //	SetTile(4, 2, 0);
-        //}
-        //else if (Input.KeyHold(Keys.D5))
-        //{
-        //	SetTile(5, 2, 0);
-        //}
-        //else if (Input.KeyHold(Keys.D6))
-        //{
-        //	SetTile(6, 2, 0);
-        //}
-        //else if (Input.KeyHold(Keys.D7))
-        //{
-        //	SetTile(7, 2, 0);
-        //}
-        //else if (Input.KeyHold(Keys.D8))
-        //{
-        //	SetTile(8, 2, 0);
-        //}
-        //else if (Input.KeyHold(Keys.D9))
-        //{
-        //	SetTile(9, 2, 0);
-        //}
-        //else if (Input.KeyHold(Keys.D0))
-        //{
-        //	SetTile(10, 2, 0);
-        //}
-        //else if (Input.KeyClick(Keys.Space))
-        //{
-        //	_map.Clear();
-        //}
-
+        //TestControls();
     }
-
+    
     private void SetTile(byte type, byte layer, int radius = 0)
     {
         var pos = SceneManager.CurrentScene.MousePositionWorld;
@@ -390,31 +348,7 @@ public class TileMapRenderer : Component, IFortRenderable
 
     public void Draw()
     {
-
         DrawTilemap();
-        //DrawTilemapUnsafe();
-
-        //var atlas = _tileRenderData.TilesetAtlas;
-        //var sb = Graphics.SpriteBatch;
-        //sb.Draw(atlas, Vector2.Zero, Color.White);
-        //for (int i = 0; i < 25; i++)
-        //{
-        //	var g = _tileRenderData.GetFrame(1, TileOrientation.All, (byte)i);
-        //	g.DrawLined(Color.Red, 1);
-        //}
-
-        //var grass0 = _tileRenderData.GetFrame(1, TileOrientation.All, 0);
-        //var grass1 = _tileRenderData.GetFrame(1, TileOrientation.All, 1);
-        //var grass2 = _tileRenderData.GetFrame(1, TileOrientation.All, 2);
-        //grass0.DrawLined(Color.Red, 1);
-        //grass1.DrawLined(Color.Red, 1);
-        //grass2.DrawLined(Color.Red, 1);
-
-        //var pos = SceneManager.CurrentScene.MousePositionWorld;
-        //var tileCoords = TileHelper.WorldToTile((int)pos.X, (int)pos.Y, _tileSize);
-        //_coordsText.Text = $"{tileCoords}";
-        //_coordsText.Position = pos;
-        //_coordsText.DrawText();
     }
 
     private void DrawTilemap()
@@ -422,7 +356,6 @@ public class TileMapRenderer : Component, IFortRenderable
         var atlas = _tileRenderData.TilesetAtlas;
         var sb = Graphics.SpriteBatch;
 
-        // Draw each layer using optimized batch method
         for (int layer = 0; layer < _map.Layers; layer++)
         {
             _cache.DrawLayer(layer, sb, atlas);
@@ -437,6 +370,54 @@ public class TileMapRenderer : Component, IFortRenderable
             var c = CurrentChunks[i];
             rec = c.WorldBounds(_chunkSize, _tileSize);
             rec.DrawLined(Color.MonoGameOrange);
+        }
+    }
+
+    private void TestControls()
+    {
+        if (Input.KeyHold(Keys.D1))
+        {
+            SetTile(2, 1, 2);
+        }
+        else if (Input.KeyHold(Keys.D2))
+        {
+            SetTile(1, 0, 1);
+        }
+        else if (Input.KeyHold(Keys.D3))
+        {
+            SetTile(3, 2, 0);
+        }
+        else if (Input.KeyHold(Keys.D4))
+        {
+            SetTile(4, 2, 0);
+        }
+        else if (Input.KeyHold(Keys.D5))
+        {
+            SetTile(5, 2, 0);
+        }
+        else if (Input.KeyHold(Keys.D6))
+        {
+            SetTile(6, 2, 0);
+        }
+        else if (Input.KeyHold(Keys.D7))
+        {
+            SetTile(7, 2, 0);
+        }
+        else if (Input.KeyHold(Keys.D8))
+        {
+            SetTile(8, 2, 0);
+        }
+        else if (Input.KeyHold(Keys.D9))
+        {
+            SetTile(9, 2, 0);
+        }
+        else if (Input.KeyHold(Keys.D0))
+        {
+            SetTile(10, 2, 0);
+        }
+        else if (Input.KeyClick(Keys.Space))
+        {
+            _map.Clear();
         }
     }
 }

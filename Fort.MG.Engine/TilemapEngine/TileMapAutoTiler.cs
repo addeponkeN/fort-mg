@@ -94,8 +94,7 @@ public class TileMapAutoTiler
                 variant = _config.SelectVariant(currentTile.Type, newOrientation);
             }
 
-            var tile = _map.Content.GetTile(currentTile.Type, newOrientation, variant);
-            _map.SetTile(x, y, layer, tile);
+            _map.SetTile(x, y, layer,  currentTile.Type, newOrientation, variant);
         }
         catch
         {

@@ -3,9 +3,13 @@ namespace Fort.MG.EntitySystem.Parsing;
 
 public class EntityTemplate
 {
-    public string Name { get; set; }
-    public TransformData Transform { get; set; }
-    public List<Dictionary<string, object>> Components { get; set; } = new();
+    public int Version { get; set; } = 1;
 
-    public List<EntityTemplate> Children { get; set; } = new();
+    public string Name { get; set; }
+    public string Extends { get; set; }
+
+    public TransformData Transform { get; set; }
+
+    public Dictionary<string, object> Components { get; set; } = new();
+    public Dictionary<string, EntityTemplate> Children { get; set; } = new();
 }

@@ -45,6 +45,7 @@ public static class RenderPasses
 
     public static RenderPass DefaultTileMapRenderer = new RenderPass
     {
+        SortMode = SpriteSortMode.Deferred,
         BlendState = BlendState.AlphaBlend,
         SamplerState = SamplerState.PointClamp,
         Priority = -10,

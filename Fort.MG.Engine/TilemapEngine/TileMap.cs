@@ -63,11 +63,26 @@ public class TileMap
         Content = tileData;
     }
 
+    public void SetTile(int tileX, int tileY, int layer, Byte tileType, TileOrientation ori = 0, byte variant = 0)
+    {
+        var c = GetChunk(tileX, tileY);
+        int i = TileHelper.TileToTileIndex(tileX, tileY, c.X, c.Y, ChunkSize);
+        var tile = Content.GetTile(tileType, ori, variant);
+        c.SetTile(i, layer, tile);
+    }
+
     public void SetTile(int tileX, int tileY, int layer, Tile tile)
     {
         var c = GetChunk(tileX, tileY);
         int i = TileHelper.TileToTileIndex(tileX, tileY, c.X, c.Y, ChunkSize);
         c.SetTile(i, layer, tile);
+    }
+
+    public Tile GetTile(int tileX, int tileY, int layer)
+    {
+        var c = GetChunk(tileX, tileY);
+        int i = TileHelper.TileToTileIndex(tileX, tileY, c.X, c.Y, ChunkSize);
+        return c.GetTile(i, layer);
     }
 
     public Chunk GetChunk(int tileX, int tileY)
@@ -112,7 +127,7 @@ public class TileLayer
         Tiles = new Tile[tm.ChunkLength];
         for (int i = 0; i < Tiles.Length; i++)
         {
-            Tiles[i] = null;//content.GetTile(content.DefaultTileType);
+            Tiles[i] = null;
         }
     }
 
@@ -148,7 +163,7 @@ public class TileObjectStore
         {
             var data = new TileObjectWorldData();
             _data.Add(data);
-            id = _data.Count;
+            id = _data.Count - 1;
         }
 
         return id;
@@ -171,7 +186,6 @@ public class TileObjectData
 public class Chunk
 {
     public TileLayer[] Layers;
-    public TileObject[] Objects;
 
     public int X;
     public int Y;
@@ -180,7 +194,6 @@ public class Chunk
     public void Setup(TileMap tm)
     {
         ChunkSize = (byte)tm.ChunkSize;
-        Objects = new TileObject[tm.ChunkLength];
         Layers = new TileLayer[tm.Layers];
         for (int i = 0; i < tm.Layers; i++)
         {
@@ -200,11 +213,6 @@ public class Chunk
         Layers[layer].Tiles[i] = tile;
     }
 
-    public void SetObject(int x, int y, TileObject to)
-    {
-        int i = TileHelper.TileToTileIndex(x, y, X, Y, ChunkSize);
-        Objects[i] = to;
-    }
 
     public void Clear()
     {
@@ -212,8 +220,5 @@ public class Chunk
         {
             Layers[i].Clear();
         }
-
-        Array.Clear(Objects);
-
     }
 }

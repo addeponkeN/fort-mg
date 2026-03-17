@@ -5,8 +5,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Fort\Fort.Network\Fort.Network.csproj" />
     <ProjectReference Include="..\Fort.MG.Engine\Fort.MG.Engine.csproj" />
+    <ProjectReference Include="..\Fort.MG.Network.Messages\Fort.MG.Network.Messages.csproj" />
   </ItemGroup>
 
 </Project>

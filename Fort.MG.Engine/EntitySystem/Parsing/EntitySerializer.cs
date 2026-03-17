@@ -36,6 +36,8 @@ public static class EntitySerializer
             throw new FileNotFoundException($"Entity templates not found: {filePath}");
 
         var yaml = File.ReadAllText(filePath);
+
+        // An entity template file can contain multiple templates, therefore deserialize a List<>
         var templates = YamlDeserializer.Deserialize<List<EntityTemplate>>(yaml);
 
         return templates.Select(CreateEntityFromTemplate).ToList();
@@ -57,6 +59,8 @@ public static class EntitySerializer
 
     public static Entity CreateEntityFromTemplate(EntityTemplate template)
     {
+        template = ResolveInheritance(template);
+
         var entity = Entity.Create();
         entity.Name = template.Name;
 
@@ -69,26 +73,93 @@ public static class EntitySerializer
         }
 
         // components
-        foreach (var componentDict in template.Components)
+        foreach (var (typeName, rawData) in template.Components)
         {
-            var component = ComponentSerializer.DeserializeComponentFromDict(componentDict, entity);
+            Dictionary<string, object> data;
+
+            if (rawData == null)
+            {
+                data = new Dictionary<string, object>();
+            }
+            else if (rawData is Dictionary<string, object> strDict)
+            {
+                data = strDict;
+            }
+            else if (rawData is Dictionary<object, object> objDict)
+            {
+                data = objDict.ToDictionary(x => x.Key.ToString(), x => x.Value);
+            }
+            else
+            {
+                throw new Exception($"Invalid component data for {typeName}");
+            }
+
+            var component = ComponentSerializer.DeserializeComponentFromDict(typeName, data, entity);
             if (component != null)
+            {
                 entity.AddComponentViaSerializer(component);
+            }
         }
 
-        foreach (var c in entity.Components) c.Init();
-        foreach (var c in entity.Components) c.OnAdded();
+        for (var i = 0; i < entity.Components.Count; i++)
+            entity.Components[i].Init();
+        for (var i = 0; i < entity.Components.Count; i++)
+            entity.Components[i].OnAdded();
 
         // children
-        foreach (var childTemplate in template.Children)
+        foreach (var (childName, childTemplate) in template.Children)
         {
             var child = CreateEntityFromTemplate(childTemplate);
+            child.Name = childName;
             child.Parent = entity;
+
             if (child.Transform.Size == Vector2.Zero)
+            {
                 child.Transform.Size = entity.Transform.Size;
+            }
         }
 
         return entity;
+    }
+
+    private static EntityTemplate ResolveInheritance(EntityTemplate template, HashSet<string> visited = null)
+    {
+        if (template.Extends == null)
+            return template;
+
+        visited ??= [];
+
+        if (!visited.Add(template.Name))
+            throw new Exception($"Cyclic inheritance detected for '{template.Name}'");
+
+        var parent = EntityDatabase.LoadEntityTemplate(template.Extends);
+
+        parent = ResolveInheritance(parent, visited);
+
+        return MergeTemplates(parent, template);
+    }
+
+    private static EntityTemplate MergeTemplates(EntityTemplate parent, EntityTemplate child)
+    {
+        var result = new EntityTemplate
+        {
+            Name = child.Name ?? parent.Name,
+            Transform = child.Transform ?? parent.Transform
+        };
+
+        foreach (var kv in parent.Components)
+            result.Components[kv.Key] = kv.Value;
+
+        foreach (var kv in child.Components)
+            result.Components[kv.Key] = kv.Value;
+
+        foreach (var kv in parent.Children)
+            result.Children[kv.Key] = kv.Value;
+
+        foreach (var kv in child.Children)
+            result.Children[kv.Key] = kv.Value;
+
+        return result;
     }
 
     private static EntityTemplate CreateTemplateFromEntity(Entity entity)
@@ -111,13 +182,19 @@ public static class EntitySerializer
             if (component is Transform) continue;
 
             var dict = ComponentSerializer.SerializeComponentToDict(component);
-            template.Components.Add(dict);
+
+            var typeName = (string)dict["type"];
+            dict.Remove("type");
+
+            template.Components[typeName] = dict;
         }
 
         // children
         foreach (var child in entity.GetChildren())
         {
-            template.Children.Add(CreateTemplateFromEntity(child));
+            var childTemplate = CreateTemplateFromEntity(child);
+            var key = child.Name ?? $"child_{template.Children.Count}";
+            template.Children[key] = childTemplate;
         }
 
         return template;

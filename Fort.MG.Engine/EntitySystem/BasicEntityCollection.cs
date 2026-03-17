@@ -11,7 +11,7 @@ public interface IFortRenderable
     void Render();
     bool Enabled { get; }
     float DrawLayer { get; }
-    bool IsDestroyed { get; }
+    bool MarkedForDestroy { get; }
     RenderPass RenderPass { get; }
 }
 
@@ -30,7 +30,7 @@ public interface IFortDrawable
 
 public class BasicEntityCollection : EntityCollection
 {
-    private readonly IdPool _idPool = new();
+    private readonly IdPool16S _idPool = new();
 
     private SystemMessageSystem _messageSystem;
 
@@ -83,7 +83,7 @@ public class BasicEntityCollection : EntityCollection
         for (var i = 0; i < _renderables.Count; i++)
         {
             var renderable = _renderables[i];
-            if (renderable.IsDestroyed)
+            if (renderable.MarkedForDestroy)
             {
                 _renderables.RemoveAt(i--);
             }
@@ -108,7 +108,7 @@ public class BasicEntityCollection : EntityCollection
         for (int i = 0; i < _initedEntities.Count; i++)
         {
             var e = _initedEntities[i];
-            if (e.IsDestroyed)
+            if (e.MarkedForDestroy)
             {
                 Remove(e);
                 i--;

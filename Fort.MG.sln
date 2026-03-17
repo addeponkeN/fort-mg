@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.11.35327.3
+# Visual Studio Version 18
+VisualStudioVersion = 18.4.11605.240 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fort.MG", "Fort.MG\Fort.MG.csproj", "{0C89B0FE-9D51-4DA4-B33C-01C62C00B10D}"
 EndProject
@@ -38,6 +38,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fort.Network", "..\Fort\Fort.Network\Fort.Network.csproj", "{93758FE3-8A42-433C-B5AF-4A9D7925C2BC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fort.MG.Engine", "Fort.MG.Engine\Fort.MG.Engine.csproj", "{110BAA96-FD62-417E-AAB9-D676AEC28ED1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fort.MG.Network.Messages", "Fort.MG.Network.Messages\Fort.MG.Network.Messages.csproj", "{F19CAB35-EF13-413D-9F29-5079CE4443DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fort.Network.SourceGen", "..\Fort\Fort.Network.SourceGen\Fort.Network.SourceGen.csproj", "{FE7012FF-4974-D98B-EE10-D1B5E06EE6EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +109,14 @@ Global
 		{110BAA96-FD62-417E-AAB9-D676AEC28ED1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{110BAA96-FD62-417E-AAB9-D676AEC28ED1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{110BAA96-FD62-417E-AAB9-D676AEC28ED1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F19CAB35-EF13-413D-9F29-5079CE4443DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F19CAB35-EF13-413D-9F29-5079CE4443DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F19CAB35-EF13-413D-9F29-5079CE4443DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F19CAB35-EF13-413D-9F29-5079CE4443DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE7012FF-4974-D98B-EE10-D1B5E06EE6EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE7012FF-4974-D98B-EE10-D1B5E06EE6EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE7012FF-4974-D98B-EE10-D1B5E06EE6EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE7012FF-4974-D98B-EE10-D1B5E06EE6EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -115,6 +127,7 @@ Global
 		{1E422F57-AAD2-4BAB-8D33-8323F879B6FA} = {7BB5C73D-CAA5-42AD-A3E3-C29E85B7F85A}
 		{C6E74B10-25E1-4F6C-A489-F16B609A355D} = {7BB5C73D-CAA5-42AD-A3E3-C29E85B7F85A}
 		{93758FE3-8A42-433C-B5AF-4A9D7925C2BC} = {7BB5C73D-CAA5-42AD-A3E3-C29E85B7F85A}
+		{FE7012FF-4974-D98B-EE10-D1B5E06EE6EA} = {7BB5C73D-CAA5-42AD-A3E3-C29E85B7F85A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BBF4550E-8862-42C0-9F5C-46B49527C404}

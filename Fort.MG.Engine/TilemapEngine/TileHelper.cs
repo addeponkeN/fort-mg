@@ -14,7 +14,19 @@ public static class TileHelper
 		return localY * chunkSize + localX;
 	}
 
-	public static Point TileIndexToWorld(int tileIndex, int chunkX, int chunkY, int tileSize, int chunkSize)
+    public static int TileToTileIndex(int x, int y, int chunkSize)
+    {
+        int localX = x % chunkSize;
+        int localY = y % chunkSize;
+
+        if (localX < 0) localX += chunkSize;
+        if (localY < 0) localY += chunkSize;
+
+        return localY * chunkSize + localX;
+    }
+
+
+    public static Point TileIndexToWorld(int tileIndex, int chunkX, int chunkY, int tileSize, int chunkSize)
 	{
 		// Find the tile's position within the chunk
 		int localY = (tileIndex / chunkSize);

@@ -1,5 +1,4 @@
-﻿using Fort.MG.YamlConverters;
-using System.Reflection;
+﻿using System.Reflection;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -7,58 +6,51 @@ namespace Fort.MG.EntitySystem.Parsing;
 
 public static class ComponentSerializer
 {
-	public static Dictionary<string, object> SerializeComponentToDict(Component component)
-	{
-		var dict = new Dictionary<string, object>
-		{
-			["type"] = ComponentRegistry.GetTypeName(component.GetType()),
-			["enabled"] = component.Enabled
-		};
+    public static Dictionary<string, object> SerializeComponentToDict(Component component)
+    {
+        var dict = new Dictionary<string, object>();
 
-		component.OnBeforeSerialize();
+        component.OnBeforeSerialize();
 
-		foreach (var member in GetSerializableMembers(component.GetType()))
-		{
-			var name = GetSerializationName(member);
-			var value = GetMemberValue(member, component);
-			if (value != null)
-				dict[name] = value;
-		}
+        foreach (var member in GetSerializableMembers(component.GetType()))
+        {
+            var name = GetSerializationName(member);
+            var value = GetMemberValue(member, component);
+            if (value != null)
+                dict[name] = value;
+        }
 
-		return dict;
-	}
+        if (!component.Enabled)
+            dict["enabled"] = false;
 
-	public static Component DeserializeComponentFromDict(Dictionary<string, object> dict, Entity entity)
-	{
-		if (!dict.TryGetValue("type", out var typeNameObj))
-			return null;
+        return dict;
+    }
 
-		var typeName = typeNameObj.ToString();
-		var component = ComponentRegistry.CreateComponent(typeName);
-		component.Entity = entity;
-		if (component == null)
-			return null;
+    public static Component DeserializeComponentFromDict(string typeName, Dictionary<string, object> dict, Entity entity)
+    {
+        var component = ComponentRegistry.CreateComponent(typeName);
+        if (component == null)
+            return null;
 
-		var yamlDict = new Dictionary<string, object>(dict);
-		yamlDict.Remove("type");
+        component.Entity = entity;
 
-		var tempYaml = YamlSerializationFactory.Serializer.Serialize(yamlDict);
-		var typedComponent = (Component)YamlSerializationFactory.Deserializer.Deserialize(tempYaml, component.GetType());
+        var tempYaml = YamlSerializationFactory.Serializer.Serialize(dict);
+        var typedComponent = (Component)YamlSerializationFactory.Deserializer.Deserialize(tempYaml, component.GetType());
 
-		foreach (var member in GetSerializableMembers(component.GetType()))
-		{
-			var value = GetMemberValue(member, typedComponent);
-			SetMemberValue(member, component, value);
-		}
+        foreach (var member in GetSerializableMembers(component.GetType()))
+        {
+            var value = GetMemberValue(member, typedComponent);
+            SetMemberValue(member, component, value);
+        }
 
-		if (dict.TryGetValue("enabled", out var enabledObj))
-			component.Enabled = Convert.ToBoolean(enabledObj);
+        if (dict.TryGetValue("enabled", out var enabledObj))
+            component.Enabled = Convert.ToBoolean(enabledObj);
 
-		component.OnAfterDeserialize();
+        component.OnAfterDeserialize();
         return component;
-	}
+    }
 
-	private static object ConvertValue(object value, Type targetType)
+    private static object ConvertValue(object value, Type targetType)
 	{
 		if (value == null || targetType == null) return value;
 

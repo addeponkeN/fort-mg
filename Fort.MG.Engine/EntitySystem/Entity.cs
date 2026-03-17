@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Fort.MG.Network.Messages;
+using Microsoft.Xna.Framework;
 
 namespace Fort.MG.EntitySystem;
 
@@ -8,7 +9,8 @@ public class BaseObject
     internal bool Inited;
 
     public bool Enabled { get; set; } = true;
-    public bool IsDestroyed { get; internal set; }
+    public bool MarkedForDestroy { get; internal set; }
+    public bool HasDestroyed { get; internal set; }
 
     /// <summary>
     /// One time init - called when the entity object is created - once ever.
@@ -28,7 +30,7 @@ public class BaseObject
     /// </summary>
     public virtual void Destroy()
     {
-        IsDestroyed = true;
+        MarkedForDestroy = true;
     }
 
     internal virtual void UpdateFirstFrame(IGameTime t)
@@ -63,7 +65,8 @@ public class Entity : BaseObject
 
     internal EntityCollection _collection;
 
-    public int Id { get; set; }
+    public EntityId Id { get; set; }
+    public EntityType Type { get; set; }
     public string Name { get; set; }
 
     public Entity? Parent
@@ -94,7 +97,7 @@ public class Entity : BaseObject
         }
     }
 
-    public Entity InstantiateChild()
+    public Entity AddChild()
     {
         var child = Instantiate();
         child.Parent = this;
@@ -192,7 +195,7 @@ public class Entity : BaseObject
 
     public virtual void RemoveComponent(Component comp)
     {
-        if (!comp.IsDestroyed)
+        if (!comp.MarkedForDestroy)
             comp.Destroy();
         comp.OnDestroyed();
 
@@ -238,13 +241,13 @@ public class Entity : BaseObject
     /// </summary>
     public virtual void OnDestroyed()
     {
-        if (IsDestroyed)
+        if (HasDestroyed)
         {
             //Log.W($"entity tried to destroy more than once - {GetType().Name} ");
             return;
         }
 
-        IsDestroyed = true;
+        HasDestroyed = true;
         for (int i = 0; i < Components.Count; i++)
         {
             var comp = Components[i];
@@ -273,7 +276,7 @@ public class Entity : BaseObject
         for (int i = 0; i < Components.Count; i++)
         {
             var c = Components[i];
-            if (c.IsDestroyed)
+            if (c.MarkedForDestroy)
             {
                 RemoveComponent(c);
                 i--;
@@ -294,28 +297,6 @@ public class Entity : BaseObject
                 component.DrawGizmos();
         }
     }
-
-    //public override void Render()
-    //{
-    //    for (int i = 0; i < Components.Count; i++)
-    //    {
-    //        var c = Components[i];
-    //        if (!c.Enabled)
-    //            continue;
-    //        c.Render();
-    //    }
-    //}
-
-    //public override void Draw()
-    //{
-    //    for (int i = 0; i < Components.Count; i++)
-    //    {
-    //        var c = Components[i];
-    //        if (!c.Enabled)
-    //            continue;
-    //        c.Draw();
-    //    }
-    //}
 
     /// <summary>
     /// Create an Entity with a component attached
@@ -408,7 +389,7 @@ public class Entity : BaseObject
     internal virtual void Spawn()
     {
         Parent = null;
-        IsDestroyed = false;
+        MarkedForDestroy = false;
         InitedFirstFrame = false;
         // UpdateLife = true;
         // Life = new AgoLife();

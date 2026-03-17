@@ -77,7 +77,7 @@ public sealed class RenderPassManager
 
         foreach (var r in renderables)
         {
-            if (!r.Enabled || r.IsDestroyed) continue;
+            if (!r.Enabled || r.MarkedForDestroy) continue;
 
             var pass = r.RenderPass ?? RenderPasses.Default;
 

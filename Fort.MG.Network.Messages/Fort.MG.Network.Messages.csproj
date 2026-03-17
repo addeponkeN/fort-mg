@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Fort\Fort.Network.SourceGen\Fort.Network.SourceGen.csproj"
+		                  OutputItemType="Analyzer"
+		                  ReferenceOutputAssembly="false" />
+		<ProjectReference Include="..\..\Fort\Fort.Network\Fort.Network.csproj" />
+	</ItemGroup>
+
+</Project>

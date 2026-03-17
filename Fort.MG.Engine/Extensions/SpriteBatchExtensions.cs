@@ -49,7 +49,7 @@ public static class SpriteBatchExtensions
 
     public static void DrawCircleFilled(this SpriteBatch sb, Vector2 pos, float rad, Color color, float layer)
     {
-        // todo
+        _circleRenderer.DrawFilled(pos, rad, color, layer);
     }
 
 }

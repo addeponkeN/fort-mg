@@ -32,17 +32,28 @@ public static class YamlSerializationFactory
 		return builder.Build();
 	}
 
-	private static readonly IYamlTypeConverter[] BaseConverters =
+    private static readonly IYamlTypeConverter[] DataObjectBaseConverters =
+    [
+        new Vector2YamlConverter(),
+        new Vector3YamlConverter(),
+        new ColorYamlConverter(),
+        new RectangleYamlConverter(),
+        new SpriteRegionYamlConverter(),
+    ];
+
+    private static readonly IYamlTypeConverter[] BaseConverters =
 	[
 		new Vector2YamlConverter(),
 		new Vector3YamlConverter(),
 		new ColorYamlConverter(),
 		new RectangleYamlConverter(),
 		new SpriteRegionYamlConverter(),
+		new DataObjectReferenceConverter(),
 	];
 
 	public static IYamlTypeConverter[] AllConverters => BaseConverters.ToArray();
 
 	public static readonly ISerializer Serializer = BuildSerializer(BaseConverters);
 	public static readonly IDeserializer Deserializer = BuildDeserializer(BaseConverters);
+	public static readonly IDeserializer DataObjectDeserializer = BuildDeserializer(DataObjectBaseConverters);
 }

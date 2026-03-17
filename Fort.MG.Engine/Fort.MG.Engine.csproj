@@ -12,6 +12,7 @@
     <ProjectReference Include="..\Fort.MG.Assets\Fort.MG.Assets.csproj" />
     <ProjectReference Include="..\Fort.MG.Extensions\Fort.MG.Extensions.csproj" />
     <ProjectReference Include="..\Fort.MG.Gui\Fort.MG.Gui.csproj" />
+    <ProjectReference Include="..\Fort.MG.Network.Messages\Fort.MG.Network.Messages.csproj" />
     <ProjectReference Include="..\Fort.MG\Fort.MG.csproj" />
   </ItemGroup>
 

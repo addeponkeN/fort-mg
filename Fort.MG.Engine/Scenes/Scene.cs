@@ -186,7 +186,7 @@ public class Scene
             sb.End();
         }
 
-        sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullClockwise, null, Cam.DrawMatrix);
+        sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null, Cam.DrawMatrix);
         EntityManagerSystem.DrawGizmos();
         sb.End();
 

@@ -53,7 +53,7 @@ public class SceneManager : EngineSystem
         FortEngine.SystemManager.OnSceneChanged(scene);
     }
 
-    public override void Update(IGameTime t)
+    public override void Update(IGameContext t)
     {
         if (Scene != null)
         {

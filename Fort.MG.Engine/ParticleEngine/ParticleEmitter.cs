@@ -62,7 +62,7 @@ public class ParticleEmitter : Entity, IFortRenderable
         _particles.Add(p);
     }
 
-    public override void Update(IGameTime t)
+    public override void Update(IGameContext t)
     {
         base.Update(t);
         var dt = t.Delta;

@@ -23,7 +23,7 @@ public class CameraFollower : Component
 		_cam.Transform.Position = Target.LocalPosition;
 	}
 
-	public override void Update(IGameTime t)
+	public override void Update(IGameContext t)
 	{
 		base.Update(t);
 

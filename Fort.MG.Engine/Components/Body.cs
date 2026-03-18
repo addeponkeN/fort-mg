@@ -27,13 +27,13 @@ public class Body : Component
         _timeSinceLastMove = 0f;
     }
 
-    public override void Update(IGameTime t)
+    public override void Update(IGameContext t)
     {
         _movedThisFrame = false;
 
         if (Velocity != Vector2.Zero)
         {
-            ApplyMovement(Velocity * t.Delta);
+            ApplyMovement(Velocity * (float)t.Delta);
         }
 
         _movedPreviousFrame = _movedThisFrame;

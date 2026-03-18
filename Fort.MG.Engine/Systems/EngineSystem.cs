@@ -7,7 +7,7 @@ public abstract class EngineSystem : BaseObject
 {
     public EngineSystemManager SystemManager { get; internal set; }
 
-    public virtual void PreUpdate(IGameTime gt)
+    public virtual void PreUpdate(IGameContext gt)
     {
 
     }
@@ -16,7 +16,7 @@ public abstract class EngineSystem : BaseObject
     {
     }
 
-    public virtual void PostUpdate(IGameTime t)
+    public virtual void PostUpdate(IGameContext t)
     {
     }
 

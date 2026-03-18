@@ -33,7 +33,7 @@ public class DebugPrinter : EngineSystem
         _textRenderer = new();
     }
 
-    public override void Update(IGameTime t)
+    public override void Update(IGameContext t)
     {
         base.Update(t);
         _fps += (int)((1f / FortEngine.Time.ElapsedGameTime.TotalSeconds - _fps) * 0.1);

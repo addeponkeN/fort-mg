@@ -7,32 +7,35 @@ namespace Fort.MG.Utils;
 /// </summary>
 public static class Time
 {
-    static IGameTime _oboTime;
-    public static float TimeScale = 1f;
+    static IGameContext _oboContext;
+    public static double TimeScale = 1.0;
 
     /// <summary>
     /// if possible - use IOboTime in Update(IOboTime t) methods instead
     /// </summary>
-    public static float Delta => _oboTime.Delta;
+    public static double Delta => _oboContext.Delta;
     /// <summary>
     /// if possible - use IOboTime in Update(IOboTime t) methods instead
     /// </summary>
-    public static float DeltaScaled => _oboTime.Delta * TimeScale;
-    /// <summary>
-    /// if possible - use IOboTime in Update(IOboTime t) methods instead
-    /// </summary>
-    public static float TotalTime => _oboTime.TotalGameTime;
+    public static double DeltaScaled => _oboContext.Delta * TimeScale;
 
-    public static IGameTime GetTimeManager() => _oboTime;
+    /// <summary>
+    /// if possible - use IOboTime in Update(IOboTime t) methods instead
+    /// </summary>
+    public static double TotalTime => _oboContext.TotalGameTime;
+
+    public static IGameContext GetTimeManager() => _oboContext;
     
-    public static void Init(IGameTime oboTime)
+    public static void Init(IGameContext oboContext)
     {
-        _oboTime = oboTime;
+        _oboContext = oboContext;
     }
 }
 
-public class DefaultGameTime : IGameTime
+public class DefaultGameContext : IGameContext
 {
     public float Delta => FortEngine.Time.Delta();
-    public float TotalGameTime => (float)FortEngine.Time.TotalGameTime.TotalSeconds;
+    public float TotalGameTime => FortEngine.Time.TotalSeconds();
+    public double Delta64 => FortEngine.Time.Delta64();
+    public double TotalGameTime64 => FortEngine.Time.TotalSeconds64();
 }

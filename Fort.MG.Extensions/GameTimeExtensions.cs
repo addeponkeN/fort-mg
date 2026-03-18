@@ -7,4 +7,7 @@ public static class GameTimeExtensions
     public static float Delta(this GameTime gt) => (float)gt.ElapsedGameTime.TotalSeconds;
     public static float DeltaMs(this GameTime gt) => (float)gt.ElapsedGameTime.TotalMilliseconds;
     public static float TotalSeconds(this GameTime gt) => (float)gt.TotalGameTime.TotalSeconds;
+
+    public static double Delta64(this GameTime gt) => gt.ElapsedGameTime.TotalSeconds;
+    public static double TotalSeconds64(this GameTime gt) => gt.TotalGameTime.TotalSeconds;
 }

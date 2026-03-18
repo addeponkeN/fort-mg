@@ -37,14 +37,14 @@ public static class FortEngine
 
 	public static void Load()
 	{
-		Load(new DefaultGameTime());
+		Load(new DefaultGameContext());
 	}
 
-	public static void Load(IGameTime gameTime)
+	public static void Load(IGameContext gameContext)
 	{
 		SceneManager = Game.SceneManager;
 
-		Utils.Time.Init(gameTime);
+		Utils.Time.Init(gameContext);
 		FortExtensions.Initialize(Graphics.SpriteBatch);
 		SystemManager = new EngineSystemManager();
 

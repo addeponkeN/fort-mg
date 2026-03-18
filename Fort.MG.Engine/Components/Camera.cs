@@ -44,7 +44,7 @@ public class Camera : Component
         Viewport = new VirtualViewportScaling(1280, 720);
     }
 
-    public override void Update(IGameTime t)
+    public override void Update(IGameContext t)
     {
         base.Update(t);
 

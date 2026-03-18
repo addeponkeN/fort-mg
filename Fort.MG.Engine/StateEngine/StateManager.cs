@@ -2,7 +2,7 @@ namespace Fort.MG.StateEngine;
 
 public class StateUpdater
 {
-    public void UpdateState<T>(IGameTime t, ref T state) where T : State
+    public void UpdateState<T>(IGameContext t, ref T state) where T : State
     {
         switch (state.CurrentState)
         {
@@ -80,7 +80,7 @@ public class StateManager
         _next = null;
     }
 
-    public virtual void Update(IGameTime t)
+    public virtual void Update(IGameContext t)
     {
         if (Current == null)
         {

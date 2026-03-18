@@ -7,7 +7,7 @@ public abstract class EntityCollection
     {
         //PoolManager<Entity>.Free(ent);
     }
-    public abstract void Update(IGameTime t);
+    public abstract void Update(IGameContext t);
 
     public abstract T? GetComponent<T>() where T : Component;
     public abstract Entity? Get(string name);

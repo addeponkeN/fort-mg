@@ -57,21 +57,21 @@ internal class PerformanceMetricsSystem : EngineSystem, IFortDrawableGui, IFortD
         _updateTimer.Loop = true;
     }
 
-    public override void PreUpdate(IGameTime gt)
+    public override void PreUpdate(IGameContext gt)
     {
         base.PreUpdate(gt);
 
         _frameStart = GetPreciseTimestamp();
     }
 
-    public override void Update(IGameTime t)
+    public override void Update(IGameContext t)
     {
         base.Update(t);
 
         _updateStart = GetPreciseTimestamp();
     }
 
-    public override void PostUpdate(IGameTime t)
+    public override void PostUpdate(IGameContext t)
     {
         base.PostUpdate(t);
 

@@ -12,7 +12,7 @@ public class TaskNotifierSystem : EngineSystem
 		_manager = new();
 	}
 
-	public override void Update(IGameTime t)
+	public override void Update(IGameContext t)
 	{
 		base.Update(t);
 		_manager.Update();

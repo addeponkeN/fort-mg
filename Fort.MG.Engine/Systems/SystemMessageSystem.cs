@@ -49,7 +49,7 @@ public class SystemMessageSystem : EngineSystem, IFortDrawableGui
         _messages.Add(newMsg);
     }
 
-    public override void Update(IGameTime t)
+    public override void Update(IGameContext t)
     {
         base.Update(t);
 

@@ -25,7 +25,7 @@ public class DefaultCameraControls : Component
         _cam = Entity.GetComponent<Camera>();
     }
 
-    public override void Update(IGameTime t)
+    public override void Update(IGameContext t)
     {
         base.Update(t);
 

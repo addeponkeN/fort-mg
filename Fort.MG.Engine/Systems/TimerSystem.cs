@@ -29,7 +29,7 @@ public class TimerSystem : EngineSystem
         _hashedTimers.Remove(timer);
     }
     
-    public override void Update(IGameTime t)
+    public override void Update(IGameContext t)
     {
         base.Update(t);
         for(int i = 0; i < _timers.Count; i++)

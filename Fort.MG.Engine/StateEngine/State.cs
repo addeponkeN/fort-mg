@@ -42,7 +42,7 @@ public class State
     /// <summary>
     /// Step 1: Update loop while starting
     /// </summary>
-    public virtual void UpdateStarting(IGameTime t)
+    public virtual void UpdateStarting(IGameContext t)
     {
         Timer += t.Delta;
     }
@@ -58,7 +58,7 @@ public class State
     /// <summary>
     /// Step 2: The main update loop of the state
     /// </summary>
-    public virtual void Update(IGameTime t)
+    public virtual void Update(IGameContext t)
     {
     }
 
@@ -75,7 +75,7 @@ public class State
     /// <summary>
     /// During step 3 - Updating
     /// </summary>
-    public virtual void UpdateExiting(IGameTime t)
+    public virtual void UpdateExiting(IGameContext t)
     {
         Timer += t.Delta;
     }

@@ -312,7 +312,7 @@ public class TileMapRenderer : Component, IFortRenderable
         }
     }
 
-    public override void Update(IGameTime t)
+    public override void Update(IGameContext t)
     {
         base.Update(t);
 

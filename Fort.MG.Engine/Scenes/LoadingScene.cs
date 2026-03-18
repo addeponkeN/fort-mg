@@ -56,7 +56,7 @@ public class LoadingScene : Scene
 		return true;
 	}
 
-	public override void Update(IGameTime t)
+	public override void Update(IGameContext t)
 	{
 		base.Update(t);
 

@@ -41,7 +41,7 @@ public class FortTimer : IDisposable
         FortEngine.SystemManager.Get<TimerSystem>().Remove(this);
     }
 
-    public void Update(IGameTime t)
+    public void Update(IGameContext t)
     {
         if(!IsRunning) return;
 
@@ -59,7 +59,7 @@ public class FortTimer : IDisposable
 
     public void Dispose()
     {
-        OnTick = null;
+        OnTick = null!;
         FortEngine.SystemManager.Get<TimerSystem>().Remove(this);
     }
 }

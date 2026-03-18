@@ -1,6 +1,5 @@
 ﻿using Fort.MG.Rendering;
 using Fort.MG.Scenes;
-using Fort.MG.Systems;
 using Fort.Utility;
 
 namespace Fort.MG.EntitySystem;
@@ -32,18 +31,12 @@ public class BasicEntityCollection : EntityCollection
 {
     private readonly IdPool16S _idPool = new();
 
-    private SystemMessageSystem _messageSystem;
-
     private readonly List<IFortRenderable> _renderables = new();
     private readonly List<Entity> _newEntities = new();
     private readonly List<Entity> _initedEntities = new();
 
     public List<Entity> Entities = new();
 
-    public BasicEntityCollection()
-    {
-        _messageSystem = FortEngine.GetSystem<SystemMessageSystem>();
-    }
 
     public override void Add(Entity ent)
     {
@@ -70,7 +63,7 @@ public class BasicEntityCollection : EntityCollection
         ent._collection = null;
     }
 
-    public override void Update(IGameTime t)
+    public override void Update(IGameContext t)
     {
         for (int i = 0; i < _newEntities.Count; i++)
         {
@@ -100,7 +93,7 @@ public class BasicEntityCollection : EntityCollection
                 }
                 catch (Exception exception)
                 {
-                    _messageSystem.AddMessage($"Error in entity update: {e.Name}: {exception.Message}", true);
+                    Logger.Error($"Error in entity update: {e.Name}: {exception.Message}");
                 }
             }
         }
@@ -146,13 +139,13 @@ public class BasicEntityCollection : EntityCollection
     public override void AddRenderable(IFortRenderable renderable)
     {
         _renderables.Add(renderable);
-        Scene.Current._renderPassManager.MarkDirty();
+        Scene.Current.RenderPassManager.MarkDirty();
     }
 
     public override void RemoveRenderable(IFortRenderable renderable)
     {
         _renderables.Remove(renderable);
-        Scene.Current._renderPassManager.MarkDirty();
+        Scene.Current.RenderPassManager.MarkDirty();
     }
 
     public override void DrawGizmos()

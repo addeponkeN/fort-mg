@@ -33,7 +33,7 @@ public class BaseObject
         MarkedForDestroy = true;
     }
 
-    internal virtual void UpdateFirstFrame(IGameTime t)
+    internal virtual void UpdateFirstFrame(IGameContext t)
     {
         if (!InitedFirstFrame)
         {
@@ -42,7 +42,7 @@ public class BaseObject
         }
     }
 
-    public virtual void Update(IGameTime t)
+    public virtual void Update(IGameContext t)
     {
         if (!InitedFirstFrame)
         {
@@ -260,7 +260,7 @@ public class Entity : BaseObject
         Components.Clear();
     }
 
-    public override void Update(IGameTime t)
+    public override void Update(IGameContext t)
     {
         base.Update(t);
 

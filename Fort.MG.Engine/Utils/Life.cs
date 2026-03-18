@@ -47,7 +47,7 @@ public struct Life
         OutTime = outTime;
     }
 
-    public void Update(IGameTime t)
+    public void Update(IGameContext t)
     {
         if(Timer >= 0)
         {

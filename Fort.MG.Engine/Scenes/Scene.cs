@@ -17,33 +17,23 @@ public enum SceneStates
     Exited,
 }
 
-public class Scene
+public class Scene : BaseScene
 {
-    public static Scene Current => SceneManager.CurrentScene;
-
-    private RenderTarget2D _target;
     private FortTimer _enterTime;
     private FortTimer _exitTime;
 
-    internal SceneStates State;
+    private RenderTarget2D _mainTarget;
 
-    internal SceneManager SceneManager;
-    internal EngineSystemManager SceneSystemManager;
-    internal CanvasSystem CanvasSystem;
+    internal readonly RenderPassManager RenderPassManager = new RenderPassManager();
+    internal readonly List<PooledRenderPassBucket> BucketsBuffer = new List<PooledRenderPassBucket>(16);
 
-    public EntityManager EntityManagerSystem;
+    public static Scene Current => SceneManager.CurrentScene;
 
-    public Camera Cam;
+    public Camera Cam { get; private set; }
+    public EntityManager EntityManagerSystem { get; private set; }
 
-    public Vector2 MousePosition { get; private set; }
-    public Vector2 MousePositionWorld { get; private set; }
-
-    public Canvas Canvas => CanvasSystem.Canvas;
-
-    protected bool InitedFirstFrame;
-
-    internal bool IsLoaded;
-    internal bool IsInited;
+    internal SceneManager SceneManager { get; set; }
+    internal CanvasSystem CanvasSystem { get; private set; }
 
     public FortTimer EnterTime
     {
@@ -65,43 +55,32 @@ public class Scene
         }
     }
 
-    public virtual void Init()
+    public Canvas Canvas => CanvasSystem.Canvas;
+
+    public Vector2 MousePosition { get; private set; }
+    public Vector2 MousePositionWorld { get; private set; }
+
+    public override void Init()
     {
-        IsInited = true;
-        SceneSystemManager = new EngineSystemManager();
-        SceneSystemManager.Add(EntityManagerSystem = new EntityManager(new BasicEntityCollection()));
+        EnterTime = 0.1f;
+        ExitTime = 0.1f;
+
+        base.Init();
+
         SceneSystemManager.Add(CanvasSystem = new CanvasSystem());
+        SceneSystemManager.Add(EntityManagerSystem = new EntityManager(new BasicEntityCollection()));
 
         Cam = Entity.Create<Camera>();
         EntityManagerSystem.Add(Cam.Entity);
 
-        EnterTime = 0.1f;
-        ExitTime = 0.1f;
-
-        _target = new RenderTarget2D(Graphics.GraphicsDevice, Screen.Width, Screen.Height,
-            false, SurfaceFormat.Color, DepthFormat.Depth24);
-
-        SetState(SceneStates.Entering);
-    }
-
-    public virtual void LoadContent()
-    {
-        IsLoaded = true;
-    }
-
-    /// <summary>
-    /// before the first frame
-    /// </summary>
-    public virtual void Start()
-    {
-        InitedFirstFrame = true;
+        _mainTarget = new RenderTarget2D(Graphics.GraphicsDevice, Screen.Width, Screen.Height, false, SurfaceFormat.Color, DepthFormat.Depth24);
     }
 
     public void SetScene(Scene scene) => SceneManager.SetScene(scene);
 
-    internal void SetState(SceneStates sceneState)
+    internal override void SetState(SceneStates sceneState)
     {
-        this.State = sceneState;
+        base.SetState(sceneState);
         switch (sceneState)
         {
             case SceneStates.Entering:
@@ -115,29 +94,13 @@ public class Scene
         }
     }
 
-    public virtual void Update(IGameTime t)
+
+    public override void Update(IGameContext t)
     {
         MousePosition = Input.MousePos;
         MousePositionWorld = Input.MouseTransformedPos(Cam.DrawMatrix);
-        if (!InitedFirstFrame)
-        {
-            Start();
-            InitedFirstFrame = true;
-        }
-        SceneSystemManager.Update(t);
-        switch (State)
-        {
-            case SceneStates.Active:
-                ActiveUpdate();
-                break;
-        }
-    }
 
-    /// <summary>
-    /// updates when the screen is done entering and is not exiting
-    /// </summary>
-    public virtual void ActiveUpdate()
-    {
+        base.Update(t);
     }
 
     public virtual void Render()
@@ -146,10 +109,7 @@ public class Scene
         SceneSystemManager.Render();
     }
 
-    internal readonly RenderPassManager _renderPassManager = new RenderPassManager();
-    internal readonly List<PooledRenderPassBucket> _bucketsBuffer = new List<PooledRenderPassBucket>(16);
-
-    private void UpdateInternal()
+    private void PreDrawUpdate()
     {
         RenderPasses.AlphaTestEffectDefault.Projection =
             Scene.Current.Cam.DrawMatrix *
@@ -158,26 +118,26 @@ public class Scene
 
     public virtual void Draw()
     {
-        UpdateInternal();
+        PreDrawUpdate();
 
         var gd = Graphics.GraphicsDevice;
         var sb = Graphics.SpriteBatch;
-        gd.SetRenderTarget(_target);
+        gd.SetRenderTarget(_mainTarget);
         gd.Clear(new Color(25, 25, 25));
 
         // In Draw():
         var renderables = EntityManagerSystem.GetRenderables();
-        _renderPassManager.CollectIntoBuckets(renderables, _bucketsBuffer);
+        RenderPassManager.CollectIntoBuckets(renderables, BucketsBuffer);
 
-        for (int bi = 0; bi < _bucketsBuffer.Count; bi++)
+        for (int bi = 0; bi < BucketsBuffer.Count; bi++)
         {
-            var bucket = _bucketsBuffer[bi];
+            var bucket = BucketsBuffer[bi];
             if (bucket.Renderables.Count == 0)
                 continue;
 
             var pass = bucket.Pass;
             sb.Begin(pass.SortMode, pass.BlendState, pass.SamplerState,
-                     pass.DepthStencilState, pass.RasterizerState, pass.Effect, Cam.DrawMatrix);
+                pass.DepthStencilState, pass.RasterizerState, pass.Effect, Cam.DrawMatrix);
 
             var list = bucket.Renderables;
             for (int i = 0, n = list.Count; i < n; i++)
@@ -206,12 +166,74 @@ public class Scene
         gd.Clear(new Color(25, 25, 25));
 
         sb.Begin();
-        sb.Draw(_target, Screen.Bounds, Color.White);
+        sb.Draw(_mainTarget, Screen.Bounds, Color.White);
         sb.End();
 
         Canvas.Draw();
 
         SceneSystemManager.DrawGui();
+    }
+}
+
+public class BaseScene
+{
+    internal SceneStates State;
+
+    internal EngineSystemManager SceneSystemManager;
+
+    protected bool InitedFirstFrame;
+
+    internal bool IsLoaded;
+    internal bool IsInited;
+
+    public virtual void Init()
+    {
+        IsInited = true;
+        SceneSystemManager = new EngineSystemManager();
+
+        SetState(SceneStates.Entering);
+    }
+
+    public virtual void LoadContent()
+    {
+        IsLoaded = true;
+    }
+
+    /// <summary>
+    /// before the first frame
+    /// </summary>
+    public virtual void Start()
+    {
+        InitedFirstFrame = true;
+    }
+
+    internal virtual void SetState(SceneStates sceneState)
+    {
+        this.State = sceneState;
+    }
+
+    public virtual void Update(IGameContext t)
+    {
+
+        if (!InitedFirstFrame)
+        {
+            Start();
+            InitedFirstFrame = true;
+        }
+        SceneSystemManager.Update(t);
+        switch (State)
+        {
+            case SceneStates.Active:
+                ActiveUpdate();
+                break;
+        }
+    }
+
+    /// <summary>
+    /// updates when the screen is done entering and is not exiting
+    /// </summary>
+    public virtual void ActiveUpdate()
+    {
     }
 
     public virtual void Exit()

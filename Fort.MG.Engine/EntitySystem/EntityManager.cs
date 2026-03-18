@@ -2,10 +2,18 @@
 
 namespace Fort.MG.EntitySystem;
 
-public class EntityManager : EngineSystem
+public interface IEntityManager
 {
+    public EntityCollection Collection { get; }
+    public T? GetComponent<T>() where T : Component;
+    public Entity? GetEntity(string name);
+    public void Add(Entity ent);
+    public void Remove(Entity ent);
+}
 
-    public EntityCollection Collection;
+public class EntityManager : EngineSystem, IEntityManager
+{
+    public EntityCollection Collection { get; private set; }
 
     internal EntityManager(EntityCollection collection)
     {
@@ -30,7 +38,7 @@ public class EntityManager : EngineSystem
         this.Collection = collection;
     }
 
-    public override void Update(IGameTime t)
+    public override void Update(IGameContext t)
     {
         base.Update(t);
         Collection.Update(t);

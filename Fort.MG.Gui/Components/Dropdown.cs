@@ -43,7 +43,7 @@ public class Dropdown : GuiComponent
 			Text = "Select...",
 			Size = new Vector2(120, 30)
 		};
-		_button.OnMouseEvent += (_) => ToggleMenu();
+		_button.OnClick += ToggleMenu;
 		AddComponent(_button);
 
 		_menu = new StackPanel
@@ -73,7 +73,7 @@ public class Dropdown : GuiComponent
 				Text = item,
 				Size = new Vector2(120, 30)
 			};
-			menuItem.OnMouseEvent += (_) => SelectItem(item);
+			menuItem.OnClick += () => SelectItem(item);
 			_menu.Items.Add(menuItem);
 		}
 	}

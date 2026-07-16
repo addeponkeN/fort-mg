@@ -63,7 +63,12 @@ public class Canvas : Container
 		VirtualViewport = new VirtualViewportScaling(w, h);
 	}
 
-	public override void AddItem(GuiComponent item)
+	public void AddWindow(Window window)
+	{
+		AddItem(window);
+    }
+
+    public override void AddItem(GuiComponent item)
 	{
 		item.Canvas = this;
 		item.Parent = this;

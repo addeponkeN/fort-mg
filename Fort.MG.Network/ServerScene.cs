@@ -9,6 +9,8 @@ public class ServerScene : BaseScene
     protected Session Session { get; private set; }
     protected NetEntityManager NetEntities { get; private set; }
 
+    public IMessageListener Listener => Session.Listener;
+
     internal void Attach(Session session)
     {
         Session = session;

@@ -52,6 +52,7 @@ public class FortGameServer
 
         Net = new NetServer();
         Net.Start(Config.Port);
+        Logger.Info($"Listening on port {Config.Port}");
 
         Logger.Info("Initializing...");
         Initialize();

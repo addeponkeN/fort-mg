@@ -41,6 +41,7 @@ public struct TriggerArgs
 public partial class GuiComponent
 {
 	public event Action<MouseClickEvent> OnMouseEvent;
+	public event Action OnClick;
 	public event Action OnMouseEnter;
 	public event Action OnMouseLeave;
 
@@ -91,6 +92,7 @@ public partial class GuiComponent
 			{
 				IsPressed = true;
 				OnMouse(new MouseClickEvent { Button = MouseButton.Left, State = MouseState.Click });
+				OnClick?.Invoke();
 				args.MouseHandled = true;
 			}
 		}

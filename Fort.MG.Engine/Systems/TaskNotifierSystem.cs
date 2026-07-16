@@ -6,7 +6,9 @@ public class TaskNotifierSystem : EngineSystem
 {
 	private TaskNotifierManager _manager;
 
-	public override void Init()
+	public TaskNotifierManager Manager => _manager;
+
+    public override void Init()
 	{
 		base.Init();
 		_manager = new();

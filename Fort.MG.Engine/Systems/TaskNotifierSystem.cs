@@ -11,7 +11,7 @@ public class TaskNotifierSystem : EngineSystem
     public override void Init()
 	{
 		base.Init();
-		_manager = new();
+		_manager = FortEngine.Default.TaskNotifiers;
 	}
 
 	public override void Update(IGameContext t)

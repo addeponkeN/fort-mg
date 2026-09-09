@@ -68,7 +68,8 @@ public class Scene : BaseScene
         base.Init();
 
         SceneSystemManager.Add(CanvasSystem = new CanvasSystem());
-        SceneSystemManager.Add(EntityManagerSystem = new EntityManager(new BasicEntityCollection()));
+        var entityCollection = new BasicEntityCollection { OwningScene = this };
+        SceneSystemManager.Add(EntityManagerSystem = new EntityManager(entityCollection));
 
         Cam = Entity.Create<Camera>();
         EntityManagerSystem.Add(Cam.Entity);

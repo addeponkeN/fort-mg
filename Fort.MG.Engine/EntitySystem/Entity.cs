@@ -337,11 +337,13 @@ public class Entity : BaseObject
     }
 
     /// <summary>
-    /// Instantiate an existing entity
+    /// Instantiate an existing entity. Adds it to <paramref name="target"/> if provided,
+    /// otherwise defaults to the current scene's entity manager (existing behavior).
     /// </summary>
-    public static Entity Instantiate(Entity existingEnt)
+    public static Entity Instantiate(Entity existingEnt, EntityManager? target = null)
     {
-        FortEngine.SceneManager.Scene.EntityManagerSystem.Add(existingEnt);
+        target ??= FortEngine.SceneManager.Scene.EntityManagerSystem;
+        target.Add(existingEnt);
         existingEnt._isInstantiated = true;
 
         if (existingEnt._children != null)
@@ -349,7 +351,7 @@ public class Entity : BaseObject
             {
                 var child = existingEnt._children[i];
                 if (!child._isInstantiated)
-                    Instantiate(child);
+                    Instantiate(child, target);
             }
 
         return existingEnt;

@@ -139,13 +139,13 @@ public class BasicEntityCollection : EntityCollection
     public override void AddRenderable(IFortRenderable renderable)
     {
         _renderables.Add(renderable);
-        Scene.Current.RenderPassManager.MarkDirty();
+        OwningScene?.RenderPassManager.MarkDirty();
     }
 
     public override void RemoveRenderable(IFortRenderable renderable)
     {
         _renderables.Remove(renderable);
-        Scene.Current.RenderPassManager.MarkDirty();
+        OwningScene?.RenderPassManager.MarkDirty();
     }
 
     public override void DrawGizmos()

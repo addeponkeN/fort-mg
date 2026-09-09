@@ -8,7 +8,15 @@ namespace Fort.MG.Utils;
 public static class Time
 {
     static IGameContext _oboContext;
-    public static double TimeScale = 1.0;
+
+    /// <summary>
+    /// if possible - use IOboTime in Update(IOboTime t) methods instead
+    /// </summary>
+    public static double TimeScale
+    {
+        get => FortEngine.Default.TimeScale;
+        set => FortEngine.Default.TimeScale = value;
+    }
 
     /// <summary>
     /// if possible - use IOboTime in Update(IOboTime t) methods instead

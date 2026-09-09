@@ -10,20 +10,35 @@ namespace Fort.MG;
 
 public static class FortEngine
 {
-	public static FortGame Game { get; private set; }
-	public static GameTime Time { get; internal set; }
-	public static SceneManager SceneManager { get; private set; }
+	/// <summary>
+	/// The default (and, today, only) game instance. Prefer the FortEngine.* static members below
+	/// for existing call sites; Default exists so this state is owned by an explicit,
+	/// instantiable object rather than bare static fields (see AI_CONTEXT.md §12).
+	/// </summary>
+	public static GameInstance Default { get; } = new();
+
+	public static FortGame Game => Default.Game;
+
+	public static GameTime Time
+	{
+		get => Default.Time;
+		internal set => Default.Time = value;
+	}
+
+	public static SceneManager SceneManager => Default.SceneManager;
 
 	/// <summary>
 	/// get camera from current scene
 	/// </summary>
 	public static Camera Cam => SceneManager.Scene.Cam;
 
-	internal static EngineSystemManager SystemManager;
+	internal static EngineSystemManager SystemManager
+	{
+		get => Default.SystemManager;
+		set => Default.SystemManager = value;
+	}
 
-	public static AssetManager Assets { get; private set; }
-
-	private static bool _startedExiting;
+	public static AssetManager Assets => Default.Assets;
 
 	internal static SceneManager CreateSceneManager()
 	{
@@ -32,7 +47,7 @@ public static class FortEngine
 
 	public static void Start(FortGame game)
 	{
-		Game = game;
+		Default.Game = game;
 	}
 
 	public static void Load()
@@ -42,17 +57,17 @@ public static class FortEngine
 
 	public static void Load(IGameContext gameContext)
 	{
-		SceneManager = Game.SceneManager;
+		Default.SceneManager = Game.SceneManager;
 
 		Utils.Time.Init(gameContext);
 		FortExtensions.Initialize(Graphics.SpriteBatch);
-		SystemManager = new EngineSystemManager();
+		Default.SystemManager = new EngineSystemManager();
 
 		SystemManager.Register<TimerSystem>();
 		//SystemManager.Register<DebugPrinter>();
 		SystemManager.Register<PerformanceMetricsSystem>();
 		SystemManager.Register<SystemMessageSystem>();
-		Assets = new AssetManager();
+		Default.Assets = new AssetManager();
 	}
 
 	public static void RegisterSystem<T>() where T : EngineSystem, new()
@@ -79,7 +94,7 @@ public static class FortEngine
 
 	internal static void Update()
 	{
-		if (_startedExiting)
+		if (Default.StartedExiting)
 		{
 			Game.Exit();
 			return;
@@ -112,6 +127,6 @@ public static class FortEngine
 
 	public static void Exit()
 	{
-		_startedExiting = true;
+		Default.StartedExiting = true;
 	}
 }

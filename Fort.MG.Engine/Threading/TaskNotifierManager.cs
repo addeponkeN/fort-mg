@@ -10,7 +10,11 @@ public class TaskNotifierLocal : TaskNotifier
 
 public class TaskNotifierManager
 {
-    public static TaskNotifierManager Get { get; private set; }
+    /// <summary>
+    /// The default (and, today, only) task notifier manager, owned by <see cref="GameInstance"/>.
+    /// Prefer injecting/using an explicit instance where possible.
+    /// </summary>
+    public static TaskNotifierManager Get => FortEngine.Default.TaskNotifiers;
 
     private readonly List<TaskNotifier> _notifiers = new();
 
@@ -18,7 +22,6 @@ public class TaskNotifierManager
 
     public TaskNotifierManager()
     {
-        Get = this;
         _local = new();
     }
 

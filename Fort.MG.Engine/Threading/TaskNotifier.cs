@@ -2,6 +2,17 @@
 
 namespace Fort.MG.Threading;
 
+/// <summary>
+/// Queues results of background <see cref="Task"/>s so their callbacks run on the game
+/// thread from <see cref="TaskNotifierManager.Update"/>.
+/// </summary>
+/// <remarks>
+/// A notifier does not register itself; add it to a <see cref="TaskNotifierManager"/> with
+/// <see cref="TaskNotifierManager.Add"/>. The manager does that for the notifiers it owns.
+/// (Registering from this constructor read <c>TaskNotifierManager.Get</c> while
+/// <see cref="FortEngine"/> was still running its static constructor, which threw and took
+/// the whole engine down before the game object existed.)
+/// </remarks>
 public abstract class TaskNotifier : IDisposable
 {
     private class TaskCallback
@@ -20,11 +31,6 @@ public abstract class TaskNotifier : IDisposable
     private readonly List<object> _queuedCalls = new();
 
     private readonly object _lock = new object();
-
-    protected TaskNotifier()
-    {
-        TaskNotifierManager.Get.Add(this);
-    }
 
     public bool IsCalling<T>(T callbackFunc)
     {

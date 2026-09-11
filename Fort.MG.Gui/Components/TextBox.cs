@@ -37,17 +37,19 @@ public class TextBox : GuiComponent
 		IsFocusable = true;
 		base.Size = new Vector2(200, 20);
 		base.Foreground = new Color(200, 200, 200, 255);
-	}
+
+        EditLabel = new EditLabel
+        {
+            Position = Position + new Vector2(_padding, 0),
+            Size = new Vector2(Size.X - 2 * _padding, Size.Y),
+            Foreground = Foreground
+        };
+    }
 
 	public override void Start()
 	{
 		base.Start();
-		EditLabel = new EditLabel
-		{
-			Position = Position + new Vector2(_padding, 0),
-			Size = new Vector2(Size.X - 2 * _padding, Size.Y),
-			Foreground = Foreground
-		};
+		EditLabel.Position = Position + new Vector2(_padding, 0);
 		_visibleWidth = Size.X - 2 * _padding;
 	}
 

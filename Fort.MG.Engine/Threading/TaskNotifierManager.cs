@@ -13,6 +13,8 @@ public class TaskNotifierManager
     /// <summary>
     /// The default (and, today, only) task notifier manager, owned by <see cref="GameInstance"/>.
     /// Prefer injecting/using an explicit instance where possible.
+    /// Only valid once <see cref="FortEngine.Default"/> has finished initializing - never touch
+    /// it from a constructor that can run while that initialization is still in progress.
     /// </summary>
     public static TaskNotifierManager Get => FortEngine.Default.TaskNotifiers;
 
@@ -23,6 +25,10 @@ public class TaskNotifierManager
     public TaskNotifierManager()
     {
         _local = new();
+        // Register explicitly: TaskNotifier no longer self-registers from its constructor,
+        // because that dereferenced TaskNotifierManager.Get during FortEngine's static
+        // initialization (cycle -> NullReferenceException, engine never started).
+        Add(_local);
     }
 
     public void Add(TaskNotifier notifier) => _notifiers.Add(notifier);

@@ -101,7 +101,7 @@ public class EditLabel : GuiComponent
 	{
 		base.Update(gt);
 
-		if (Bounds.Contains(Canvas.MousePosition))
+		if (Canvas != null && Bounds.Contains(Canvas.MousePosition))
 		{
 			if (Input.LeftClick)
 			{

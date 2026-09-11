@@ -67,6 +67,7 @@ public static class FortEngine
 		//SystemManager.Register<DebugPrinter>();
 		SystemManager.Register<PerformanceMetricsSystem>();
 		SystemManager.Register<SystemMessageSystem>();
+		SystemManager.Register<TaskNotifierSystem>();
 		Default.Assets = new AssetManager();
 	}
 

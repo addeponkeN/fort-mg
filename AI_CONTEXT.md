@@ -8,6 +8,21 @@
 > This file is meant to give an AI agent (or a new maintainer) enough context to work safely in
 > either repository without re-deriving the architecture from scratch.
 
+## 0. Agent path & scratch policy
+
+> See **`AGENTS.md`** (workspace root, mirrored into `Fort/`) for the enforced version.
+
+`.reasonix/settings.json` wires a blocking `PreToolUse` hook,
+`.reasonix/hooks/restrict-paths.js`, which denies **reads and writes outside the related local
+repositories** — `Fort.MG` and its sibling `Fort` are read+write; the .NET/Git/NuGet toolchain and
+`X:\dev\Clones\Nopipeline` (a `Fort.MG.sln` build dependency) are read-only. Everything else,
+including `%TEMP%` / `%TMP%` / `/tmp`, is blocked.
+
+Agent scratch work (build probes, generated output, log dumps) goes to a gitignored **`_temp/`
+folder in each repository root** — never `%TEMP%`. The guard is a tool-argument policy check, not a
+sandbox, and hooks are only re-read when a session is constructed (restart Reasonix after editing
+`.reasonix/settings.json`).
+
 ## 1. Overview
 
 `Fort.MG` is a custom 2D game engine built on top of **MonoGame 3.8.4 (DesktopGL)**, targeting

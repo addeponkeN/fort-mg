@@ -9,3 +9,5 @@ ProjectValuation/
 
 *.csproj.user
 /.reasonix/tasks
+# agent scratch workspace: use _temp/ instead of %TEMP% (see AGENTS.md)
+_temp/

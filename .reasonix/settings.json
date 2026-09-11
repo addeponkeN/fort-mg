@@ -1,0 +1,19 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "match": "*",
+        "command": "node .reasonix/hooks/restrict-paths.js",
+        "description": "Restrict read/write to the related local repositories (Fort.MG and Fort); block %TEMP%/%TMP%",
+        "timeout": 5000
+      }
+    ],
+    "SessionStart": [
+      {
+        "command": "node .reasonix/hooks/session-context.js",
+        "description": "Inject the repository path + _temp scratch policy into the session",
+        "timeout": 5000
+      }
+    ]
+  }
+}

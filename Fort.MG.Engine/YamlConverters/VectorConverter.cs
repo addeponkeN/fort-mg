@@ -22,7 +22,9 @@ public class Vector2YamlConverter : IYamlTypeConverter
     public void WriteYaml(IEmitter emitter, object? value, Type type, ObjectSerializer serializer)
     {
         var v = (Vector2)value!;
-        emitter.Emit(new Scalar($"{v.X},{v.Y}"));
+        // InvariantCulture: the reader parses with InvariantCulture, and a culture that uses ',' as
+        // the decimal separator would emit "2,5,1" and corrupt the value.
+        emitter.Emit(new Scalar(FormattableString.Invariant($"{v.X},{v.Y}")));
     }
 }
 
@@ -51,12 +53,15 @@ public class Vector3YamlConverter : IYamlTypeConverter
             z = float.Parse(parts[2], provider: CultureInfo.InvariantCulture);
         }
 
-        return new Vector3(x, z, y);
+        // Symmetric with WriteYaml, which emits "x,y,z". This previously returned (x, z, y), so
+        // every save/load round-trip silently swapped the Y and Z components.
+        return new Vector3(x, y, z);
     }
 
     public void WriteYaml(IEmitter emitter, object? value, Type type, ObjectSerializer serializer)
     {
         var v = (Vector3)value!;
-        emitter.Emit(new Scalar($"{v.X},{v.Y},{v.Z}"));
+        // InvariantCulture: see Vector2YamlConverter.WriteYaml.
+        emitter.Emit(new Scalar(FormattableString.Invariant($"{v.X},{v.Y},{v.Z}")));
     }
 }

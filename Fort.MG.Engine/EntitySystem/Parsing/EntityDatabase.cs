@@ -92,4 +92,29 @@ public static class EntityDatabase
         Entity.Instantiate(ent);
         return ent;
     }
+
+    /// <summary>
+    /// Names (lower-case file name without extension) of every mapped entity template. Scans the
+    /// templates folder on first use. Additive: the mapping was previously only built lazily by
+    /// <see cref="GetFile"/> in DEBUG builds.
+    /// </summary>
+    public static IReadOnlyCollection<string> GetAllTemplateNames()
+    {
+        if (MappedFiles.Count == 0)
+            MapFiles();
+
+        return MappedFiles.Keys;
+    }
+
+    /// <summary>
+    /// Absolute path of the template file backing <paramref name="name"/>, or null when unknown.
+    /// Additive: lets the editor save edits back to the exact file a template was loaded from.
+    /// </summary>
+    public static string? GetTemplatePath(string name)
+    {
+        if (MappedFiles.Count == 0)
+            MapFiles();
+
+        return MappedFiles.TryGetValue(name.ToLowerInvariant(), out var path) ? path : null;
+    }
 }

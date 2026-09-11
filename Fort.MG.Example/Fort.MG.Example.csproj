@@ -34,6 +34,9 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\Fort\Fort.TexturePacker\Fort.TexturePacker.csproj" />
+		<ProjectReference Include="..\Fort.MG.Editor\Fort.MG.Editor.csproj" />
+		<!-- Built and copied into content/ by the SyncContentPipelineExtension target below; not referenced as an assembly. -->
+		<ProjectReference Include="..\Fort.MG.PipelineExtension\Fort.MG.PipelineExtension.csproj" ReferenceOutputAssembly="false" PrivateAssets="All" />
 		<ProjectReference Include="..\Fort.MG.Engine\Fort.MG.Engine.csproj" />
 		<ProjectReference Include="..\Fort.MG.Gui\Fort.MG.Gui.csproj" />
 	</ItemGroup>
@@ -43,5 +46,36 @@
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>
+	<!--
+	  Two things the MonoGame content build needs that MSBuild does not do by itself here:
 
+	  1. MGCB is invoked as `dotnet mgcb`, which is resolved from .config/dotnet-tools.json, so that
+	     tool has to be restored. MonoGame.Content.Builder.Task only installs into its own package
+	     folder, which it never uses on Windows because it probes for an extensionless `mgcb`.
+	     Without this the content build fails with MSB3073 / "Run dotnet tool restore".
+
+	  2. content/Content.mgcb references content/Fort.MG.PipelineExtension.dll, so rebuild it from
+	     source and copy it next to the content instead of relying on a checked-in binary.
+	-->
+	<Target Name="RestoreContentBuilderTool" BeforeTargets="PrepareContentBuilder">
+		<Exec Command="&quot;$(DotnetCommand)&quot; tool restore" WorkingDirectory="$(MSBuildProjectDirectory)" />
+	</Target>
+
+	<Target Name="SyncContentPipelineExtension" BeforeTargets="PrepareContentBuilder">
+		<MSBuild Projects="$(MSBuildProjectDirectory)\..\Fort.MG.PipelineExtension\Fort.MG.PipelineExtension.csproj"
+		         Targets="Build"
+		         Properties="Configuration=$(Configuration)">
+			<Output TaskParameter="TargetOutputs" ItemName="ContentPipelineExtensionOutput" />
+		</MSBuild>
+
+		<!-- Only the extension plus its own package dependencies; MonoGame's pipeline assemblies stay owned by MGCB. -->
+		<ItemGroup>
+			<ContentPipelineExtensionFile Include="@(ContentPipelineExtensionOutput)" />
+			<ContentPipelineExtensionFile Include="@(ContentPipelineExtensionOutput->'%(RootDir)%(Directory)RectpackSharp.dll')" />
+		</ItemGroup>
+
+		<Copy SourceFiles="@(ContentPipelineExtensionFile)"
+		      DestinationFolder="$(MSBuildProjectDirectory)\content"
+		      SkipUnchangedFiles="true" />
+	</Target>
 </Project>

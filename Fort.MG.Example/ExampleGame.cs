@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Linq;
 using Fort.MG.Assets.Data;
+using Fort.MG.Editor;
 using Fort.MG.Gui;
 using Fort.MG.Gui.Components;
 using Fort.Utility;
@@ -20,6 +21,7 @@ public class ExampleGame : FortGame
 	private SpriteRegion _threeSlice;
 
 	private Window _debugWindow;
+	private EntityEditorSystem _editor;
 
 	protected override void Initialize()
 	{
@@ -41,6 +43,9 @@ public class ExampleGame : FortGame
 		_pixel.SetData([Color.White]);
 
 		LoadTest();
+
+		FortEngine.RegisterSystem<EntityEditorSystem>();
+		_editor = FortEngine.GetSystem<EntityEditorSystem>();
 
 		_textRen = new TextRenderer();
 	}
@@ -181,6 +186,7 @@ public class ExampleGame : FortGame
 	{
 		base.Render(gt);
 		_canvas.Render();
+		_editor?.RenderGui();
 	}
 
 	protected override void Draw(GameTime gt)
@@ -198,6 +204,7 @@ public class ExampleGame : FortGame
 		}
 
 		_canvas.Draw();
+		_editor?.DrawGui();
 		swDrawMs.Stop();
 
 		DrawDebug(gt);

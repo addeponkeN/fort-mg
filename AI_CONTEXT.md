@@ -49,6 +49,7 @@ refactors.
 | `Fort.MG.Gui` | Retained-mode UI toolkit (controls, skins, canvas, focus/input handling) | `Fort.MG.Extensions` |
 | `Fort.MG.Network.Messages` | Game-specific `[NetData]` message struct definitions | `Fort.Network`, `Fort.Network.SourceGen` (as analyzer) |
 | `Fort.MG.Engine` | **The core engine**: ECS-ish entities, scenes, states, rendering, tilemaps, particles | `Fort.MG.Assets`, `Fort.MG.Extensions`, `Fort.MG.Gui`, `Fort.MG.Network.Messages`, `Fort.MG`, `YamlDotNet` |
+| `Fort.MG.Editor` | In-game entity editor: browses, edits, and saves the data-driven entity templates (`content/templates/*.yaml`) | `Fort.MG.Engine`, `Fort.MG.Gui` |
 | `Fort.MG.Network` | Game-level networking glue over `Fort.Network` | `LiteNetLib`, `Fort.MG.Engine`, `Fort.MG.Network.Messages` |
 | `Fort.MG.Example` | Sample/demo game executable + custom content type reader example | `Fort.TexturePacker`, `Fort.MG.Engine`, `Fort.MG.Gui`, `Nopipeline.Task`, `MonoGame.Content.Builder.Task` |
 
@@ -200,6 +201,27 @@ it contains no source files of its own.
   base behaviors and a `Skins/` folder for visual theming.
 - `FocusManager`, `KeyRepeater`, `StyleManager`, `GuiSettings`, `GuiContent`, `Markdowns` — supporting
   input-focus, key-repeat, styling, and markdown-text rendering helpers.
+
+### Fort.MG.Editor
+- `EntityEditorSystem : EngineSystem` — owns an editor `Canvas`; registered via
+  `FortEngine.RegisterSystem<EntityEditorSystem>()` and toggled with **F1**. Exposes `RenderGui()` /
+  `DrawGui()`, which must be called where no `SpriteBatch` is active (it is deliberately *not* an
+  `IFortDrawableGui`, because the global `DrawGui` pass runs inside an ambient batch). While closed
+  it updates and draws nothing.
+- `EntityEditorSession` — the working (scene-detached) entity tree, selection, dirty flag, and
+  YAML-snapshot undo/redo. Load/save go through `EntitySerializer`; the working tree is built with
+  `Entity.Create` + `Parent`, never `Entity.Instantiate`, so editing cannot leak entities into the
+  running scene.
+- `Panels/` — `ToolbarPanel`, `TemplateBrowserPanel`, `HierarchyPanel`, `InspectorPanel`, and
+  `EditorPreview` (gizmo viewport: click to select, drag to move).
+- `Fields/` — `ComponentFieldModel` (cached, reflection-derived editable fields per component type,
+  reusing `ComponentSerializer`'s discovery/naming rules) and `PropertyRow` / `FieldWidgets` (the
+  type→widget mapping: bool→Checkbox, enum→Dropdown, numeric→TextBox, Vector2/3→numeric row,
+  Color→swatch + RGBA boxes; types it cannot safely author render read-only).
+- Additive engine seams it relies on: public `ComponentSerializer.GetSerializableMembers` /
+  `GetSerializationName` / `GetMemberType` / `GetMemberValue` / `SetMemberValue`;
+  `EntitySerializer.SerializeEntityTemplates` / `DeserializeEntityTemplates` / `SerializeTemplates`
+  and public `CreateTemplateFromEntity`; `EntityDatabase.GetAllTemplateNames` / `GetTemplatePath`.
 
 ### Fort.MG.Assets / pipeline
 - `Fort.MG.Assets.Data`: `SpriteAtlas`/`SpriteRegion`, `TilesetAtlas`/`TilesetRegion` — plain data
@@ -500,6 +522,7 @@ It does not own:
 - `Fort.MG` projects may depend on `Fort`.
 - `Fort` must never depend on `Fort.MG`.
 - Example projects may depend on everything.
+- `Fort.MG.Editor` may depend on `Fort.MG.Engine`/`Fort.MG.Gui`; `Fort.MG.Example` may depend on `Fort.MG.Editor`. The engine must never depend on the editor.
 - Engine must never depend on Example.
 
 ## 19. Lifecycle Guarantees
@@ -536,7 +559,9 @@ It does not own:
 - ECS improvements
 - Better renderer
 - Audio engine
-- Editor
+- Editor — first pass landed as `Fort.MG.Editor` (see §5): template browsing/editing/saving,
+  hierarchy, inspector, and a gizmo viewport with select + drag. Follow-ups: render real sprites in
+  the viewport, cross-canvas input routing while the editor is open.
 - Multi-lobby server hosting (refactor simulation-state statics into instantiable context objects —
   see §12's Static Facades guidance)
 

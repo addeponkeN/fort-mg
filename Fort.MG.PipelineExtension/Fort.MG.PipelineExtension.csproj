@@ -1,6 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net10.0</TargetFramework>
+		<!-- MGCB (dotnet-mgcb) runs on .NET 8 - its tool package only ships tools/net8.0 - and loads
+		     this assembly as a plugin from the game's content folder, so it must target a framework
+		     that host can actually load. -->
+		<TargetFramework>net8.0</TargetFramework>
+		<!-- Its package dependencies (e.g. RectpackSharp) have to land next to the assembly in bin/
+		     so they can be copied beside the extension into the content folder. -->
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -15,10 +21,6 @@
 	<ItemGroup>
 		<PackageReference Include="RectpackSharp" Version="1.2.0" />
 		<PackageReference Include="System.Drawing.Common" Version="8.0.10" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\Fort.MG.Assets.Data\Fort.MG.Assets.Data.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

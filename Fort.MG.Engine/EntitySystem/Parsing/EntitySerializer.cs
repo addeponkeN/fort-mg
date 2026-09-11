@@ -11,6 +11,15 @@ public static class EntitySerializer
     // Save multiple entities to a single file
     public static void SaveEntityTemplates(IEnumerable<Entity> entities, string filePath)
     {
+        File.WriteAllText(filePath, SerializeEntityTemplates(entities));
+    }
+
+    /// <summary>
+    /// Serializes a set of entities to the YAML template format without touching the file system.
+    /// Additive: used by the editor for in-memory snapshots (undo/redo) and diffing.
+    /// </summary>
+    public static string SerializeEntityTemplates(IEnumerable<Entity> entities)
+    {
         var templates = new List<EntityTemplate>();
 
         foreach (var entity in entities)
@@ -19,8 +28,7 @@ public static class EntitySerializer
             templates.Add(template);
         }
 
-        var yaml = YamlSerializer.Serialize(templates);
-        File.WriteAllText(filePath, yaml);
+        return YamlSerializer.Serialize(templates);
     }
 
     // Save single entity (convenience method)
@@ -29,14 +37,31 @@ public static class EntitySerializer
         SaveEntityTemplates(new[] { entity }, filePath);
     }
 
+    /// <summary>
+    /// Serializes already-built templates. Additive: the editor uses this to write a template it has
+    /// edited while preserving template-level metadata such as
+    /// <see cref="EntityTemplate.Extends"/>, which the entity-based overload cannot carry.
+    /// </summary>
+    public static string SerializeTemplates(IEnumerable<EntityTemplate> templates)
+    {
+        return YamlSerializer.Serialize(new List<EntityTemplate>(templates));
+    }
+
     // Load multiple entities from a single file
     public static List<Entity> LoadEntityTemplates(string filePath)
     {
         if (!File.Exists(filePath))
             throw new FileNotFoundException($"Entity templates not found: {filePath}");
 
-        var yaml = File.ReadAllText(filePath);
+        return DeserializeEntityTemplates(File.ReadAllText(filePath));
+    }
 
+    /// <summary>
+    /// Parses YAML template text into entities (the inverse of <see cref="SerializeEntityTemplates"/>).
+    /// Additive: used by the editor for in-memory undo/redo snapshots.
+    /// </summary>
+    public static List<Entity> DeserializeEntityTemplates(string yaml)
+    {
         // An entity template file can contain multiple templates, therefore deserialize a List<>
         var templates = YamlDeserializer.Deserialize<List<EntityTemplate>>(yaml);
 
@@ -98,6 +123,12 @@ public static class EntitySerializer
             if (component != null)
             {
                 entity.AddComponentViaSerializer(component);
+            }
+            else
+            {
+                // Unregistered component type (e.g. a template referring to a component that no longer
+                // exists): surface it rather than silently dropping the component.
+                Logger.Warn($"Entity template '{entity.Name}': unknown component type '{typeName}' - skipped.");
             }
         }
 
@@ -162,7 +193,11 @@ public static class EntitySerializer
         return result;
     }
 
-    private static EntityTemplate CreateTemplateFromEntity(Entity entity)
+    /// <summary>
+    /// Builds an <see cref="EntityTemplate"/> (including child templates) from a live entity tree.
+    /// Additive: exposed for the editor; previously private.
+    /// </summary>
+    public static EntityTemplate CreateTemplateFromEntity(Entity entity)
     {
         // entity
         var template = new EntityTemplate
@@ -170,7 +205,12 @@ public static class EntitySerializer
             Name = entity.Name ?? "Unnamed",
             Transform = new TransformData
             {
-                Position = entity.Transform.Position3,
+                // Templates store the transform relative to the parent, which is what
+                // CreateEntityFromTemplate applies (it sets Position3 first, then LocalPosition3, so
+                // LocalPosition is the effective value). Writing the world position into Position as
+                // well was inert on load but self-inconsistent - a child's "position" disagreed with
+                // its "localPosition" - so both keys now carry the same parent-relative value.
+                Position = entity.Transform.LocalPosition3,
                 LocalPosition = entity.Transform.LocalPosition3,
                 Size = entity.Transform.Size
             }
@@ -183,8 +223,10 @@ public static class EntitySerializer
 
             var dict = ComponentSerializer.SerializeComponentToDict(component);
 
-            var typeName = (string)dict["type"];
-            dict.Remove("type");
+            // The component type name is the YAML key. SerializeComponentToDict only emits member
+            // entries (plus "enabled"), so resolve the name from the registry instead of reading a
+            // "type" key that is never written (which previously threw KeyNotFoundException on save).
+            var typeName = ComponentRegistry.GetTypeName(component.GetType());
 
             template.Components[typeName] = dict;
         }

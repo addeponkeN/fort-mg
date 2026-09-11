@@ -427,6 +427,9 @@ public class Entity : BaseObject
 
     public IReadOnlyList<Entity> GetChildren()
     {
-        return _children;
+        // _children is allocated lazily by ConnectChild, so a leaf entity has none. Return an empty
+        // list rather than null: callers (and template serialization) iterate this without a null
+        // check, which previously threw NullReferenceException when saving any childless entity.
+        return _children ?? (IReadOnlyList<Entity>)Array.Empty<Entity>();
     }
 }

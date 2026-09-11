@@ -109,7 +109,12 @@ public static class ComponentSerializer
 		}
 	}
 
-	private static IEnumerable<MemberInfo> GetSerializableMembers(Type type)
+	/// <summary>
+	/// Public accessor for the members that participate in component serialization
+	/// (public instance properties/fields annotated with <see cref="SerializeAttribute"/>).
+	/// Additive: the editor builds its property model from this, reusing the same discovery rules.
+	/// </summary>
+	public static IEnumerable<MemberInfo> GetSerializableMembers(Type type)
 	{
 		var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
 							 .Where(p => p.CanRead && p.CanWrite && HasSerializeAttribute(p));
@@ -123,7 +128,8 @@ public static class ComponentSerializer
 	private static bool HasSerializeAttribute(MemberInfo member) =>
 		member.GetCustomAttribute<SerializeAttribute>() != null;
 
-	private static string GetSerializationName(MemberInfo member)
+	/// <summary>Serialization key used for this member (Serialize.Name, then YamlMember.Alias, then camelCase).</summary>
+	public static string GetSerializationName(MemberInfo member)
 	{
 		var attr = member.GetCustomAttribute<SerializeAttribute>();
 		if (!string.IsNullOrEmpty(attr?.Name))
@@ -144,21 +150,24 @@ public static class ComponentSerializer
 		return char.ToLowerInvariant(name[0]) + name.Substring(1);
 	}
 
-	private static Type GetMemberType(MemberInfo member) => member switch
+	/// <summary>Declared CLR type of a serializable member.</summary>
+	public static Type GetMemberType(MemberInfo member) => member switch
 	{
 		PropertyInfo prop => prop.PropertyType,
 		FieldInfo field => field.FieldType,
 		_ => null
 	};
 
-	private static object GetMemberValue(MemberInfo member, object obj) => member switch
+	/// <summary>Reads the current value of a serializable member.</summary>
+	public static object GetMemberValue(MemberInfo member, object obj) => member switch
 	{
 		PropertyInfo prop => prop.GetValue(obj),
 		FieldInfo field => field.GetValue(obj),
 		_ => null
 	};
 
-	private static void SetMemberValue(MemberInfo member, object obj, object value)
+	/// <summary>Writes the value of a serializable member.</summary>
+	public static void SetMemberValue(MemberInfo member, object obj, object value)
 	{
 		switch (member)
 		{
